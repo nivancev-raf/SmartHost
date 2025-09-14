@@ -1,0 +1,52 @@
+<header class="main-header" [class.transparent]="isHeroVisible">
+  <div class="header-content">
+    <!-- Logo -->
+    <div class="logo">
+      <a routerLink="/">
+        <span class="logo-text">SmartHost</span>
+      </a>
+    </div>
+
+    <!-- Navigation - changes based on role -->
+    <nav class="main-nav">
+      <!-- Guest/Client Navigation -->
+      <ng-container *ngIf="!authService.isAdmin()">
+        <a routerLink="/apartments" routerLinkActive="active">Our Accommodations</a>
+        <a routerLink="/reservations" routerLinkActive="active">Reservations</a>
+        <a routerLink="/contact" routerLinkActive="active">Contact</a>
+        <a routerLink="/about" routerLinkActive="active">More...</a>
+      </ng-container>
+
+      <!-- Admin Navigation -->
+      <ng-container *ngIf="authService.isAdmin()">
+        <a routerLink="/admin/apartments" routerLinkActive="active">Properties</a>
+        <a routerLink="/admin/reservations" routerLinkActive="active">Reservations</a>
+        <a routerLink="/admin/calendar" routerLinkActive="active">Calendar</a>
+        <a routerLink="/admin/finance" routerLinkActive="active">Finance</a>
+      </ng-container>
+
+      <!-- Auth Section -->
+      <div class="auth-section">
+        <ng-container *ngIf="!(authService.isLoggedIn$ | async)">
+          <button mat-button routerLink="/login" class="login-btn">Login</button>
+        </ng-container>
+        
+        <ng-container *ngIf="authService.isLoggedIn$ | async">
+          <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+            <mat-icon>account_circle</mat-icon>
+          </button>
+          <mat-menu #userMenu="matMenu">
+            <button mat-menu-item routerLink="/profile">
+              <mat-icon>person</mat-icon>
+              <span>Profile</span>
+            </button>
+            <button mat-menu-item (click)="authService.logout()">
+              <mat-icon>logout</mat-icon>
+              <span>Logout</span>
+            </button>
+          </mat-menu>
+        </ng-container>
+      </div>
+    </nav>
+  </div>
+</header>

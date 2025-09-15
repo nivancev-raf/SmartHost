@@ -87,6 +87,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+  }
+
   logout(): void {
     this.authService.logout();
     this.isMobileMenuOpen = false;
@@ -112,7 +116,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     ];
   }
 
-  // Check if current route is active
   isRouteActive(route: string): boolean {
     return this.router.url.startsWith(route);
   }

@@ -1,0 +1,178 @@
+.register-dialog {
+  width: 100%;
+  max-width: 450px;
+  padding: 0;
+}
+
+.register-dialog h2 {
+  margin: 0;
+  padding: 24px 24px 0 24px;
+  font-size: 24px;
+  font-weight: 400;
+  color: #333;
+  text-align: center;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px 0 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 8px;
+  color: #d32f2f;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.error-message mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.dialog-actions {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.login-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.login-text {
+  color: #666;
+  font-size: 14px;
+}
+
+.login-btn-link {
+  color: #00bcd4 !important;
+  font-weight: 500;
+  text-transform: none;
+  font-size: 14px;
+  min-width: auto;
+  padding: 0 4px;
+  height: auto;
+}
+
+.login-btn-link:hover {
+  background-color: rgba(0, 188, 212, 0.04);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.action-buttons button {
+  min-width: 80px;
+}
+
+.register-btn {
+  background-color: #00bcd4 !important;
+  color: white !important;
+}
+
+.register-btn:hover:not([disabled]) {
+  background-color: #00acc1 !important;
+}
+
+.register-btn[disabled] {
+  background-color: rgba(0, 188, 212, 0.4) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Material form field customizations */
+::ng-deep .register-dialog .mat-mdc-form-field {
+  margin-bottom: 4px;
+}
+
+::ng-deep .register-dialog .mat-mdc-form-field-label {
+  color: #666;
+}
+
+::ng-deep .register-dialog .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: #00bcd4;
+}
+
+::ng-deep .register-dialog .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+::ng-deep .register-dialog .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+::ng-deep .register-dialog .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #00bcd4 !important;
+}
+
+::ng-deep .register-dialog .mdc-notched-outline__leading,
+::ng-deep .register-dialog .mdc-notched-outline__notch,
+::ng-deep .register-dialog .mdc-notched-outline__trailing {
+  border-color: rgba(0, 0, 0, 0.23);
+}
+
+::ng-deep .register-dialog .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+::ng-deep .register-dialog .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+::ng-deep .register-dialog .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+  border-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .register-dialog {
+    max-width: 100%;
+    width: 100vw;
+    max-height: 100vh;
+  }
+  
+  .register-dialog h2 {
+    font-size: 20px;
+    padding: 16px 16px 0 16px;
+  }
+  
+  .register-form {
+    padding: 16px 16px 0 16px;
+    max-height: 50vh;
+  }
+  
+  .dialog-actions {
+    padding: 16px;
+  }
+  
+  .action-buttons {
+    flex-direction: column-reverse;
+  }
+  
+  .action-buttons button {
+    min-width: auto;
+    width: 100%;
+  }
+}

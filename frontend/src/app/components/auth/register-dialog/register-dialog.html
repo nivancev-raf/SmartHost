@@ -1,0 +1,145 @@
+<div class="register-dialog">
+  <h2 mat-dialog-title>Join SmartHost</h2>
+  
+  <mat-dialog-content>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="errorMessage">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- First Name Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>First Name</mat-label>
+        <input matInput 
+               type="text" 
+               formControlName="firstName" 
+               placeholder="Enter your first name"
+               autocomplete="given-name">
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched">
+          {{ getErrorMessage('firstName') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Last Name Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Last Name</mat-label>
+        <input matInput 
+               type="text" 
+               formControlName="lastName" 
+               placeholder="Enter your last name"
+               autocomplete="family-name">
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
+          {{ getErrorMessage('lastName') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Email Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput 
+               type="email" 
+               formControlName="email" 
+               placeholder="Enter your email"
+               autocomplete="email">
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+          {{ getErrorMessage('email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Phone Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Phone</mat-label>
+        <input matInput 
+               type="tel" 
+               formControlName="phone" 
+               placeholder="Enter your phone number"
+               autocomplete="tel">
+        <mat-icon matSuffix>phone</mat-icon>
+        <mat-error *ngIf="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
+          {{ getErrorMessage('phone') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Password Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput 
+               [type]="hidePassword ? 'password' : 'text'" 
+               formControlName="password" 
+               placeholder="Enter your password"
+               autocomplete="new-password">
+        <button mat-icon-button 
+                matSuffix 
+                type="button"
+                (click)="togglePasswordVisibility()" 
+                [attr.aria-label]="'Hide password'" 
+                [attr.aria-pressed]="hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+          {{ getErrorMessage('password') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Confirm Password Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Confirm Password</mat-label>
+        <input matInput 
+               [type]="hideConfirmPassword ? 'password' : 'text'" 
+               formControlName="confirmPassword" 
+               placeholder="Confirm your password"
+               autocomplete="new-password">
+        <button mat-icon-button 
+                matSuffix 
+                type="button"
+                (click)="toggleConfirmPasswordVisibility()" 
+                [attr.aria-label]="'Hide password'" 
+                [attr.aria-pressed]="hideConfirmPassword">
+          <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+          {{ getErrorMessage('confirmPassword') }}
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <!-- Login Link -->
+    <div class="login-link">
+      <span class="login-text">Already have an account? </span>
+      <button mat-button 
+              type="button" 
+              class="login-btn-link"
+              (click)="onLoginClick()">
+        Login
+      </button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button mat-button 
+              type="button" 
+              (click)="onCancel()"
+              [disabled]="isLoading">
+        Cancel
+      </button>
+      
+      <button mat-raised-button 
+              color="primary" 
+              type="button"
+              (click)="onSubmit()"
+              [disabled]="registerForm.invalid || isLoading"
+              class="register-btn">
+        <mat-icon *ngIf="isLoading" class="loading-spinner">refresh</mat-icon>
+        <span *ngIf="!isLoading">Register</span>
+        <span *ngIf="isLoading">Creating account...</span>
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

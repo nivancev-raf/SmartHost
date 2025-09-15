@@ -1,0 +1,82 @@
+<div class="login-dialog">
+  <h2 mat-dialog-title>Welcome Back</h2>
+  
+  <mat-dialog-content>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="errorMessage">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Email Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput 
+               type="email" 
+               formControlName="email" 
+               placeholder="Enter your email"
+               autocomplete="email">
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          {{ getErrorMessage('email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Password Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput 
+               [type]="hidePassword ? 'password' : 'text'" 
+               formControlName="password" 
+               placeholder="Enter your password"
+               autocomplete="current-password">
+        <button mat-icon-button 
+                matSuffix 
+                type="button"
+                (click)="togglePasswordVisibility()" 
+                [attr.aria-label]="'Hide password'" 
+                [attr.aria-pressed]="hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          {{ getErrorMessage('password') }}
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <!-- Register Link -->
+    <div class="register-link">
+      <span class="register-text">Not a member? </span>
+      <button mat-button 
+              type="button" 
+              class="register-btn"
+              (click)="onRegisterClick()">
+        Register
+      </button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button mat-button 
+              type="button" 
+              (click)="onCancel()"
+              [disabled]="isLoading">
+        Cancel
+      </button>
+      
+      <button mat-raised-button 
+              color="primary" 
+              type="button"
+              (click)="onSubmit()"
+              [disabled]="loginForm.invalid || isLoading"
+              class="login-btn">
+        <mat-icon *ngIf="isLoading" class="loading-spinner">refresh</mat-icon>
+        <span *ngIf="!isLoading">Login</span>
+        <span *ngIf="isLoading">Logging in...</span>
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

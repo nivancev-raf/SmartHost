@@ -1,9 +1,8 @@
-<header class="main-header" [class.transparent]="isHeroVisible">
+<header class="main-header">
   <div class="header-content">
     <div class="logo">
       <a routerLink="/">
-        <img src="images/logo-dark-removebg.png" alt="SmartHost Logo" class="logo-image logo-dark">
-        <img src="images/logo-light-removebg.png" alt="SmartHost Logo" class="logo-image logo-light">
+        <img src="images/logo-dark-removebg.png" alt="SmartHost Logo" class="logo-image">
         <span class="logo-text">SmartHost</span>
       </a>
     </div>
@@ -11,7 +10,8 @@
     <!-- Mobile Controls (Login + Menu Toggle) -->
     <div class="mobile-controls">
       <!-- Mobile Login Button (only when not logged in and menu is closed) -->
-      <button mat-button routerLink="/login" class="mobile-login-btn" 
+      <button mat-button class="mobile-login-btn" 
+              (click)="openLoginDialog()"
               *ngIf="!(authService.isLoggedIn$ | async) && !isMobileMenuOpen">
         <mat-icon>lock</mat-icon>
         <span>Login</span>
@@ -66,7 +66,7 @@
        <!-- Auth Section -->
       <div class="auth-section">
         <ng-container *ngIf="!(authService.isLoggedIn$ | async)">
-          <button mat-button routerLink="/login" class="login-btn" (click)="closeMobileMenu()">
+          <button mat-button class="login-btn" (click)="openLoginDialog()">
             <mat-icon>key</mat-icon>
             Login
           </button>

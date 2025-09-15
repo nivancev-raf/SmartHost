@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { Router, NavigationEnd, RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../../services/auth';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+import { DialogService } from '../../../services/dialog.service';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
@@ -24,7 +24,6 @@ import { MatMenuModule } from '@angular/material/menu';
   styleUrls: ['./header.css']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  isHeroVisible = false;
   isMobileMenuOpen = false;
   isLoggedIn = false;
   userRole = 'GUEST';
@@ -34,6 +33,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   constructor(
     public authService: AuthService,
+    private dialogService: DialogService,
     private router: Router
   ) {}
 
@@ -56,31 +56,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.currentUser = user;
       })
     );
-
-    // Check if we're on home page to show transparent header
-    this.subscriptions.add(
-      this.router.events.pipe(
-        filter(event => event instanceof NavigationEnd)
-      ).subscribe((event: NavigationEnd) => {
-        this.isHeroVisible = event.url === '/' || event.url === '/home';
-      })
-    );
-
-    // Initial check
-    this.isHeroVisible = this.router.url === '/' || this.router.url === '/home';
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-  }
-
-  @HostListener('window:scroll')
-  onWindowScroll(): void {
-    const scrolled = window.pageYOffset;
-    if (this.isHeroVisible) {
-      // Make header opaque when scrolling past hero section
-      this.isHeroVisible = scrolled < window.innerHeight * 0.8;
-    }
   }
 
   toggleMobileMenu(): void {
@@ -93,6 +72,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logout();
+    this.isMobileMenuOpen = false;
+  }
+
+  openLoginDialog(): void {
+    this.dialogService.openLoginDialog();
+    this.isMobileMenuOpen = false;
+  }
+
+  openRegisterDialog(): void {
+    this.dialogService.openRegisterDialog();
     this.isMobileMenuOpen = false;
   }
 

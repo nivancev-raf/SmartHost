@@ -33,16 +33,6 @@
     <div class="hero-text">
       <h1 class="hero-title">{{ heroTitle }}</h1>
       <p class="hero-subtitle">{{ heroSubtitle }}</p>
-      
-      <!-- Call to Action Button -->
-      <div class="hero-actions" *ngIf="showActions">
-        <button mat-raised-button 
-                color="primary" 
-                class="cta-button"
-                (click)="onCtaClick()">
-          {{ ctaText }}
-        </button>
-      </div>
     </div>
 
     <!-- Search Form - only for guests/clients -->

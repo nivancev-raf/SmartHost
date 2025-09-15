@@ -1,10 +1,29 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-search-form',
   templateUrl: './search-form.html',
-  styleUrls: ['./search-form.css']
+  styleUrls: ['./search-form.css'],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatNativeDateModule
+  ]
 })
 export class SearchFormComponent implements OnInit {
   @Output() searchSubmit = new EventEmitter<any>();

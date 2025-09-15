@@ -1,14 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {SearchFormComponent} from "../../shared/search-form/search-form";
-
-interface HeroConfig {
-  title: string;
-  subtitle: string;
-  showSearch: boolean;
-  showActions: boolean;
-  ctaText?: string;
-}
+import { HeroConfig } from "../../../models/hero-config";
 
 @Component({
   selector: 'app-hero-section',
@@ -17,14 +10,11 @@ interface HeroConfig {
   styleUrls: ['./hero-section.css']
 })
 export class HeroSectionComponent implements OnInit, OnDestroy {
-  @Input() heroTitle = 'Breathtaking river and city view';
-  @Input() heroSubtitle = 'Brand new, luxury apartments located in Belgrade Waterfront';
+  @Input() heroTitle = 'Stay Smart, Pay Less';
+  @Input() heroSubtitle = 'Direct booking without commission fees - luxury apartments in Belgrade';
   @Input() showSearch = true;
-  @Input() showActions = true;
-  @Input() ctaText = 'View our apartments';
 
   @Output() searchSubmit = new EventEmitter<any>();
-  @Output() ctaClick = new EventEmitter<void>();
 
   heroImages: string[] = [
     'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1920&h=1080&fit=crop&crop=center',
@@ -106,18 +96,10 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
     this.searchSubmit.emit(searchData);
   }
 
-  onCtaClick(): void {
-    this.ctaClick.emit();
-  }
-
   updateHeroConfig(config: HeroConfig): void {
     this.heroTitle = config.title;
     this.heroSubtitle = config.subtitle;
     this.showSearch = config.showSearch;
-    this.showActions = config.showActions;
-    if (config.ctaText) {
-      this.ctaText = config.ctaText;
-    }
     this.cdr.detectChanges();
   }
 }

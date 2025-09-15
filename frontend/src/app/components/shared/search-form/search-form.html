@@ -1,1 +1,53 @@
-<p>search-form works!</p>
+<form [formGroup]="searchForm" (ngSubmit)="onSubmit()" class="search-form">
+  <!-- Search Controls Row -->
+  <div class="search-controls">
+    <!-- Check-in Date -->
+    <div class="control-group">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Check-in</mat-label>
+        <input matInput [matDatepicker]="checkinPicker" formControlName="checkIn" [min]="minDate">
+        <mat-datepicker-toggle matIconSuffix [for]="checkinPicker">
+          <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+        </mat-datepicker-toggle>
+        <mat-datepicker #checkinPicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <!-- Check-out Date -->
+    <div class="control-group">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Check-out</mat-label>
+        <input matInput [matDatepicker]="checkoutPicker" formControlName="checkOut" [min]="minDate">
+        <mat-datepicker-toggle matIconSuffix [for]="checkoutPicker">
+          <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+        </mat-datepicker-toggle>
+        <mat-datepicker #checkoutPicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <!-- Number of Guests -->
+    <div class="control-group">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Guests</mat-label>
+        <mat-select formControlName="guests">
+          <mat-option *ngFor="let option of guestOptions" [value]="option">
+            <mat-icon>person</mat-icon>
+            {{option}} Guest{{option > 1 ? 's' : ''}}
+          </mat-option>
+        </mat-select>
+        <mat-icon matSuffix>people</mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Search Button -->
+  <div class="search-button-container">
+    <button type="submit" 
+            mat-raised-button 
+            class="search-button"
+            [disabled]="!searchForm.valid">
+      <mat-icon>search</mat-icon>
+      <span>Search Available Apartments</span>
+    </button>
+  </div>
+</form>

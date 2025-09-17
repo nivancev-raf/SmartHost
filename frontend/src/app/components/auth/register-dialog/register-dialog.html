@@ -2,7 +2,7 @@
   <h2 mat-dialog-title>Join SmartHost</h2>
   
   <mat-dialog-content>
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" (keydown.enter)="onSubmit()" class="register-form">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" (keydown.enter)="$event.preventDefault(); onSubmit()" class="register-form">
       <!-- Error Message -->
       <div class="error-message" *ngIf="errorMessage">
         <mat-icon>error_outline</mat-icon>
@@ -133,6 +133,7 @@
       <button mat-raised-button 
               color="primary" 
               type="submit"
+              (click)="onSubmit()"
               [disabled]="registerForm.invalid || isLoading"
               class="register-btn">
         <mat-icon *ngIf="isLoading" class="loading-spinner">refresh</mat-icon>

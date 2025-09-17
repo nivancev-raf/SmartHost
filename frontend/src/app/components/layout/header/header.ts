@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { DialogService } from '../../../services/dialog.service';
@@ -26,6 +26,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   userRole = 'GUEST';
   currentUser: any = null;
+  isScrolled = false;
 
   private subscriptions = new Subscription();
 
@@ -58,6 +59,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    this.isScrolled = scrollTop > 80; // Change background after scrolling 80px
   }
 
   toggleMobileMenu(): void {

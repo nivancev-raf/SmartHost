@@ -1,1 +1,15 @@
-<p>apartments works!</p>
+<div class="admin-apartments">
+  <h1>Manage Apartments</h1>
+  
+  <div class="apartments-grid">
+    <!-- Example of using apartment card with admin actions -->
+    <app-apartment-card 
+      *ngFor="let apartment of apartments" 
+      [apartment]="apartment"
+      [showAdminActions]="true"
+      (onView)="onViewApartment($event)"
+      (onEdit)="onEditApartment($event)"
+      (onDelete)="onDeleteApartment($event)">
+    </app-apartment-card>
+  </div>
+</div>

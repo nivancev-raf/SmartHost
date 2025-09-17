@@ -1,0 +1,62 @@
+<mat-card class="apartment-card">
+  <div class="card-header">
+    <img mat-card-image [src]="apartment.imageUrl" [alt]="apartment.name" class="apartment-image">
+    <div class="rating-overlay">
+      <div class="rating">
+        <mat-icon class="star-icon">star</mat-icon>
+        <span class="rating-value">{{ apartment.rating }}</span>
+      </div>
+    </div>
+  </div>
+
+  <mat-card-content class="card-content">
+    <div class="apartment-info">
+      <h3 class="apartment-name">{{ apartment.name }}</h3>
+      
+      <div class="location-info">
+        <mat-icon class="location-icon">location_on</mat-icon>
+        <span class="location-text">{{ apartment.location }}</span>
+        <mat-icon class="guests-icon">group</mat-icon>
+        <span class="guests-text">{{ apartment.guests }}</span>
+      </div>
+
+      <div class="amenities">
+        <mat-chip-set class="amenities-chips">
+          <mat-chip *ngFor="let amenity of apartment.amenities.slice(0, 3)">
+            {{ amenity }}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+
+      <div class="price-section">
+        <span class="price">{{ apartment.currency }}{{ apartment.price }}</span>
+        <span class="price-period">/ night</span>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions class="card-actions">
+    <!-- Public actions (always shown) -->
+    <ng-container *ngIf="!showAdminActions">
+      <button mat-raised-button color="primary" class="details-btn" (click)="onViewClick()">
+        Details
+      </button>
+    </ng-container>
+
+    <!-- Admin actions (only for admin) -->
+    <ng-container *ngIf="showAdminActions">
+      <button mat-button color="primary" (click)="onViewClick()">
+        <mat-icon>visibility</mat-icon>
+        View
+      </button>
+      <button mat-button color="accent" (click)="onEditClick()">
+        <mat-icon>edit</mat-icon>
+        Edit
+      </button>
+      <button mat-button color="warn" (click)="onDeleteClick()">
+        <mat-icon>delete</mat-icon>
+        Delete
+      </button>
+    </ng-container>
+  </mat-card-actions>
+</mat-card>

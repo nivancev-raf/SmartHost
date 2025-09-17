@@ -1,9 +1,27 @@
 <app-hero-section></app-hero-section>
 
 <main class="home-content">
-  <section class="features-section">
-    <!-- Add your home page content here -->
-    <h2>Welcome to SmartHost</h2>
-    <p>Find and book the perfect accommodation for your stay.</p>
+  <section class="apartments-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Our Apartments</h2>
+        <p class="section-subtitle">Discover our handpicked selection of premium accommodations</p>
+      </div>
+      
+      <div class="apartments-grid">
+        <app-apartment-card 
+          *ngFor="let apartment of apartments" 
+          [apartment]="apartment"
+          [showAdminActions]="false"
+          (onView)="onViewApartment($event)">
+        </app-apartment-card>
+      </div>
+      
+      <div class="view-more-section">
+        <button mat-raised-button color="primary" class="view-more-btn">
+          View All Apartments
+        </button>
+      </div>
+    </div>
   </section>
 </main>

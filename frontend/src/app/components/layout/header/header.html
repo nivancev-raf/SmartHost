@@ -1,8 +1,10 @@
-<header class="main-header">
+<header class="main-header" [class.scrolled]="isScrolled">
   <div class="header-content">
     <div class="logo">
       <a routerLink="/">
-        <img src="images/logo-dark-removebg.png" alt="SmartHost Logo" class="logo-image">
+        <img [src]="isScrolled ? 'images/logo-light-removebg.png' : 'images/logo-dark-removebg.png'" 
+             alt="SmartHost Logo" 
+             class="logo-image">
         <span class="logo-text">SmartHost</span>
       </a>
     </div>
@@ -47,7 +49,9 @@
         <a routerLink="/booking-history" routerLinkActive="active" (click)="closeMobileMenu()">Booking history</a>
         <!-- Profile tab for logged in users -->
         <ng-container *ngIf="authService.isLoggedIn$ | async">
-          <a routerLink="/profile" routerLinkActive="active" (click)="closeMobileMenu()">Profile</a>
+          <a routerLink="/profile" routerLinkActive="active" (click)="closeMobileMenu()">
+            {{ currentUser?.firstName ? currentUser.firstName + "'s profile" : "Profile" }}
+          </a>
         </ng-container>
       </ng-container>
 
@@ -58,7 +62,9 @@
         <a routerLink="/admin/calendar" routerLinkActive="active" (click)="closeMobileMenu()">Calendar</a>
         <a routerLink="/admin/finance" routerLinkActive="active" (click)="closeMobileMenu()">Finance</a>
         <!-- Profile tab for admin -->
-        <a routerLink="/profile" routerLinkActive="active" (click)="closeMobileMenu()">Profile</a>
+        <a routerLink="/profile" routerLinkActive="active" (click)="closeMobileMenu()">
+          {{ currentUser?.firstName ? currentUser.firstName + "'s profile" : "Profile" }}
+        </a>
       </ng-container>
 
        <!-- Auth Section -->

@@ -10,12 +10,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import smarthost.backend.dto.UserDTO;
 import smarthost.backend.requests.LoginRequest;
+import smarthost.backend.requests.RegisterRequest;
 import smarthost.backend.response.LoginResponse;
+import smarthost.backend.response.RegisterResponse;
 import smarthost.backend.services.UserService;
 import smarthost.backend.utils.JwtUtil;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -58,6 +57,22 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid credentials");
         }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registrationRequest) {
+       try{
+            UserDTO newUser = userService.registerUser(registrationRequest);
+            String token = jwtUtil.generateToken(newUser.getEmail());
+            RegisterResponse response = new RegisterResponse();
+            response.setToken(token);
+            response.setUser(newUser);
+
+            return ResponseEntity.ok(response);
+       }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error during registration: " + e.getMessage());
+       }
     }
 
 }

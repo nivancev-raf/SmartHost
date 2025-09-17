@@ -8,8 +8,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import smarthost.backend.dto.UserDTO;
+import smarthost.backend.enums.UserTypes;
 import smarthost.backend.model.User;
 import smarthost.backend.repository.UserRepository;
+import smarthost.backend.requests.RegisterRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,22 @@ public class UserService implements UserDetailsService {
                 .build();
 
     }
+
+    public UserDTO registerUser(RegisterRequest registerRequest) {
+        if (userRepository.findByEmail(registerRequest.getEmail()) != null) {
+            throw new IllegalArgumentException("User with email " + registerRequest.getEmail() + " already exists");
+        }
+        User user = new User();
+        user.setFirstName(registerRequest.getFirstName());
+        user.setLastName(registerRequest.getLastName());
+        user.setEmail(registerRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setRole(UserTypes.CLIENT);
+        user.setPhone(registerRequest.getPhone());
+        User savedUser = userRepository.save(user);
+        return new UserDTO(savedUser.getId(), savedUser.getFirstName(), savedUser.getLastName(), savedUser.getEmail(), savedUser.getRole(), savedUser.getPhone());
+    }
+
 
     public UserDTO getUserDTOByEmail(String email) {
         User user = userRepository.findByEmail(email);

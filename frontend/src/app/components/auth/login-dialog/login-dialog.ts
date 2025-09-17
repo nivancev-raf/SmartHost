@@ -1,6 +1,6 @@
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,12 +31,11 @@ export class LoginDialogComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    public dialogRef: MatDialogRef<LoginDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    public dialogRef: MatDialogRef<LoginDialogComponent>
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required]]
     });
   }
 
@@ -50,7 +49,7 @@ export class LoginDialogComponent {
       try {
         await this.authService.login(email, password);
         this.isLoading = false;
-        this.dialogRef.close({ success: true });
+        this.dialogRef.close();
       } catch (error: any) {
         this.isLoading = false;
         this.errorMessage = error.message || 'Login failed. Please try again.';
@@ -59,11 +58,11 @@ export class LoginDialogComponent {
   }
 
   onCancel(): void {
-    this.dialogRef.close({ success: false });
+    this.dialogRef.close();
   }
 
   onRegisterClick(): void {
-    this.dialogRef.close({ success: false, openRegister: true });
+    this.dialogRef.close({ openRegister: true });
   }
 
   togglePasswordVisibility(): void {
@@ -77,9 +76,6 @@ export class LoginDialogComponent {
     }
     if (control?.hasError('email')) {
       return 'Please enter a valid email';
-    }
-    if (control?.hasError('minlength')) {
-      return 'Password must be at least 6 characters';
     }
     return '';
   }

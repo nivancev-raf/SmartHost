@@ -3,32 +3,13 @@ import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-
-interface LoginResponse {
-  token: string;
-  user: {
-    id: number;
-    email: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-  };
-}
-
-interface User {
-  id: number;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  phone?: string;
-}
+import { LoginResponse, User, RegisterRequest } from '../models/auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'http://localhost:8080/api';
+  private readonly API_URL = 'http://localhost:8080';
   private currentUserId: number | null = null;
 
   // Observable streams
@@ -70,7 +51,16 @@ export class AuthService {
     if (!isPlatformBrowser(this.platformId)) {
       return 'GUEST';
     }
-    return localStorage.getItem('userRole') || 'GUEST';
+    const userData = localStorage.getItem('userData');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        return user.role || 'GUEST';
+      } catch (e) {
+        return 'GUEST';
+      }
+    }
+    return 'GUEST';
   }
 
   async login(email: string, password: string): Promise<void> {
@@ -85,12 +75,12 @@ export class AuthService {
         }
       ).toPromise();
 
+      console.log('Login response:', response);
+
       if (response && response.token && response.user) {
         // Store auth data (only on client side)
         if (isPlatformBrowser(this.platformId)) {
           localStorage.setItem('token', response.token);
-          localStorage.setItem('userRole', response.user.role);
-          localStorage.setItem('userId', response.user.id.toString());
           localStorage.setItem('userData', JSON.stringify(response.user));
         }
 
@@ -110,7 +100,7 @@ export class AuthService {
     }
   }
 
-  async register(userData: any): Promise<void> {
+  async register(userData: RegisterRequest): Promise<void> {
     try {
       const response = await this.http.post<LoginResponse>(
         `${this.API_URL}/auth/register`,
@@ -134,8 +124,6 @@ export class AuthService {
   private async setAuthData(token: string, user: User): Promise<void> {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('token', token);
-      localStorage.setItem('userRole', user.role);
-      localStorage.setItem('userId', user.id.toString());
       localStorage.setItem('userData', JSON.stringify(user));
     }
 
@@ -163,8 +151,6 @@ export class AuthService {
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('userId');
       localStorage.removeItem('userData');
     }
 
@@ -226,41 +212,10 @@ export class AuthService {
     await this.getCurrentUser();
   }
 
-  getCurrentUserId(): number | null {
-    if (this.currentUserId) return this.currentUserId;
-    if (!isPlatformBrowser(this.platformId)) return null;
-    const savedId = localStorage.getItem('userId');
-    return savedId ? parseInt(savedId) : null;
-  }
-
-  getCurrentUserRole(): string {
-    return this.getUserRole();
-  }
-
   // Role checking methods
-  isGuest(): boolean {
-    return this.getCurrentUserRole() === 'GUEST' || !this.tokenExists();
-  }
-
-  isClient(): boolean {
-    return this.getCurrentUserRole() === 'CLIENT';
-  }
 
   isAdmin(): boolean {
-    return this.getCurrentUserRole() === 'ADMIN';
-  }
-
-  // Check if user can access certain features
-  canCreateReview(): boolean {
-    return this.isClient();
-  }
-
-  canManageProperties(): boolean {
-    return this.isAdmin();
-  }
-
-  canViewBookingHistory(): boolean {
-    return this.isClient() || this.isAdmin();
+    return this.getUserRole() === 'ADMIN';
   }
 
   private handleLoginError(error: any): void {

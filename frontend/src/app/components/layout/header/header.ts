@@ -7,7 +7,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-header',
@@ -17,7 +16,6 @@ import { MatMenuModule } from '@angular/material/menu';
     MatButtonModule,
     CommonModule, 
     MatIconModule, 
-    MatMenuModule,
     RouterLink,
     RouterLinkActive
   ],

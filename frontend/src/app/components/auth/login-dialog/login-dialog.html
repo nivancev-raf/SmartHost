@@ -2,7 +2,7 @@
   <h2 mat-dialog-title>Welcome Back</h2>
   
   <mat-dialog-content>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" (keydown.enter)="onSubmit()" class="login-form">
       <!-- Error Message -->
       <div class="error-message" *ngIf="errorMessage">
         <mat-icon>error_outline</mat-icon>
@@ -69,8 +69,7 @@
       
       <button mat-raised-button 
               color="primary" 
-              type="button"
-              (click)="onSubmit()"
+              type="submit"
               [disabled]="loginForm.invalid || isLoading"
               class="login-btn">
         <mat-icon *ngIf="isLoading" class="loading-spinner">refresh</mat-icon>

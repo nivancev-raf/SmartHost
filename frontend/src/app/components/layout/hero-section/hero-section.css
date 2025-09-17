@@ -1,7 +1,7 @@
 .hero-container {
   position: relative;
-  height: 80vh; /* Reduced from 100vh to 70vh */
-  min-height: 500px; /* Ensure minimum height for smaller screens */
+  height: 80vh; 
+  min-height: 500px; 
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -31,7 +31,7 @@
 }
 
 .hero-background .slide.active {
-  opacity: 1;
+  opacity: 0.8;
   transform: scale(1);
 }
 

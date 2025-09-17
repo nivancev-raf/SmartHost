@@ -17,21 +17,13 @@
         <span>Login</span>
       </button>
       
-      <!-- Mobile User Menu (only when logged in and menu is closed) -->
-      <button mat-icon-button [matMenuTriggerFor]="mobileUserMenu" class="mobile-user-btn" 
+      <!-- Mobile Logout Button (only when logged in and menu is closed) -->
+      <button mat-button class="mobile-logout-btn" 
+              (click)="logout()"
               *ngIf="(authService.isLoggedIn$ | async) && !isMobileMenuOpen">
-        <mat-icon>account_circle</mat-icon>
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Logout</span>
       </button>
-      <mat-menu #mobileUserMenu="matMenu">
-        <button mat-menu-item routerLink="/profile">
-          <mat-icon>person</mat-icon>
-          <span>Profile</span>
-        </button>
-        <button mat-menu-item (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          <span>Logout</span>
-        </button>
-      </mat-menu>
 
       <!-- Mobile Menu Toggle -->
       <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" [class.open]="isMobileMenuOpen">
@@ -53,6 +45,10 @@
         <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">About us</a>
         <a routerLink="/reviews" routerLinkActive="active" (click)="closeMobileMenu()">Reviews</a>
         <a routerLink="/booking-history" routerLinkActive="active" (click)="closeMobileMenu()">Booking history</a>
+        <!-- Profile tab for logged in users -->
+        <ng-container *ngIf="authService.isLoggedIn$ | async">
+          <a routerLink="/profile" routerLinkActive="active" (click)="closeMobileMenu()">Profile</a>
+        </ng-container>
       </ng-container>
 
       <!-- Admin Navigation -->
@@ -61,6 +57,8 @@
         <a routerLink="/admin/reservations" routerLinkActive="active" (click)="closeMobileMenu()">Reservations</a>
         <a routerLink="/admin/calendar" routerLinkActive="active" (click)="closeMobileMenu()">Calendar</a>
         <a routerLink="/admin/finance" routerLinkActive="active" (click)="closeMobileMenu()">Finance</a>
+        <!-- Profile tab for admin -->
+        <a routerLink="/profile" routerLinkActive="active" (click)="closeMobileMenu()">Profile</a>
       </ng-container>
 
        <!-- Auth Section -->
@@ -73,19 +71,10 @@
         </ng-container>
         
         <ng-container *ngIf="authService.isLoggedIn$ | async">
-          <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
-            <mat-icon>account_circle</mat-icon>
+          <button mat-button class="logout-btn" (click)="logout()">
+            <mat-icon>exit_to_app</mat-icon>
+            Logout
           </button>
-          <mat-menu #userMenu="matMenu">
-            <button mat-menu-item routerLink="/profile" (click)="closeMobileMenu()">
-              <mat-icon>person</mat-icon>
-              <span>Profile</span>
-            </button>
-            <button mat-menu-item (click)="logout()">
-              <mat-icon>logout</mat-icon>
-              <span>Logout</span>
-            </button>
-          </mat-menu>
         </ng-container>
       </div>
     </nav>

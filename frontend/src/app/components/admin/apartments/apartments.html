@@ -1,15 +1,93 @@
 <div class="admin-apartments">
-  <h1>Manage Apartments</h1>
-  
-  <div class="apartments-grid">
-    <!-- Example of using apartment card with admin actions -->
-    <app-apartment-card 
-      *ngFor="let apartment of apartments" 
-      [apartment]="apartment"
-      [showAdminActions]="true"
-      (onView)="onViewApartment($event)"
-      (onEdit)="onEditApartment($event)"
-      (onDelete)="onDeleteApartment($event)">
-    </app-apartment-card>
+  <!-- Admin Header -->
+  <div class="admin-header">
+    <div class="admin-greeting">
+      <h1>My Properties</h1>
+      <p class="welcome-text">Hello, <span class="admin-name">{{adminName}}</span>!</p>
+    </div>
+    
+    <button mat-raised-button 
+            color="primary" 
+            class="add-apartment-btn"
+            (click)="onAddApartment()">
+      <mat-icon>add</mat-icon>
+      Add New Property
+    </button>
+  </div>
+
+  <!-- Statistics Cards (Optional) -->
+  <div class="stats-row">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon">home</mat-icon>
+          <div class="stat-info">
+            <span class="stat-number">{{apartments.length}}</span>
+            <span class="stat-label">Total Properties</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon available">check_circle</mat-icon>
+          <div class="stat-info">
+            <span class="stat-number">{{apartments.length}}</span>
+            <span class="stat-label">Available</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon occupied">schedule</mat-icon>
+          <div class="stat-info">
+            <span class="stat-number">0</span>
+            <span class="stat-label">Occupied</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <p>Loading your properties...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && apartments.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">home_work</mat-icon>
+    <h2>No Properties Yet</h2>
+    <p>Start building your property portfolio by adding your first apartment.</p>
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onAddApartment()">
+      <mat-icon>add</mat-icon>
+      Add Your First Property
+    </button>
+  </div>
+
+  <!-- Apartments Grid -->
+  <div *ngIf="!isLoading && apartments.length > 0" class="apartments-section">
+    <div class="section-header">
+      <h2>Your Properties</h2>
+      <span class="property-count">{{apartments.length}} properties</span>
+    </div>
+    
+    <div class="apartments-grid">
+      <app-apartment-card 
+        *ngFor="let apartment of apartments; trackBy: trackByApartmentId"
+        [apartment]="apartment"
+        [showAdminActions]="true"
+        (onView)="onViewApartment($event)"
+        (onEdit)="onEditApartment($event)"
+        (onDelete)="onDeleteApartment($event)">
+      </app-apartment-card>
+    </div>
   </div>
 </div>

@@ -1,8 +1,8 @@
-<header class="main-header" [class.scrolled]="isScrolled">
+<header class="main-header" [class.scrolled]="isScrolled" [class.admin-page]="isAdminPage">
   <div class="header-content">
     <div class="logo">
       <a routerLink="/">
-        <img [src]="isScrolled ? 'images/logo-light-removebg.png' : 'images/logo-dark-removebg.png'" 
+        <img [src]="(isScrolled || isAdminPage) ? 'images/logo-light-removebg.png' : 'images/logo-dark-removebg.png'" 
              alt="SmartHost Logo" 
              class="logo-image">
         <span class="logo-text">SmartHost</span>

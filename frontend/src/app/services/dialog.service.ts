@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LoginDialogComponent } from '../components/auth/login-dialog/login-dialog';
 import { RegisterDialogComponent } from '../components/auth/register-dialog/register-dialog';
+import { ApartmentDetailsDialog, ApartmentDetailsDialogData } from '../components/shared/apartment-details-dialog/apartment-details-dialog';
+import { Apartment } from '../models/apartment';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +46,23 @@ export class DialogService {
         // If user clicked "Login" in register dialog, open login dialog
         this.openLoginDialog();
       }
+    });
+
+    return dialogRef;
+  }
+
+  openApartmentDetailsDialog(apartment: Apartment, isAdminView: boolean = false) {
+    const dialogRef = this.dialog.open(ApartmentDetailsDialog, {
+      width: '800px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      disableClose: false,
+      autoFocus: false,
+      restoreFocus: true,
+      data: {
+        apartment,
+        isAdminView
+      } as ApartmentDetailsDialogData
     });
 
     return dialogRef;

@@ -1,0 +1,246 @@
+.admin-apartments {
+  padding: 120px 24px 24px 24px; /* Added top padding for fixed header */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Admin Header */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.admin-greeting h1 {
+  margin: 0 0 8px 0;
+  font-size: 32px;
+  font-weight: 500;
+  color: #333;
+}
+
+.welcome-text {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+}
+
+.admin-name {
+  color: #00bcd4;
+  font-weight: 500;
+}
+
+.add-apartment-btn {
+  background-color: #00bcd4 !important;
+  color: white !important;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-apartment-btn:hover {
+  background-color: #00acc1 !important;
+}
+
+.add-apartment-btn mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Statistics Row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  cursor: default;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #00bcd4;
+}
+
+.stat-icon.available {
+  color: #4caf50;
+}
+
+.stat-icon.occupied {
+  color: #ff9800;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* Loading State */
+.loading-container {
+  text-align: center;
+  padding: 64px 24px;
+  color: #666;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  color: #666;
+}
+
+.empty-icon {
+  font-size: 72px;
+  width: 72px;
+  height: 72px;
+  color: #ccc;
+  margin-bottom: 24px;
+}
+
+.empty-state h2 {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 500;
+  color: #333;
+}
+
+.empty-state p {
+  margin: 0 0 32px 0;
+  font-size: 16px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.empty-state button {
+  background-color: #00bcd4 !important;
+  color: white !important;
+}
+
+/* Apartments Section */
+.apartments-section {
+  margin-top: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+  color: #333;
+}
+
+.property-count {
+  color: #666;
+  font-size: 14px;
+  background: #f5f5f5;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+/* Apartments Grid */
+.apartments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 16px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .admin-apartments {
+    padding: 90px 16px 16px 16px; /* Adjusted top padding for mobile header */
+  }
+
+  .admin-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .admin-greeting h1 {
+    font-size: 24px;
+  }
+
+  .add-apartment-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .apartments-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-apartments {
+    padding: 90px 12px 12px 12px; /* Consistent mobile padding */
+  }
+
+  .admin-greeting h1 {
+    font-size: 20px;
+  }
+
+  .welcome-text {
+    font-size: 14px;
+  }
+
+  .section-header h2 {
+    font-size: 20px;
+  }
+
+  .apartments-grid {
+    grid-template-columns: 1fr;
+  }
+}

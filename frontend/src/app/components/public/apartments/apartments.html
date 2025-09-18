@@ -1,1 +1,21 @@
-<p>apartments works!</p>
+<div class="apartments-page">
+  <div class="page-header">
+    <h1>Our Accommodations</h1>
+    <p>Discover our curated collection of premium apartments</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <p>Loading apartments...</p>
+  </div>
+
+  <!-- Apartments Grid -->
+  <div *ngIf="!isLoading" class="apartments-grid">
+    <app-apartment-card 
+      *ngFor="let apartment of apartments; trackBy: trackByApartmentId" 
+      [apartment]="apartment"
+      [showAdminActions]="false"
+      (onView)="onViewApartment($event)">
+    </app-apartment-card>
+  </div>
+</div>

@@ -4,19 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-
-export interface Apartment {
-  id: number;
-  name: string;
-  location: string;
-  rating: number;
-  guests: number;
-  price: number;
-  currency: string;
-  imageUrl: string;
-  amenities: string[];
-  description?: string;
-}
+import { ApartmentCardData } from '../../../models/apartment';
 
 @Component({
   selector: 'app-apartment-card',
@@ -31,12 +19,12 @@ export interface Apartment {
   ]
 })
 export class ApartmentCardComponent {
-  @Input() apartment!: Apartment;
+  @Input() apartment!: ApartmentCardData; // apartment! data is required
   @Input() showAdminActions = false;
   
-  @Output() onEdit = new EventEmitter<Apartment>();
-  @Output() onDelete = new EventEmitter<Apartment>();
-  @Output() onView = new EventEmitter<Apartment>();
+  @Output() onEdit = new EventEmitter<ApartmentCardData>();
+  @Output() onDelete = new EventEmitter<ApartmentCardData>();
+  @Output() onView = new EventEmitter<ApartmentCardData>();
 
   onEditClick(): void {
     this.onEdit.emit(this.apartment);

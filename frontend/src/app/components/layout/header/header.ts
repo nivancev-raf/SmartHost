@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { DialogService } from '../../../services/dialog.service';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
@@ -27,6 +28,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   userRole = 'GUEST';
   currentUser: any = null;
   isScrolled = false;
+  isAdminPage = false;
 
   private subscriptions = new Subscription();
 
@@ -55,6 +57,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.currentUser = user;
       })
     );
+
+    // Check initial route
+    this.checkIfAdminPage();
+
+    // Subscribe to router events to detect route changes
+    this.subscriptions.add(
+      this.router.events.pipe(
+        filter(event => event instanceof NavigationEnd)
+      ).subscribe(() => {
+        this.checkIfAdminPage();
+      })
+    );
+  }
+
+  private checkIfAdminPage(): void {
+    this.isAdminPage = this.router.url.startsWith('/admin');
   }
 
   ngOnDestroy(): void {

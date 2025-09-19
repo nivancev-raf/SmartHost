@@ -46,7 +46,6 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
       if (this.autoSlideEnabled) { // Double check
         this.currentSlide = (this.currentSlide + 1) % this.heroImages.length;
         this.cdr.detectChanges(); // Force change detection
-        console.log('Auto slide to:', this.currentSlide);
       }
     }, 4000);
   }

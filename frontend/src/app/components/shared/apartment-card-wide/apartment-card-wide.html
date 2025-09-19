@@ -1,0 +1,80 @@
+<mat-card class="apartment-card-wide">
+  <div class="card-content">
+    <!-- Left Side - Image -->
+    <div class="image-section" (click)="onViewClick()">
+      <img [src]="apartment.imageUrl" [alt]="apartment.name" class="apartment-image">
+      <div class="rating-overlay">
+        <div class="stars">
+          <mat-icon 
+            *ngFor="let filled of getStarArray()" 
+            [class.filled]="filled"
+            class="star-icon">
+            star
+          </mat-icon>
+        </div>
+        <span class="rating-text">{{apartment.rating}}</span>
+      </div>
+    </div>
+
+    <!-- Right Side - Details -->
+    <div class="details-section">
+      <!-- Header -->
+      <div class="apartment-header">
+        <h3 class="apartment-name" (click)="onViewClick()">{{apartment.name}}</h3>
+        <div class="location">
+          <mat-icon>location_on</mat-icon>
+          <span>{{apartment.location}}</span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <p class="apartment-description" *ngIf="apartment.description">
+        {{apartment.description}}
+      </p>
+
+      <!-- Amenities -->
+      <div class="amenities-section" *ngIf="apartment.amenities && apartment.amenities.length > 0">
+        <mat-chip-set>
+          <mat-chip *ngFor="let amenity of apartment.amenities.slice(0, 4)">
+            {{amenity}}
+          </mat-chip>
+          <mat-chip *ngIf="apartment.amenities.length > 4" class="more-amenities">
+            +{{apartment.amenities.length - 4}} more
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+
+      <!-- Bottom Section -->
+      <div class="bottom-section">
+        <div class="guests-info">
+          <mat-icon>people</mat-icon>
+          <span>Up to {{apartment.guests}} guests</span>
+        </div>
+
+        <div class="price-and-actions">
+          <div class="price-section">
+            <span class="price">{{apartment.currency}}{{apartment.price}}</span>
+            <span class="price-unit">/ night</span>
+          </div>
+
+          <div class="actions">
+            <button mat-stroked-button color="primary" (click)="onViewClick()" class="view-btn">
+              <mat-icon>visibility</mat-icon>
+              View Details
+            </button>
+            
+            <button 
+              mat-raised-button 
+              color="primary" 
+              (click)="onBookClick()" 
+              class="book-btn"
+              *ngIf="showBookButton">
+              <mat-icon>calendar_today</mat-icon>
+              Book Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-card>

@@ -72,7 +72,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private checkIfAdminPage(): void {
-    this.isAdminPage = this.router.url.startsWith('/admin');
+    this.isAdminPage = this.router.url.startsWith('/admin') || this.router.url.startsWith('/apartments');
   }
 
   ngOnDestroy(): void {

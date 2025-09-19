@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "price-rules")
+@Table(name = "price_rules")
 @Data
 public class PriceRule {
 

@@ -48,6 +48,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()   // Guest može da čita reviews
                         .requestMatchers("/contact/**").permitAll()  // Contact forma
                         .requestMatchers("/about").permitAll()       // About Us stranica
+                        .requestMatchers("/amenities").permitAll() // Amenities list
 
                         // AUTHENTICATED ENDPOINTS - samo prijavljeni korisnici
                         .requestMatchers("/auth/current-user").authenticated()

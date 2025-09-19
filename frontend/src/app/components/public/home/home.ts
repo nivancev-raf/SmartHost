@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { HeroSectionComponent } from '../../layout/hero-section/hero-section';
 import { ApartmentCardComponent } from '../../shared/apartment-card/apartment-card';
-import { ApartmentCardData, Apartment, ApartmentStatus } from '../../../models/apartment';
+import { ApartmentCardData, Apartment, ApartmentStatus, AmenityDto } from '../../../models/apartment';
 import { ApartmentService } from '../../../services/apartment.service';
 import { DialogService } from '../../../services/dialog.service';
 
@@ -59,7 +59,7 @@ export class Home implements OnInit {
         name: 'Aqua View Studio',
         description: 'Modern studio with beautiful city views and premium amenities. Perfect for couples or solo travelers.',
         address: 'Knez Mihailova 12',
-        city: 'Beograd',
+        city: 'Belgrade',
         floor: 3,
         bedrooms: 1,
         bathrooms: 1,
@@ -68,22 +68,28 @@ export class Home implements OnInit {
         basePrice: 55,
         status: ApartmentStatus.AVAILABLE,
         createdAt: new Date().toISOString(),
-        amenities: ['Wi-Fi', 'Klima', 'Kuhinja', 'TV', 'Balkon'],
+        amenities: [
+          { id: 1, name: 'Wi-Fi' },
+          { id: 2, name: 'Air Conditioning' },
+          { id: 3, name: 'Kitchen' },
+          { id: 6, name: 'TV' },
+          { id: 5, name: 'Balcony' }
+        ],
         rating: 4.8,
         currency: '€',
         images: [
           {
             id: 1,
             apartmentId: 1,
-            imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-            isPrimary: true,
+            url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
+            isFeatured: true,
             createdAt: new Date().toISOString()
           },
           {
             id: 2,
             apartmentId: 1,
-            imageUrl: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-            isPrimary: false,
+            url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
+            isFeatured: false,
             createdAt: new Date().toISOString()
           }
         ]
@@ -94,7 +100,7 @@ export class Home implements OnInit {
         name: 'Urban Loft Dorcol',
         description: 'Stylish loft in the heart of Dorcol with exposed brick walls and modern furnishings.',
         address: 'Cara Dusana 45',
-        city: 'Beograd',
+        city: 'Belgrade',
         floor: 2,
         bedrooms: 2,
         bathrooms: 1,
@@ -103,15 +109,20 @@ export class Home implements OnInit {
         basePrice: 72,
         status: ApartmentStatus.AVAILABLE,
         createdAt: new Date().toISOString(),
-        amenities: ['Wi-Fi', 'Balkon', 'Perionica', 'TV'],
+        amenities: [
+          { id: 1, name: 'Wi-Fi' },
+          { id: 5, name: 'Balcony' },
+          { id: 7, name: 'Washing Machine' },
+          { id: 6, name: 'TV' }
+        ],
         rating: 4.9,
         currency: '€',
         images: [
           {
             id: 3,
             apartmentId: 2,
-            imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&h=600&fit=crop',
-            isPrimary: true,
+            url: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&h=600&fit=crop',
+            isFeatured: true,
             createdAt: new Date().toISOString()
           }
         ]
@@ -125,73 +136,97 @@ export class Home implements OnInit {
       {
         id: 1,
         name: 'Aqua View Studio',
-        location: 'Beograd',
+        location: 'Belgrade',
         rating: 4.8,
         guests: 2,
         price: 55,
         currency: '€',
         imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop',
-        amenities: ['Wi-Fi', 'Klima', 'Kuhinja'],
+        amenities: [
+          { id: 1, name: 'Wi-Fi' },
+          { id: 2, name: 'Air Conditioning' },
+          { id: 3, name: 'Kitchen' }
+        ],
         description: 'Modern studio with beautiful city views'
       },
       {
         id: 2,
         name: 'Urban Loft Dorcol',
-        location: 'Beograd',
+        location: 'Belgrade',
         rating: 4.9,
         guests: 3,
         price: 72,
         currency: '€',
         imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=250&fit=crop',
-        amenities: ['Wi-Fi', 'Balkon', 'Perionica'],
+        amenities: [
+          { id: 1, name: 'Wi-Fi' },
+          { id: 5, name: 'Balcony' },
+          { id: 7, name: 'Washing Machine' }
+        ],
         description: 'Stylish loft in the heart of Dorcol'
       },
       {
         id: 3,
         name: 'Kalemegdan Terrace',
-        location: 'Beograd',
+        location: 'Belgrade',
         rating: 4.7,
         guests: 4,
         price: 95,
         currency: '€',
         imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=250&fit=crop',
-        amenities: ['Wi-Fi', 'Parking', 'Pogled'],
+        amenities: [
+          { id: 1, name: 'Wi-Fi' },
+          { id: 4, name: 'Parking' },
+          { id: 8, name: 'City View' }
+        ],
         description: 'Beautiful apartment with terrace and park view'
       },
       {
         id: 4,
         name: 'Zen Garden Suite',
-        location: 'Beograd',
+        location: 'Belgrade',
         rating: 4.6,
         guests: 2,
         price: 68,
         currency: '€',
         imageUrl: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=400&h=250&fit=crop',
-        amenities: ['Wi-Fi', 'Balkon', 'Klima'],
+        amenities: [
+          { id: 1, name: 'Wi-Fi' },
+          { id: 5, name: 'Balcony' },
+          { id: 2, name: 'Air Conditioning' }
+        ],
         description: 'Peaceful suite with garden access'
       },
       {
         id: 5,
         name: 'City Center Loft',
-        location: 'Beograd',
+        location: 'Belgrade',
         rating: 4.8,
         guests: 4,
         price: 85,
         currency: '€',
         imageUrl: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=250&fit=crop',
-        amenities: ['Wi-Fi', 'Parking', 'Kuhinja'],
+        amenities: [
+          { id: 1, name: 'Wi-Fi' },
+          { id: 4, name: 'Parking' },
+          { id: 3, name: 'Kitchen' }
+        ],
         description: 'Modern loft in the city center'
       },
       {
         id: 6,
         name: 'Riverside Apartment',
-        location: 'Beograd',
+        location: 'Belgrade',
         rating: 4.9,
         guests: 3,
         price: 78,
         currency: '€',
         imageUrl: 'https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?w=400&h=250&fit=crop',
-        amenities: ['Wi-Fi', 'Pogled', 'Terasa'],
+        amenities: [
+          { id: 1, name: 'Wi-Fi' },
+          { id: 8, name: 'City View' },
+          { id: 9, name: 'Terrace' }
+        ],
         description: 'Stunning apartment with river views'
       }
     ];

@@ -37,7 +37,7 @@
       <div *ngIf="hasMultipleImages && apartment.images!.length > 1" class="thumbnail-strip">
         <img 
           *ngFor="let image of apartment.images; let i = index"
-          [src]="image.imageUrl" 
+          [src]="image.url" 
           [alt]="apartment.name + ' - Image ' + (i + 1)"
           (click)="setImage(i)"
           [class.active]="i === currentImageIndex"
@@ -132,7 +132,7 @@
         <h3>Amenities</h3>
         <div class="amenities-list">
           <mat-chip *ngFor="let amenity of apartment.amenities">
-            {{amenity}}
+            {{amenity.name}}
           </mat-chip>
         </div>
       </div>

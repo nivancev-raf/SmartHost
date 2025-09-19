@@ -48,8 +48,8 @@ export class ApartmentDetailsDialog implements OnInit {
       this.apartment.images = [{
         id: 0,
         apartmentId: this.apartment.id,
-        imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-        isPrimary: true,
+        url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
+        isFeatured: true,
         createdAt: new Date().toISOString()
       }];
     }
@@ -92,7 +92,7 @@ export class ApartmentDetailsDialog implements OnInit {
 
   // Get current image URL
   get currentImageUrl(): string {
-    return this.apartment.images?.[this.currentImageIndex]?.imageUrl || '';
+    return this.apartment.images?.[this.currentImageIndex]?.url || '';
   }
 
   // Check if multiple images exist
@@ -105,12 +105,10 @@ export class ApartmentDetailsDialog implements OnInit {
     switch (this.apartment.status) {
       case 'AVAILABLE':
         return '#4caf50';
-      case 'OCCUPIED':
+      case 'CLEANING':
         return '#ff9800';
-      case 'MAINTENANCE':
+      case 'BOOKED':
         return '#f44336';
-      case 'UNAVAILABLE':
-        return '#757575';
       default:
         return '#757575';
     }
@@ -121,12 +119,10 @@ export class ApartmentDetailsDialog implements OnInit {
     switch (this.apartment.status) {
       case 'AVAILABLE':
         return 'Available';
-      case 'OCCUPIED':
-        return 'Occupied';
-      case 'MAINTENANCE':
-        return 'Under Maintenance';
-      case 'UNAVAILABLE':
-        return 'Unavailable';
+      case 'BOOKED':
+        return 'Booked';
+      case 'CLEANING':
+        return 'Under Cleaning';
       default:
         return 'Unknown';
     }

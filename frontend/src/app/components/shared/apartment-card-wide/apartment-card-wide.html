@@ -36,7 +36,7 @@
       <div class="amenities-section" *ngIf="apartment.amenities && apartment.amenities.length > 0">
         <mat-chip-set>
           <mat-chip *ngFor="let amenity of apartment.amenities.slice(0, 4)">
-            {{amenity}}
+            {{amenity.name}}
           </mat-chip>
           <mat-chip *ngIf="apartment.amenities.length > 4" class="more-amenities">
             +{{apartment.amenities.length - 4}} more

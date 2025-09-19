@@ -2,16 +2,15 @@ import { User } from './auth';
 
 export enum ApartmentStatus {
   AVAILABLE = 'AVAILABLE',
-  OCCUPIED = 'OCCUPIED', 
-  MAINTENANCE = 'MAINTENANCE',
-  UNAVAILABLE = 'UNAVAILABLE'
+  BOOKED = 'BOOKED',     
+  CLEANING = 'CLEANING'  
 }
 
 export interface ApartmentImage {
   id: number;
   apartmentId: number;
-  imageUrl: string;
-  isPrimary: boolean;
+  url: string;
+  isFeatured: boolean;
   createdAt: string;
 }
 
@@ -30,20 +29,13 @@ export interface Apartment {
   basePrice: number;
   status: ApartmentStatus;
   createdAt: string;
-  
-  // New amenities field
-  amenities?: string[];
-  
-  // Relationships
+  amenities: AmenityDto[];
   owner?: User;
-  images?: ApartmentImage[];
-  
-  // Additional frontend properties for display
+  images: ApartmentImage[];
   rating?: number;
   currency?: string;
 }
 
-// DTO for apartment card display - maps backend data to card-friendly format
 export interface ApartmentCardData {
   id: number;
   name: string;
@@ -53,6 +45,42 @@ export interface ApartmentCardData {
   price: number; // maps to basePrice
   currency: string;
   imageUrl: string; // primary image from images array
-  amenities: string[];
+  amenities: AmenityDto[];
   description?: string;
+}
+
+export interface UpdateApartmentRequest {
+  name: string;
+  description: string;
+  address: string;
+  city: string;
+  floor?: number;
+  bedrooms: number;
+  bathrooms: number;
+  maxGuests: number;
+  sizeM2?: number;
+  basePrice: number;
+  status?: ApartmentStatus;
+  amenityIds?: number[];
+}
+
+export interface CreateApartmentRequest {
+  ownerId: number;
+  name: string;
+  description: string;
+  address: string;
+  city: string;
+  floor?: number;
+  bedrooms: number;
+  bathrooms: number;
+  maxGuests: number;
+  sizeM2?: number;
+  basePrice: number;
+  amenityIds?: number[]; 
+}
+
+
+export interface AmenityDto {
+  id: number;
+  name: string;
 }

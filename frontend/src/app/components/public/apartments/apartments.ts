@@ -13,7 +13,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApartmentCardWideComponent } from '../../shared/apartment-card-wide/apartment-card-wide';
-import { Apartment, ApartmentCardData, ApartmentStatus } from '../../../models/apartment';
+import { Apartment, ApartmentCardData, ApartmentStatus, AmenityDto } from '../../../models/apartment';
 import { ApartmentService } from '../../../services/apartment.service';
 import { DialogService } from '../../../services/dialog.service';
 
@@ -46,8 +46,8 @@ export class Apartments implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
 
   // Filter options
-  cities = ['Beograd', 'Novi Sad', 'Nis'];
-  amenities = ['Wi-Fi', 'Klima', 'Kuhinja', 'Parking', 'Balkon', 'TV', 'Perionica', 'Pogled', 'Terasa'];
+  cities = ['Belgrade', 'Novi Sad', 'Nis'];
+  amenities: AmenityDto[] = [];
   priceRange = { min: 30, max: 150 };
 
   // Mock data - in real app this would come from API
@@ -58,7 +58,7 @@ export class Apartments implements OnInit, OnDestroy {
       name: 'Aqua View Studio',
       description: 'Modern studio with beautiful city views and all amenities included.',
       address: 'Knez Mihailova 12',
-      city: 'Beograd',
+      city: 'Belgrade',
       floor: 3,
       bedrooms: 1,
       bathrooms: 1,
@@ -67,22 +67,97 @@ export class Apartments implements OnInit, OnDestroy {
       basePrice: 55,
       status: ApartmentStatus.AVAILABLE,
       createdAt: new Date().toISOString(),
-      amenities: ['Wi-Fi', 'Klima', 'Kuhinja', 'TV', 'Parking'],
+      amenities: [
+        { id: 1, name: 'Wi-Fi' },
+        { id: 2, name: 'Air Conditioning' },
+        { id: 3, name: 'Kitchen' },
+        { id: 6, name: 'TV' },
+        { id: 4, name: 'Parking' }
+      ],
       rating: 4.8,
       currency: '€',
       images: [
         {
           id: 1,
           apartmentId: 1,
-          imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-          isPrimary: true,
+          url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
+          isFeatured: true,
           createdAt: new Date().toISOString()
         },
         {
           id: 2,
           apartmentId: 1,
-          imageUrl: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-          isPrimary: false,
+          url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
+          isFeatured: false,
+          createdAt: new Date().toISOString()
+        }
+      ]
+    },
+    {
+      id: 2,
+      ownerId: 1,
+      name: 'Luxury Downtown Apartment',
+      description: 'Spacious 2-bedroom apartment in the heart of Belgrade with premium amenities.',
+      address: 'Terazije 25',
+      city: 'Belgrade',
+      floor: 5,
+      bedrooms: 2,
+      bathrooms: 2,
+      maxGuests: 4,
+      sizeM2: 80,
+      basePrice: 95,
+      status: ApartmentStatus.AVAILABLE,
+      createdAt: new Date().toISOString(),
+      amenities: [
+        { id: 1, name: 'Wi-Fi' },
+        { id: 2, name: 'Air Conditioning' },
+        { id: 3, name: 'Kitchen' },
+        { id: 5, name: 'Balcony' },
+        { id: 6, name: 'TV' },
+        { id: 7, name: 'Washing Machine' },
+        { id: 8, name: 'City View' }
+      ],
+      rating: 4.9,
+      currency: '€',
+      images: [
+        {
+          id: 3,
+          apartmentId: 2,
+          url: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
+          isFeatured: true,
+          createdAt: new Date().toISOString()
+        }
+      ]
+    },
+    {
+      id: 3,
+      ownerId: 2,
+      name: 'Cozy Garden Studio',
+      description: 'Charming studio apartment with private terrace and garden access.',
+      address: 'Skadarska 15',
+      city: 'Belgrade',
+      floor: 1,
+      bedrooms: 1,
+      bathrooms: 1,
+      maxGuests: 2,
+      sizeM2: 35,
+      basePrice: 45,
+      status: ApartmentStatus.AVAILABLE,
+      createdAt: new Date().toISOString(),
+      amenities: [
+        { id: 1, name: 'Wi-Fi' },
+        { id: 3, name: 'Kitchen' },
+        { id: 6, name: 'TV' },
+        { id: 9, name: 'Terrace' }
+      ],
+      rating: 4.6,
+      currency: '€',
+      images: [
+        {
+          id: 4,
+          apartmentId: 3,
+          url: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
+          isFeatured: true,
           createdAt: new Date().toISOString()
         }
       ]
@@ -101,6 +176,7 @@ export class Apartments implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initializeFilterForm();
+    this.loadAmenities();
     this.loadApartments();
     this.handleQueryParams();
     this.setupFilterSubscription();
@@ -148,6 +224,32 @@ export class Apartments implements OnInit, OnDestroy {
     );
   }
 
+  private loadAmenities(): void {
+    this.subscriptions.add(
+      this.apartmentService.getAllAmenities().subscribe({
+        next: (amenities) => {
+          this.amenities = amenities;
+          console.log('Loaded amenities:', this.amenities);
+        },
+        error: (error) => {
+          console.error('Error loading amenities:', error);
+          // Fallback to mock data if backend is not available
+          this.amenities = [
+            { id: 1, name: 'Wi-Fi' },
+            { id: 2, name: 'Air Conditioning' },
+            { id: 3, name: 'Kitchen' },
+            { id: 4, name: 'Parking' },
+            { id: 5, name: 'Balcony' },
+            { id: 6, name: 'TV' },
+            { id: 7, name: 'Washing Machine' },
+            { id: 8, name: 'City View' },
+            { id: 9, name: 'Terrace' }
+          ];
+        }
+      })
+    );
+  }
+
   private loadApartments(): void {
     console.log('Starting to load apartments...'); // Debug log
     this.isLoading = true;
@@ -187,12 +289,11 @@ export class Apartments implements OnInit, OnDestroy {
         return false;
       }
 
-      // Amenities filter (amenities in Apartment model is string[])
       if (filters.amenities && filters.amenities.length > 0) {
-        const apartmentAmenities = apartment.amenities?.map((a: string) => a.toLowerCase()) || [];
-        const requiredAmenities = filters.amenities.map((a: string) => a.toLowerCase());
+        const apartmentAmenityIds = apartment.amenities?.map((a: AmenityDto) => a.id) || [];
+        const requiredAmenityIds = filters.amenities.map((a: AmenityDto) => a.id);
         
-        if (!requiredAmenities.every((amenity: string) => apartmentAmenities.includes(amenity))) {
+        if (!requiredAmenityIds.every((amenityId: number) => apartmentAmenityIds.includes(amenityId))) {
           return false;
         }
       }

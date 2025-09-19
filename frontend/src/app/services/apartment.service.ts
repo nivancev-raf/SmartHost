@@ -1,7 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { Apartment, ApartmentCardData, ApartmentStatus } from '../models/apartment';
+import { 
+  Apartment, 
+  ApartmentCardData, 
+  ApartmentStatus, 
+  CreateApartmentRequest, 
+  UpdateApartmentRequest,
+  AmenityDto 
+} from '../models/apartment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,88 +18,78 @@ export class ApartmentService {
 
   constructor(private http: HttpClient) {}
 
-  // Get all apartments
-  getApartments(): Observable<ApartmentCardData[]> {
-    return this.http.get<Apartment[]>(`${this.API_URL}/apartments`)
-      .pipe(
-        map(apartments => apartments.map(apt => this.transformToCardData(apt)))
-      );
+  getAllApartments(): Observable<Apartment[]> {
+    return this.http.get<Apartment[]>(`${this.API_URL}/apartments`);
   }
 
-  // Get apartment by ID
-  getApartment(id: number): Observable<Apartment> {
+  getApartmentById(id: number): Observable<Apartment> {
     return this.http.get<Apartment>(`${this.API_URL}/apartments/${id}`);
   }
 
-  // Get apartments by status
-  getApartmentsByStatus(status: ApartmentStatus): Observable<ApartmentCardData[]> {
-    return this.http.get<Apartment[]>(`${this.API_URL}/apartments?status=${status}`)
-      .pipe(
-        map(apartments => apartments.map(apt => this.transformToCardData(apt)))
-      );
+  createApartment(request: CreateApartmentRequest): Observable<Apartment> {
+    return this.http.post<Apartment>(`${this.API_URL}/apartments`, request);
   }
 
-  // Transform backend apartment data to card display format
-  public transformToCardData(apartment: Apartment): ApartmentCardData {
-    // Get primary image or fallback to placeholder
-    const primaryImage = apartment.images?.find(img => img.isPrimary);
-    const imageUrl = primaryImage?.imageUrl || this.getPlaceholderImage();
+  updateApartment(id: number, request: UpdateApartmentRequest): Observable<Apartment> {
+    return this.http.put<Apartment>(`${this.API_URL}/apartments/${id}`, request);
+  }
 
-    // Calculate average rating (you'll need to implement this based on reviews)
+  deleteApartment(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/apartments/${id}`);
+  }
+
+  getApartmentsByOwner(ownerId: number): Observable<Apartment[]> {
+    return this.http.get<Apartment[]>(`${this.API_URL}/apartments/owner/${ownerId}`);
+  }
+
+  getApartmentsByStatus(status: ApartmentStatus): Observable<Apartment[]> {
+    return this.http.get<Apartment[]>(`${this.API_URL}/apartments?status=${status}`);
+  }
+
+  getAllAmenities(): Observable<AmenityDto[]> {
+    return this.http.get<AmenityDto[]>(`${this.API_URL}/amenities`);
+  }
+
+  getApartments(): Observable<ApartmentCardData[]> {
+    return this.getAllApartments().pipe(
+      map(apartments => apartments.map(apt => this.transformToCardData(apt)))
+    );
+  }
+
+  getApartmentsByStatusAsCards(status: ApartmentStatus): Observable<ApartmentCardData[]> {
+    return this.getApartmentsByStatus(status).pipe(
+      map(apartments => apartments.map(apt => this.transformToCardData(apt)))
+    );
+  }
+
+    public transformToCardData(apartment: Apartment): ApartmentCardData {
+    const primaryImage = apartment.images?.find(img => img.isFeatured);
+    const imageUrl = primaryImage?.url || this.getPlaceholderImage();
+
     const rating = this.calculateAverageRating(apartment);
 
-    // Default amenities - you can extend this based on apartment features
-    const amenities = this.getDefaultAmenities(apartment);
+    // Extract amenity names from AmenityDto objects for display (limit to 3)
+    const amenities = apartment.amenities?.slice(0, 3) || [];
 
     return {
-      id: apartment.id,
-      name: apartment.name,
-      location: apartment.city,
-      rating: rating,
-      guests: apartment.maxGuests || 1,
-      price: Number(apartment.basePrice),
-      currency: '€', 
-      imageUrl: imageUrl,
-      amenities: amenities,
-      description: apartment.description
+        id: apartment.id,
+        name: apartment.name,
+        location: `${apartment.city}, ${apartment.address}`,
+        price: Number(apartment.basePrice),
+        currency: '€',
+        rating: rating,
+        guests: apartment.maxGuests || 1,
+        imageUrl: imageUrl,
+        amenities: amenities,
+        description: apartment.description
     };
-  }
+    }
 
   // Calculate average rating from reviews (placeholder implementation)
   private calculateAverageRating(apartment: Apartment): number {
     // TODO: Implement based on your review system
     // For now, return a random rating between 4.0 and 5.0
     return Math.round((4.0 + Math.random()) * 10) / 10;
-  }
-
-  // Get default amenities based on apartment features
-  private getDefaultAmenities(apartment: Apartment): string[] {
-    // If amenities are provided from backend, use them
-    if (apartment.amenities && apartment.amenities.length > 0) {
-      return apartment.amenities.slice(0, 3); // Limit to 3 for display
-    }
-
-    // Otherwise, generate based on apartment features
-    const amenities: string[] = ['Wi-Fi']; // Default amenity
-
-    if (apartment.bedrooms && apartment.bedrooms > 0) {
-      amenities.push('Kuhinja');
-    }
-    
-    if (apartment.sizeM2 && apartment.sizeM2 > 50) {
-      amenities.push('Klima');
-    }
-
-    if (apartment.floor && apartment.floor > 3) {
-      amenities.push('Pogled');
-    }
-
-    // Add more amenities based on apartment features
-    if (apartment.bathrooms && apartment.bathrooms > 1) {
-      amenities.push('Parking');
-    }
-
-    return amenities.slice(0, 3); // Limit to 3 amenities for display
   }
 
   // Get placeholder image URL
@@ -107,16 +104,24 @@ export class ApartmentService {
     return placeholders[Math.floor(Math.random() * placeholders.length)];
   }
 
-  // Admin methods
-  createApartment(apartment: Partial<Apartment>): Observable<Apartment> {
-    return this.http.post<Apartment>(`${this.API_URL}/apartments`, apartment);
+  // Image upload methods
+  uploadApartmentImages(apartmentId: number, formData: FormData): Observable<any> {
+    return this.http.post(`${this.API_URL}/apartments/${apartmentId}/images`, formData);
   }
 
-  updateApartment(id: number, apartment: Partial<Apartment>): Observable<Apartment> {
-    return this.http.put<Apartment>(`${this.API_URL}/apartments/${id}`, apartment);
+  // Availability check method
+  checkAvailability(apartmentId: number, checkin: Date, checkout: Date): Observable<boolean> {
+    const params = {
+      apartmentId: apartmentId.toString(),
+      checkin: checkin.toISOString().split('T')[0],
+      checkout: checkout.toISOString().split('T')[0]
+    };
+
+    return this.http.get<boolean>(`${this.API_URL}/apartments/check-availability`, { params });
   }
 
-  deleteApartment(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/apartments/${id}`);
+  // Booking method
+  createBooking(bookingData: any): Observable<any> {
+    return this.http.post(`${this.API_URL}/bookings`, bookingData);
   }
 }

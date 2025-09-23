@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
-
+import java.util.ArrayList;
+import java.util.List;
 @Entity
 @Table(name = "amenities")
 @Data
@@ -21,6 +22,9 @@ public class Amenity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // Add the reverse relationship
+    @ManyToMany(mappedBy = "amenities", fetch = FetchType.LAZY)
+    private List<Apartment> apartments = new ArrayList<>();
 
     public Long getId() {
         return id;

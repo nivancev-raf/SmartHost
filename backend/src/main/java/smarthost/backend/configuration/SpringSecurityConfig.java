@@ -50,6 +50,12 @@ public class SpringSecurityConfig {
                         .requestMatchers("/about").permitAll()       // About Us stranica
                         .requestMatchers("/amenities").permitAll() // Amenities list
 
+                        // SWAGGER ENDPOINTS - Add these lines
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api-docs/**").permitAll()
+
                         // AUTHENTICATED ENDPOINTS - samo prijavljeni korisnici
                         .requestMatchers("/auth/current-user").authenticated()
                         .requestMatchers("/profile/**").authenticated() // My Profile

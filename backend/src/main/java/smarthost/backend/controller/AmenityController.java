@@ -26,4 +26,9 @@ public class AmenityController {
         List<AmenityDto> amenities = amenityService.getAllAmenities();
         return ResponseEntity.ok(amenities);
     }
+    @GetMapping("/{apartmentId}")
+    public ResponseEntity<List<AmenityDto>> getAmenitiesByApartmentId(@PathVariable Long apartmentId) {
+        List<AmenityDto> amenities = amenityService.getAmenitiesByApartmentId(apartmentId);
+        return ResponseEntity.ok(amenities);
+    }
 }

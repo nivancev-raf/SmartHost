@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { LoginDialogComponent } from '../components/auth/login-dialog/login-dialog';
 import { RegisterDialogComponent } from '../components/auth/register-dialog/register-dialog';
 import { ApartmentDetailsDialog, ApartmentDetailsDialogData } from '../components/shared/apartment-details-dialog/apartment-details-dialog';
+import { ApartmentCreateDialogComponent } from '../components/shared/apartment-create-dialog/apartment-create-dialog';
 import { Apartment } from '../models/apartment';
 
 @Injectable({
@@ -63,6 +64,20 @@ export class DialogService {
         apartment,
         isAdminView
       } as ApartmentDetailsDialogData
+    });
+
+    return dialogRef;
+  }
+
+  openApartmentCreateDialog(ownerId: number) {
+    const dialogRef = this.dialog.open(ApartmentCreateDialogComponent, {
+      width: '800px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      disableClose: false,
+      autoFocus: true,
+      restoreFocus: true,
+      data: { ownerId }
     });
 
     return dialogRef;

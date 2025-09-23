@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { 
   Apartment, 
@@ -18,6 +18,17 @@ export class ApartmentService {
 
   constructor(private http: HttpClient) {}
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    let headers = new HttpHeaders();
+    
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    
+    return headers;
+  }
+
   getAllApartments(): Observable<Apartment[]> {
     return this.http.get<Apartment[]>(`${this.API_URL}/apartments`);
   }
@@ -27,19 +38,23 @@ export class ApartmentService {
   }
 
   createApartment(request: CreateApartmentRequest): Observable<Apartment> {
-    return this.http.post<Apartment>(`${this.API_URL}/apartments`, request);
+    const headers = this.getAuthHeaders();
+    return this.http.post<Apartment>(`${this.API_URL}/apartments`, request, { headers });
   }
 
   updateApartment(id: number, request: UpdateApartmentRequest): Observable<Apartment> {
-    return this.http.put<Apartment>(`${this.API_URL}/apartments/${id}`, request);
+    const headers = this.getAuthHeaders();
+    return this.http.put<Apartment>(`${this.API_URL}/apartments/${id}`, request, { headers });
   }
 
   deleteApartment(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/apartments/${id}`);
+    const headers = this.getAuthHeaders();
+    return this.http.delete<void>(`${this.API_URL}/apartments/${id}`, { headers });
   }
 
   getApartmentsByOwner(ownerId: number): Observable<Apartment[]> {
-    return this.http.get<Apartment[]>(`${this.API_URL}/apartments/owner/${ownerId}`);
+    const headers = this.getAuthHeaders();
+    return this.http.get<Apartment[]>(`${this.API_URL}/apartments/owner/${ownerId}`, { headers });
   }
 
   getApartmentsByStatus(status: ApartmentStatus): Observable<Apartment[]> {
@@ -48,6 +63,10 @@ export class ApartmentService {
 
   getAllAmenities(): Observable<AmenityDto[]> {
     return this.http.get<AmenityDto[]>(`${this.API_URL}/amenities`);
+  }
+
+  getAmenitiesByApartmentId(apartmentId: number): Observable<AmenityDto[]> {
+    return this.http.get<AmenityDto[]>(`${this.API_URL}/amenities/${apartmentId}`);
   }
 
   getApartments(): Observable<ApartmentCardData[]> {
@@ -106,7 +125,8 @@ export class ApartmentService {
 
   // Image upload methods
   uploadApartmentImages(apartmentId: number, formData: FormData): Observable<any> {
-    return this.http.post(`${this.API_URL}/apartments/${apartmentId}/images`, formData);
+    const headers = this.getAuthHeaders();
+    return this.http.post(`${this.API_URL}/apartments/${apartmentId}/images`, formData, { headers });
   }
 
   // Availability check method
@@ -122,6 +142,7 @@ export class ApartmentService {
 
   // Booking method
   createBooking(bookingData: any): Observable<any> {
-    return this.http.post(`${this.API_URL}/bookings`, bookingData);
+    const headers = this.getAuthHeaders();
+    return this.http.post(`${this.API_URL}/bookings`, bookingData, { headers });
   }
 }

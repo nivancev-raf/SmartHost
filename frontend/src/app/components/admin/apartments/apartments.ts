@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,57 +19,25 @@ import { DialogService } from '../../../services/dialog.service';
 })
 export class Apartments implements OnInit, OnDestroy {
   apartments: ApartmentCardData[] = [];
+  allApartments: Apartment[] = []; // Store full apartment data
   adminName: string = '';
   isLoading: boolean = true;
   private subscriptions = new Subscription();
-
-  // Mock data - in real app this would come from API
-  private mockApartments: Apartment[] = [
-    {
-      id: 1,
-      ownerId: 1,
-      name: 'Aqua View Studio',
-      description: 'Modern studio with beautiful city views',
-      address: 'Knez Mihailova 12',
-      city: 'Beograd',
-      floor: 3,
-      bedrooms: 1,
-      bathrooms: 1,
-      maxGuests: 2,
-      sizeM2: 45,
-      basePrice: 55,
-      status: ApartmentStatus.AVAILABLE,
-      createdAt: new Date().toISOString(),
-      amenities: [
-          { id: 1, name: 'Wi-Fi' },
-          { id: 2, name: 'Air Conditioning' },
-          { id: 3, name: 'Kitchen' },
-      ],
-      rating: 4.8,
-      currency: '€',
-      images: [
-        {
-          id: 1,
-          apartmentId: 1,
-          url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop',
-          isFeatured: true,
-          createdAt: new Date().toISOString()
-        }
-      ]
-    }
-    // More apartments...
-  ];
 
   constructor(
     private apartmentService: ApartmentService, 
     private authService: AuthService, 
     private router: Router,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadAdminData();
-    this.loadApartments();
+    // Use setTimeout to ensure the view is initialized
+    setTimeout(() => {
+      this.loadApartments();
+    }, 0);
   }
 
   ngOnDestroy(): void {
@@ -81,6 +49,7 @@ export class Apartments implements OnInit, OnDestroy {
       this.authService.currentUser$.subscribe(user => {
         if (user) {
           this.adminName = user.firstName ? `${user.firstName} ${user.lastName}` : user.email;
+          this.cdr.detectChanges(); // Force change detection
         } else {
           this.router.navigate(['/']);
         }
@@ -89,16 +58,85 @@ export class Apartments implements OnInit, OnDestroy {
   }
 
   private loadApartments(): void {
-    // Transform mock data to card format
-    this.apartments = this.mockApartments.map(apartment => 
-      this.apartmentService.transformToCardData(apartment)
-    );
-    this.isLoading = false;
+    // Get current user ID from localStorage
+    const userDataStr = localStorage.getItem('userData');
+    if (!userDataStr) {
+      console.error('No user data found in localStorage');
+      this.isLoading = false;
+      this.cdr.detectChanges(); // Force change detection
+      return;
+    }
+
+    try {
+      const userData = JSON.parse(userDataStr);
+      const ownerId = userData.id;
+
+      this.subscriptions.add(
+        this.apartmentService.getApartmentsByOwner(ownerId).subscribe({
+          next: (apartments) => {
+            this.allApartments = apartments;
+            this.apartments = apartments.map(apartment => 
+              this.apartmentService.transformToCardData(apartment)
+            );
+            this.isLoading = false;
+            console.log('Loaded apartments for owner:', apartments.length);
+            this.cdr.detectChanges(); // Force change detection
+          },
+          error: (error) => {
+            console.error('Error loading apartments:', error);
+            this.isLoading = false;
+            this.cdr.detectChanges(); // Force change detection for error state
+            // You could show a user-friendly error message here
+          }
+        })
+      );
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      this.isLoading = false;
+      this.cdr.detectChanges(); // Force change detection
+    }
   }
 
   onAddApartment(): void {
-    console.log('Add new apartment');
-    // TODO: Open add apartment dialog or navigate to add form
+    // Get current user ID from localStorage since admin is already logged in
+    const userDataStr = localStorage.getItem('userData');
+    if (userDataStr) {
+      try {
+        const userData = JSON.parse(userDataStr);
+        const dialogRef = this.dialogService.openApartmentCreateDialog(userData.id);
+        
+        dialogRef.afterClosed().subscribe(result => {
+          if (result?.success) {
+            console.log('Apartment created:', result.apartment);
+            // Refresh the apartments list
+            this.loadApartments();
+          }
+        });
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        // Fallback to mock owner ID
+        const dialogRef = this.dialogService.openApartmentCreateDialog(1);
+        
+        dialogRef.afterClosed().subscribe(result => {
+          if (result?.success) {
+            console.log('Apartment created:', result.apartment);
+            // Refresh the apartments list
+            this.loadApartments();
+          }
+        });
+      }
+    } else {
+      // Fallback to mock owner ID if no user data found
+      const dialogRef = this.dialogService.openApartmentCreateDialog(1);
+      
+      dialogRef.afterClosed().subscribe(result => {
+        if (result?.success) {
+          console.log('Apartment created:', result.apartment);
+          // Refresh the apartments list
+          this.loadApartments();
+        }
+      });
+    }
   }
 
   trackByApartmentId(index: number, apartment: ApartmentCardData): number {
@@ -107,7 +145,7 @@ export class Apartments implements OnInit, OnDestroy {
 
   onViewApartment(apartment: ApartmentCardData): void {
     // Find the full apartment data for the dialog
-    const fullApartment = this.mockApartments.find(apt => apt.id === apartment.id);
+    const fullApartment = this.allApartments.find(apt => apt.id === apartment.id);
     if (fullApartment) {
       const dialogRef = this.dialogService.openApartmentDetailsDialog(fullApartment, true);
       

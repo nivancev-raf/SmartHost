@@ -1,0 +1,171 @@
+<div class="apartment-create-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Create New Apartment</h2>
+    <button mat-icon-button mat-dialog-close class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <form [formGroup]="apartmentForm" class="apartment-form">
+      
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <h3 class="section-title">Basic Information</h3>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Apartment Name</mat-label>
+            <input matInput formControlName="name" placeholder="Enter apartment name">
+            <mat-error>{{ getFieldError('name') }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3" 
+                     placeholder="Describe the apartment..."></textarea>
+            <mat-error>{{ getFieldError('description') }}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Location Section -->
+      <div class="form-section">
+        <h3 class="section-title">Location</h3>
+        
+        <div class="form-row two-columns">
+          <mat-form-field appearance="outline">
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" placeholder="Street address">
+            <mat-error>{{ getFieldError('address') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>City</mat-label>
+            <mat-select formControlName="city">
+              <mat-option *ngFor="let city of cities" [value]="city">
+                {{ city }}
+              </mat-option>
+            </mat-select>
+            <mat-error>{{ getFieldError('city') }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Floor</mat-label>
+            <input matInput type="number" formControlName="floor" placeholder="Optional">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Property Details Section -->
+      <div class="form-section">
+        <h3 class="section-title">Property Details</h3>
+        
+        <div class="form-row three-columns">
+          <mat-form-field appearance="outline">
+            <mat-label>Bedrooms</mat-label>
+            <input matInput type="number" formControlName="bedrooms" min="0">
+            <mat-error>{{ getFieldError('bedrooms') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Bathrooms</mat-label>
+            <input matInput type="number" formControlName="bathrooms" min="1">
+            <mat-error>{{ getFieldError('bathrooms') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Max Guests</mat-label>
+            <input matInput type="number" formControlName="maxGuests" min="1">
+            <mat-error>{{ getFieldError('maxGuests') }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row two-columns">
+          <mat-form-field appearance="outline">
+            <mat-label>Size (m²)</mat-label>
+            <input matInput type="number" formControlName="sizeM2" min="1" placeholder="Optional">
+            <mat-error>{{ getFieldError('sizeM2') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Base Price (€)</mat-label>
+            <input matInput type="number" formControlName="basePrice" min="1">
+            <mat-error>{{ getFieldError('basePrice') }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                {{ status.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Amenities Section -->
+      <div class="form-section">
+        <h3 class="section-title">Amenities</h3>
+        
+        <div class="amenities-section" *ngIf="!isLoadingAmenities">
+          <div class="selected-amenities" *ngIf="selectedAmenities.length > 0">
+            <h4>Selected Amenities:</h4>
+            <mat-chip-set class="selected-chips">
+              <mat-chip *ngFor="let amenity of selectedAmenities" 
+                       (removed)="removeAmenity(amenity)">
+                {{ amenity.name }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+
+          <div class="available-amenities">
+            <h4>Available Amenities:</h4>
+            <div class="amenities-grid">
+              <div class="amenities-chips">
+                <mat-chip *ngFor="let amenity of availableAmenities" 
+                         [class.selected]="isAmenitySelected(amenity)"
+                         (click)="onAmenityToggle(amenity)">
+                  {{ amenity.name }}
+                  <mat-icon *ngIf="isAmenitySelected(amenity)">check</mat-icon>
+                </mat-chip>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="amenities-loading" *ngIf="isLoadingAmenities">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading amenities...</p>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <div class="actions-left">
+      <button mat-button (click)="onCancel()" [disabled]="isLoading">
+        Cancel
+      </button>
+    </div>
+
+    <div class="actions-right">
+      <button mat-raised-button color="primary" 
+              (click)="onSubmit()" 
+              [disabled]="isLoading || apartmentForm.invalid">
+        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+        <span *ngIf="!isLoading">Create Apartment</span>
+        <span *ngIf="isLoading">Creating...</span>
+      </button>
+    </div>
+  </div>
+</div>

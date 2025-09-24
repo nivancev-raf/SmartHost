@@ -1,0 +1,118 @@
+.confirmation-dialog {
+  min-width: 400px;
+  max-width: 500px;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 24px 16px 24px;
+  margin: 0;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.dialog-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.dialog-header.delete .dialog-icon {
+  color: #f44336;
+}
+
+.dialog-header.delete h2 {
+  color: #f44336;
+}
+
+.dialog-header.warning .dialog-icon {
+  color: #ff9800;
+}
+
+.dialog-header.warning h2 {
+  color: #ff9800;
+}
+
+.dialog-header.info .dialog-icon {
+  color: #00bcd4;
+}
+
+.dialog-header.info h2 {
+  color: #00bcd4;
+}
+
+.dialog-content {
+  padding: 0 24px 16px 24px;
+  color: #666;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.dialog-content p {
+  margin: 0;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px 24px 24px;
+}
+
+.cancel-btn {
+  color: #666;
+}
+
+.cancel-btn:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.confirm-btn.mat-mdc-raised-button.mat-warn {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.confirm-btn.mat-mdc-raised-button.mat-warn:hover {
+  background-color: #d32f2f !important;
+}
+
+.confirm-btn.mat-mdc-raised-button.mat-primary {
+  background-color: #00bcd4 !important;
+  color: white !important;
+}
+
+.confirm-btn.mat-mdc-raised-button.mat-primary:hover {
+  background-color: #00acc1 !important;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 480px) {
+  .confirmation-dialog {
+    min-width: auto;
+    max-width: 90vw;
+  }
+
+  .dialog-header {
+    padding: 20px 20px 12px 20px;
+  }
+
+  .dialog-content {
+    padding: 0 20px 12px 20px;
+    font-size: 14px;
+  }
+
+  .dialog-actions {
+    padding: 12px 20px 20px 20px;
+    flex-direction: column-reverse;
+  }
+
+  .dialog-actions button {
+    width: 100%;
+  }
+}

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApartmentCardComponent } from '../../shared/apartment-card/apartment-card';
@@ -13,7 +15,7 @@ import { DialogService } from '../../../services/dialog.service';
 
 @Component({
   selector: 'app-apartments',
-  imports: [CommonModule, ApartmentCardComponent, MatButtonModule, MatIconModule, MatCardModule],
+  imports: [CommonModule, ApartmentCardComponent, MatButtonModule, MatIconModule, MatCardModule, MatSnackBarModule, MatDialogModule],
   templateUrl: './apartments.html',
   styleUrl: './apartments.css'
 })
@@ -29,7 +31,8 @@ export class Apartments implements OnInit, OnDestroy {
     private authService: AuthService, 
     private router: Router,
     private dialogService: DialogService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -165,7 +168,42 @@ export class Apartments implements OnInit, OnDestroy {
   }
 
   onDeleteApartment(apartment: ApartmentCardData): void {
-    console.log('Delete apartment:', apartment);
-    // Show confirmation dialog and delete
+    const dialogRef = this.dialogService.openConfirmationDialog({
+      title: 'Delete Apartment',
+      message: `Are you sure you want to delete "<strong>${apartment.name}</strong>"?<br><br>This action cannot be undone and will permanently remove the apartment from your listings.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      type: 'delete'
+    });
+    
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.subscriptions.add(
+          this.apartmentService.deleteApartment(apartment.id).subscribe({
+            next: () => {
+              console.log('Apartment deleted successfully:', apartment.name);
+              this.snackBar.open('Apartment deleted successfully', 'Close', { 
+                duration: 3000,
+                panelClass: ['success-snackbar']
+              });
+              
+              // Remove the apartment from the local arrays
+              this.apartments = this.apartments.filter(apt => apt.id !== apartment.id);
+              this.allApartments = this.allApartments.filter(apt => apt.id !== apartment.id);
+              
+              // Force change detection
+              this.cdr.detectChanges();
+            },
+            error: (error) => {
+              console.error('Error deleting apartment:', error);
+              this.snackBar.open('Failed to delete apartment. Please try again.', 'Close', { 
+                duration: 4000,
+                panelClass: ['error-snackbar']
+              });
+            }
+          })
+        );
+      }
+    });
   }
 }

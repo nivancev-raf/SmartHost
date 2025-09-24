@@ -82,12 +82,17 @@ export class ApartmentService {
   }
 
     public transformToCardData(apartment: Apartment): ApartmentCardData {
-    const primaryImage = apartment.images?.find(img => img.isFeatured);
-    const imageUrl = primaryImage?.url || this.getPlaceholderImage();
-
+    let primaryImage = apartment.images?.find(img => img.featured);
+    if (!primaryImage && apartment.images?.length > 0) {
+      primaryImage = apartment.images[0];
+    }
+    let imageUrl = primaryImage?.url;
+    if (imageUrl && !imageUrl.startsWith('http')) {
+      imageUrl = `${this.API_URL}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+    }
+    imageUrl = imageUrl || this.getPlaceholderImage();
+    
     const rating = this.calculateAverageRating(apartment);
-
-    // Extract amenity names from AmenityDto objects for display (limit to 3)
     const amenities = apartment.amenities?.slice(0, 3) || [];
 
     return {

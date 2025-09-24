@@ -4,6 +4,7 @@ import { LoginDialogComponent } from '../components/auth/login-dialog/login-dial
 import { RegisterDialogComponent } from '../components/auth/register-dialog/register-dialog';
 import { ApartmentDetailsDialog, ApartmentDetailsDialogData } from '../components/shared/apartment-details-dialog/apartment-details-dialog';
 import { ApartmentCreateDialogComponent } from '../components/shared/apartment-create-dialog/apartment-create-dialog';
+import { ConfirmationDialogComponent, ConfirmationDialogData } from '../components/shared/confirmation-dialog/confirmation-dialog';
 import { Apartment } from '../models/apartment';
 
 @Injectable({
@@ -78,6 +79,19 @@ export class DialogService {
       autoFocus: true,
       restoreFocus: true,
       data: { ownerId }
+    });
+
+    return dialogRef;
+  }
+
+  openConfirmationDialog(data: ConfirmationDialogData) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '450px',
+      maxWidth: '90vw',
+      disableClose: false,
+      autoFocus: true,
+      restoreFocus: true,
+      data
     });
 
     return dialogRef;

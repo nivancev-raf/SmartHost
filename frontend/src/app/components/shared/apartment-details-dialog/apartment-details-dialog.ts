@@ -49,7 +49,7 @@ export class ApartmentDetailsDialog implements OnInit {
         id: 0,
         apartmentId: this.apartment.id,
         url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-        isFeatured: true,
+        featured: true,
         createdAt: new Date().toISOString()
       }];
     }

@@ -81,14 +81,14 @@ export class Apartments implements OnInit, OnDestroy {
           id: 1,
           apartmentId: 1,
           url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-          isFeatured: true,
+          featured: true,
           createdAt: new Date().toISOString()
         },
         {
           id: 2,
           apartmentId: 1,
           url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-          isFeatured: false,
+          featured: false,
           createdAt: new Date().toISOString()
         }
       ]
@@ -124,7 +124,7 @@ export class Apartments implements OnInit, OnDestroy {
           id: 3,
           apartmentId: 2,
           url: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
-          isFeatured: true,
+          featured: true,
           createdAt: new Date().toISOString()
         }
       ]
@@ -157,7 +157,7 @@ export class Apartments implements OnInit, OnDestroy {
           id: 4,
           apartmentId: 3,
           url: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
-          isFeatured: true,
+          featured: true,
           createdAt: new Date().toISOString()
         }
       ]

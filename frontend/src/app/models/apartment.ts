@@ -10,7 +10,7 @@ export interface ApartmentImage {
   id: number;
   apartmentId: number;
   url: string;
-  isFeatured: boolean;
+  featured: boolean;
   createdAt: string;
 }
 

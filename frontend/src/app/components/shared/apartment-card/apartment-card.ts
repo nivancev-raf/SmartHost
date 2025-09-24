@@ -46,4 +46,10 @@ export class ApartmentCardComponent {
     }
     return stars;
   }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    // Fallback to a default placeholder image
+    img.src = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
+  }
 }

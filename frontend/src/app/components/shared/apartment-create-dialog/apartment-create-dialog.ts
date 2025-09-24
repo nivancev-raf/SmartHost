@@ -36,6 +36,8 @@ export class ApartmentCreateDialogComponent implements OnInit {
   apartmentForm!: FormGroup;
   availableAmenities: AmenityDto[] = [];
   selectedAmenities: AmenityDto[] = [];
+  selectedFiles: File[] = [];
+  featuredImageIndex: number = 0;
   isLoading = false;
   isLoadingAmenities = true;
 
@@ -136,8 +138,74 @@ export class ApartmentCreateDialogComponent implements OnInit {
     }, 0);
   }
 
+  onImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      const filesArray = Array.from(input.files);
+      this.selectedFiles = [...this.selectedFiles, ...filesArray];
+      
+      // Reset featured index if this is the first image
+      if (this.selectedFiles.length === filesArray.length) {
+        this.featuredImageIndex = 0;
+      }
+      
+      this.cdr.markForCheck();
+    }
+  }
+
+  removeImage(index: number): void {
+    this.selectedFiles.splice(index, 1);
+    
+    // Adjust featured index if necessary
+    if (this.featuredImageIndex >= this.selectedFiles.length) {
+      this.featuredImageIndex = Math.max(0, this.selectedFiles.length - 1);
+    } else if (this.featuredImageIndex === index) {
+      this.featuredImageIndex = 0;
+    } else if (this.featuredImageIndex > index) {
+      this.featuredImageIndex--;
+    }
+
+    this.cdr.markForCheck(); // markForCheck instead of detectChanges because we are in an event handler
+  }
+
+  setFeaturedImage(index: number): void {
+    this.featuredImageIndex = index;
+    this.cdr.markForCheck();
+  }
+
+  getImagePreview(file: File): string {
+    return URL.createObjectURL(file);
+  }
+
+  private uploadImages(apartmentId: number): void {
+    const formData = new FormData();
+    
+    // Add all selected files to FormData
+    this.selectedFiles.forEach((file, index) => {
+      formData.append('files', file);
+    });
+    
+    // Add featured image index
+    formData.append('featuredIndex', this.featuredImageIndex.toString());
+
+    this.apartmentService.uploadApartmentImages(apartmentId, formData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        console.log('Images uploaded successfully:', response);
+        this.snackBar.open('Apartment and images uploaded successfully!', 'Close', { duration: 3000 });
+        this.dialogRef.close({ success: true, apartment: { id: apartmentId } });
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Error uploading images:', error);
+        this.snackBar.open('Apartment created but failed to upload images', 'Close', { duration: 3000 });
+        this.dialogRef.close({ success: true, apartment: { id: apartmentId } });
+      }
+    });
+  }
+
   onSubmit(): void {
-    if (this.apartmentForm.valid) {
+    if (this.apartmentForm.valid && this.selectedFiles.length > 0) {
       this.isLoading = true;
       
       const formValue = this.apartmentForm.value;
@@ -158,9 +226,10 @@ export class ApartmentCreateDialogComponent implements OnInit {
 
       this.apartmentService.createApartment(createRequest).subscribe({
         next: (apartment) => {
-          this.isLoading = false;
-          this.snackBar.open('Apartment created successfully!', 'Close', { duration: 3000 });
-          this.dialogRef.close({ success: true, apartment });
+          console.log('Apartment created:', apartment);
+          
+          // Upload images (we know there's at least one)
+          this.uploadImages(apartment.id);
         },
         error: (error) => {
           this.isLoading = false;
@@ -170,7 +239,15 @@ export class ApartmentCreateDialogComponent implements OnInit {
       });
     } else {
       this.markFormGroupTouched();
-      this.snackBar.open('Please fill in all required fields correctly', 'Close', { duration: 3000 });
+      
+      // Show specific error messages
+      if (!this.apartmentForm.valid && this.selectedFiles.length === 0) {
+        this.snackBar.open('Please fill in all required fields and upload at least one image', 'Close', { duration: 4000 });
+      } else if (!this.apartmentForm.valid) {
+        this.snackBar.open('Please fill in all required fields correctly', 'Close', { duration: 3000 });
+      } else if (this.selectedFiles.length === 0) {
+        this.snackBar.open('Please upload at least one image for the apartment', 'Close', { duration: 3000 });
+      }
     }
   }
 

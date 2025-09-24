@@ -82,14 +82,14 @@ export class Home implements OnInit {
             id: 1,
             apartmentId: 1,
             url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-            isFeatured: true,
+            featured: true,
             createdAt: new Date().toISOString()
           },
           {
             id: 2,
             apartmentId: 1,
             url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-            isFeatured: false,
+            featured: false,
             createdAt: new Date().toISOString()
           }
         ]
@@ -122,7 +122,7 @@ export class Home implements OnInit {
             id: 3,
             apartmentId: 2,
             url: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&h=600&fit=crop',
-            isFeatured: true,
+            featured: true,
             createdAt: new Date().toISOString()
           }
         ]

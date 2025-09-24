@@ -1,6 +1,6 @@
-<div class="apartment-edit-dialog">
+<div class="apartment-dialog">
   <div class="dialog-header">
-    <h2 mat-dialog-title>Edit Apartment</h2>
+    <h2 mat-dialog-title>{{ dialogTitle }}</h2>
     <button mat-icon-button mat-dialog-close class="close-button">
       <mat-icon>close</mat-icon>
     </button>
@@ -99,7 +99,7 @@
           </mat-form-field>
         </div>
 
-        <div class="form-row">
+        <div class="form-row" *ngIf="showStatusField">
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Status</mat-label>
             <mat-select formControlName="status">
@@ -150,44 +150,46 @@
 
       <!-- Images Section -->
       <div class="form-section">
-        <h3 class="section-title">Images</h3>
+        <h3 class="section-title">Images <span class="required" *ngIf="imagesRequired">*</span></h3>
         
         <div class="images-section" *ngIf="!isLoadingImages">
           
-          <!-- Existing Images -->
+          <!-- Existing Images (only for edit mode) -->
           <div class="existing-images" *ngIf="existingImages.length > 0">
-            <h4>Current Images ({{ existingImages.length }}):</h4>
+            <h4>Current Images ({{ existingImages.length - deletedImageIds.length }}):</h4>
             <div class="images-grid">
-              <div *ngFor="let image of existingImages; let i = index" class="image-preview">
-                <img [src]="getExistingImageUrl(image)" alt="Existing image">
-                <div class="image-overlay">
-                  <button type="button" 
-                          mat-icon-button 
-                          color="warn" 
-                          (click)="removeExistingImage(i)"
-                          class="remove-btn">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                  <button type="button" 
-                          mat-icon-button 
-                          color="primary" 
-                          (click)="setFeaturedExistingImage(i)"
-                          class="featured-btn"
-                          [class.featured]="isExistingImageFeatured && featuredImageIndex === i">
-                    <mat-icon>{{ isExistingImageFeatured && featuredImageIndex === i ? 'star' : 'star_border' }}</mat-icon>
-                  </button>
+              <ng-container *ngFor="let image of existingImages; let i = index">
+                <div *ngIf="!isImageDeleted(image)" class="image-preview">
+                  <img [src]="getExistingImageUrl(image)" alt="Existing image">
+                  <div class="image-overlay">
+                    <button type="button" 
+                            mat-icon-button 
+                            color="warn" 
+                            (click)="removeExistingImage(i)"
+                            class="remove-btn">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                    <button type="button" 
+                            mat-icon-button 
+                            color="primary" 
+                            (click)="setFeaturedExistingImage(i)"
+                            class="featured-btn"
+                            [class.featured]="isFeaturedExistingImage(i)">
+                      <mat-icon>{{ isFeaturedExistingImage(i) ? 'star' : 'star_border' }}</mat-icon>
+                    </button>
+                  </div>
+                  <div class="image-info">
+                    <span class="image-type">Current</span>
+                    <span *ngIf="isFeaturedExistingImage(i)" class="featured-label">Featured</span>
+                  </div>
                 </div>
-                <div class="image-info">
-                  <span class="image-type">Current</span>
-                  <span *ngIf="isExistingImageFeatured && featuredImageIndex === i" class="featured-label">Featured</span>
-                </div>
-              </div>
+              </ng-container>
             </div>
           </div>
 
           <!-- New Images -->
           <div class="new-images" *ngIf="selectedFiles.length > 0">
-            <h4>New Images ({{ selectedFiles.length }}):</h4>
+            <h4>{{ existingImages.length > 0 ? 'New Images' : 'Selected Images' }} ({{ selectedFiles.length }}):</h4>
             <div class="images-grid">
               <div *ngFor="let file of selectedFiles; let i = index" class="image-preview">
                 <img [src]="getNewImagePreview(file)" alt="New image preview">
@@ -204,19 +206,19 @@
                           color="primary" 
                           (click)="setFeaturedNewImage(i)"
                           class="featured-btn"
-                          [class.featured]="!isExistingImageFeatured && featuredImageIndex === i">
-                    <mat-icon>{{ !isExistingImageFeatured && featuredImageIndex === i ? 'star' : 'star_border' }}</mat-icon>
+                          [class.featured]="isFeaturedNewImage(i)">
+                    <mat-icon>{{ isFeaturedNewImage(i) ? 'star' : 'star_border' }}</mat-icon>
                   </button>
                 </div>
                 <div class="image-info">
                   <span class="filename">{{ file.name }}</span>
-                  <span *ngIf="!isExistingImageFeatured && featuredImageIndex === i" class="featured-label">Featured</span>
+                  <span *ngIf="isFeaturedNewImage(i)" class="featured-label">Featured</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Add New Images -->
+          <!-- Image Upload -->
           <div class="image-upload">
             <input #fileInput 
                    type="file" 
@@ -229,13 +231,27 @@
                     mat-stroked-button 
                     (click)="fileInput.click()"
                     class="upload-btn">
-              <mat-icon>add_photo_alternate</mat-icon>
-              Add More Images
+              <mat-icon>{{ existingImages.length > 0 ? 'add_photo_alternate' : 'cloud_upload' }}</mat-icon>
+              {{ existingImages.length > 0 ? 'Add More Images' : 'Select Images' }}
             </button>
             
             <p class="upload-hint">
-              Select additional images for your apartment.
+              <strong *ngIf="imagesRequired">Required:</strong> 
+              Select {{ existingImages.length > 0 ? 'additional' : 'at least one' }} image{{ existingImages.length > 0 ? 's' : '' }} for your apartment.
+              {{ existingImages.length === 0 && selectedFiles.length === 0 ? 'The first image will be the featured image.' : '' }}
             </p>
+          </div>
+
+          <!-- Validation Message -->
+          <div class="validation-message" *ngIf="imagesRequired && selectedFiles.length === 0 && existingImages.length === 0">
+            <mat-icon>error</mat-icon>
+            <span>At least one image is required to create an apartment</span>
+          </div>
+
+          <!-- Success Message -->
+          <div class="success-message" *ngIf="selectedFiles.length > 0 || existingImages.length > 0">
+            <mat-icon>check_circle</mat-icon>
+            <span>{{ (selectedFiles.length + existingImages.length) }} image(s) {{ selectedFiles.length > 0 ? 'selected' : 'available' }}</span>
           </div>
         </div>
 
@@ -258,10 +274,10 @@
     <div class="actions-right">
       <button mat-raised-button color="primary" 
               (click)="onSubmit()" 
-              [disabled]="isLoading || apartmentForm.invalid">
+              [disabled]="isSubmitDisabled()">
         <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
-        <span *ngIf="!isLoading">Update Apartment</span>
-        <span *ngIf="isLoading">Updating...</span>
+        <span *ngIf="!isLoading">{{ submitButtonText }}</span>
+        <span *ngIf="isLoading">{{ loadingText }}...</span>
       </button>
     </div>
   </div>

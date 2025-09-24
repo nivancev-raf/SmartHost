@@ -1,4 +1,6 @@
-.apartment-edit-dialog {
+/* Shared apartment dialog styles that can be reused by both create and edit dialogs */
+
+.apartment-dialog {
   max-width: 800px;
   min-width: 600px;
 }
@@ -47,6 +49,11 @@
   font-weight: 500;
 }
 
+.section-title .required {
+  color: #f44336;
+  font-weight: bold;
+}
+
 .form-row {
   display: flex;
   gap: 16px;
@@ -85,7 +92,9 @@
 }
 
 .selected-amenities h4,
-.available-amenities h4 {
+.available-amenities h4,
+.existing-images h4,
+.new-images h4 {
   margin: 0 0 12px 0;
   color: #333;
   font-size: 16px;
@@ -139,7 +148,8 @@
   height: 16px;
 }
 
-.amenities-loading {
+.amenities-loading,
+.images-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -148,7 +158,8 @@
   color: #666;
 }
 
-.amenities-loading mat-spinner {
+.amenities-loading mat-spinner,
+.images-loading mat-spinner {
   --mdc-circular-progress-active-indicator-color: #00bcd4;
 }
 
@@ -157,14 +168,6 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.existing-images h4,
-.new-images h4 {
-  margin: 0 0 16px 0;
-  color: #333;
-  font-size: 16px;
-  font-weight: 500;
 }
 
 .images-grid {
@@ -299,17 +302,42 @@
   text-align: center;
 }
 
-.images-loading {
+.validation-message {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 40px;
-  color: #666;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 8px;
+  color: #f44336;
+  font-size: 14px;
+  margin-top: 12px;
 }
 
-.images-loading mat-spinner {
-  --mdc-circular-progress-active-indicator-color: #00bcd4;
+.validation-message mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 8px;
+  color: #4caf50;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.success-message mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 /* Dialog Actions */
@@ -367,48 +395,48 @@ mat-form-field.appearance-outline {
 }
 
 /* Material form field customizations */
-::ng-deep .apartment-edit-dialog .mat-mdc-form-field-label {
+::ng-deep .apartment-dialog .mat-mdc-form-field-label {
   color: #666;
 }
 
-::ng-deep .apartment-edit-dialog .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+::ng-deep .apartment-dialog .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
   color: #00bcd4;
 }
 
-::ng-deep .apartment-edit-dialog .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-::ng-deep .apartment-edit-dialog .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-::ng-deep .apartment-edit-dialog .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+::ng-deep .apartment-dialog .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+::ng-deep .apartment-dialog .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+::ng-deep .apartment-dialog .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
   border-color: #00bcd4 !important;
 }
 
-::ng-deep .apartment-edit-dialog .mdc-notched-outline__leading,
-::ng-deep .apartment-edit-dialog .mdc-notched-outline__notch,
-::ng-deep .apartment-edit-dialog .mdc-notched-outline__trailing {
+::ng-deep .apartment-dialog .mdc-notched-outline__leading,
+::ng-deep .apartment-dialog .mdc-notched-outline__notch,
+::ng-deep .apartment-dialog .mdc-notched-outline__trailing {
   border-color: rgba(0, 0, 0, 0.23);
 }
 
-::ng-deep .apartment-edit-dialog .mat-mdc-form-field:hover .mdc-notched-outline__leading,
-::ng-deep .apartment-edit-dialog .mat-mdc-form-field:hover .mdc-notched-outline__notch,
-::ng-deep .apartment-edit-dialog .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+::ng-deep .apartment-dialog .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+::ng-deep .apartment-dialog .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+::ng-deep .apartment-dialog .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
   border-color: rgba(0, 0, 0, 0.6);
 }
 
 /* Mat-select styling */
-::ng-deep .apartment-edit-dialog .mat-mdc-select.mat-mdc-select-focused .mat-mdc-select-arrow {
+::ng-deep .apartment-dialog .mat-mdc-select.mat-mdc-select-focused .mat-mdc-select-arrow {
   color: #00bcd4;
 }
 
-::ng-deep .apartment-edit-dialog .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+::ng-deep .apartment-dialog .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
   background-color: rgba(0, 188, 212, 0.1);
 }
 
-::ng-deep .apartment-edit-dialog .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+::ng-deep .apartment-dialog .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
   background-color: rgba(0, 188, 212, 0.04);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .apartment-edit-dialog {
+  .apartment-dialog {
     min-width: auto;
     max-width: 95vw;
   }

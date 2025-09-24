@@ -12,11 +12,11 @@ export class AuthService {
   private readonly API_URL = 'http://localhost:8080';
   private currentUserId: number | null = null;
 
-  // Observable streams
-  private isLoggedInSubject = new BehaviorSubject<boolean>(this.tokenExists());
+  // Observable streams - Initialize with proper initial values
+  private isLoggedInSubject = new BehaviorSubject<boolean>(false);
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
-  private userRoleSubject = new BehaviorSubject<string>(this.getUserRole());
+  private userRoleSubject = new BehaviorSubject<string>('GUEST');
   userRole$ = this.userRoleSubject.asObservable();
 
   private currentUserSubject = new BehaviorSubject<User | null>(null);
@@ -27,17 +27,82 @@ export class AuthService {
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    // Load current user if token exists
-    if (this.tokenExists()) {
-      this.loadCurrentUser();
+    // Initialize authentication state on startup
+    this.initializeAuthState();
+  }
+
+  private initializeAuthState(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      const savedUserData = localStorage.getItem('userData');
+      
+      if (token && savedUserData && this.isTokenValid(token)) {
+        try {
+          const user = JSON.parse(savedUserData);
+          // Update all subjects with persisted state
+          this.isLoggedInSubject.next(true);
+          this.userRoleSubject.next(user.role || 'GUEST');
+          this.currentUserSubject.next(user);
+          this.currentUserId = user.id;
+          
+          console.log('Auth state restored from localStorage:', {
+            isLoggedIn: true,
+            role: user.role,
+            user: user
+          });
+        } catch (e) {
+          console.error('Error parsing saved user data, clearing localStorage');
+          this.clearAuthData();
+        }
+      } else {
+        // No valid auth data or token expired, ensure clean state
+        console.log('No valid auth data found, clearing state');
+        this.clearAuthData();
+      }
     }
+  }
+
+  private clearAuthData(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userData');
+    }
+    this.isLoggedInSubject.next(false);
+    this.userRoleSubject.next('GUEST');
+    this.currentUserSubject.next(null);
+    this.currentUserId = null;
   }
 
   tokenExists(): boolean {
     if (!isPlatformBrowser(this.platformId)) {
       return false;
     }
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    return !!token && this.isTokenValid(token);
+  }
+
+  private isTokenValid(token: string): boolean {
+    try {
+      // Basic token format check
+      if (!token || token.split('.').length !== 3) {
+        return false;
+      }
+      
+      // Decode JWT payload to check expiration
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      
+      // Check if token is expired
+      if (payload.exp && payload.exp < currentTime) {
+        console.log('Token has expired');
+        return false;
+      }
+      
+      return true;
+    } catch (e) {
+      console.error('Invalid token format:', e);
+      return false;
+    }
   }
 
   getToken(): string | null {
@@ -149,37 +214,13 @@ export class AuthService {
   }
 
   logout(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('userData');
-    }
-
-    this.isLoggedInSubject.next(false);
-    this.userRoleSubject.next('GUEST');
-    this.currentUserSubject.next(null);
-    this.currentUserId = null;
-
+    this.clearAuthData();
     this.router.navigate(['/']);
   }
 
 
-  private async loadCurrentUser(): Promise<void> {
-    if (isPlatformBrowser(this.platformId)) {
-      const savedUserData = localStorage.getItem('userData');
-      if (savedUserData) {
-        try {
-          const user = JSON.parse(savedUserData);
-          this.currentUserSubject.next(user);
-          this.currentUserId = user.id;
-        } catch (e) {
-          console.error('Error parsing saved user data');
-        }
-      }
-    }
-  }
-
   isAdmin(): boolean {
-    return this.getUserRole() === 'ADMIN';
+    return this.userRoleSubject.value === 'ADMIN';
   }
 
   private handleLoginError(error: any): void {

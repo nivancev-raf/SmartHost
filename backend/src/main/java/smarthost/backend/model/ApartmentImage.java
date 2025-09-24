@@ -50,11 +50,10 @@ public class ApartmentImage {
         this.url = url;
     }
 
-    public Boolean getFeatured() {
+    public Boolean getIsFeatured() {
         return isFeatured;
     }
-
-    public void setFeatured(Boolean featured) {
+    public void setIsFeatured(Boolean featured) {
         isFeatured = featured;
     }
 

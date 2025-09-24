@@ -1,9 +1,13 @@
 package smarthost.backend.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import smarthost.backend.dto.ApartmentDto;
+import smarthost.backend.dto.ApartmentImageDto;
 import smarthost.backend.requests.CreateApartmentRequest;
 import smarthost.backend.model.Apartment;
 import smarthost.backend.requests.UpdateApartmentRequest;
@@ -15,6 +19,8 @@ import java.util.List;
 @RequestMapping("/apartments")
 @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
 public class ApartmentController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ApartmentController.class);
 
     private final ApartmentService apartmentService;
 
@@ -60,6 +66,20 @@ public class ApartmentController {
     public ResponseEntity<List<ApartmentDto>> getApartmentsByOwner(@PathVariable Long ownerId) {
         List<ApartmentDto> apartments = apartmentService.getApartmentsByOwner(ownerId);
         return ResponseEntity.ok(apartments);
+    }
+
+    @PostMapping("/{apartmentId}/images")
+    public ResponseEntity<List<ApartmentImageDto>> uploadImages(
+            @PathVariable Long apartmentId,
+            @RequestParam("files") MultipartFile[] files,
+            @RequestParam(value = "featuredIndex", defaultValue = "0") int featuredIndex){
+
+        try {
+            List<ApartmentImageDto> savedImages = apartmentService.saveApartmentImages(apartmentId, files, featuredIndex);
+            return ResponseEntity.ok(savedImages);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
     }
 
 }

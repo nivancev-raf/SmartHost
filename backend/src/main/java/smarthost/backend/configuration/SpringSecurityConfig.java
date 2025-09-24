@@ -66,14 +66,11 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/reviews/**").hasRole("CLIENT") // Reviews - samo CLIENT
 
                         // ADMIN ONLY ENDPOINTS - samo ADMIN
+                        .requestMatchers(HttpMethod.POST, "/apartments/*/images").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/apartments/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/apartments/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/apartments/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/reservations/**").hasRole("ADMIN")  // Admin pregled rezervacija
-                        .requestMatchers("/admin/calendar/**").hasRole("ADMIN")     // Calendar management
-                        .requestMatchers("/admin/finance/**").hasRole("ADMIN")      // Finance dashboard
-                        .requestMatchers("/admin/**").hasRole("ADMIN")              // Admin panel
-
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

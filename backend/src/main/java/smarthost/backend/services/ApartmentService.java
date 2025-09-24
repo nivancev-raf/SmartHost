@@ -2,6 +2,7 @@ package smarthost.backend.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import smarthost.backend.dto.AmenityDto;
 import smarthost.backend.dto.ApartmentDto;
 import smarthost.backend.dto.ApartmentImageDto;
@@ -15,8 +16,10 @@ import smarthost.backend.model.Apartment;
 import smarthost.backend.repository.ApartmentRepository;
 import smarthost.backend.requests.UpdateApartmentRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.io.IOException;
 
 @Service
 public class ApartmentService {
@@ -25,16 +28,18 @@ public class ApartmentService {
     private final ApartmentImageRepository apartmentImageRepository;
     private final AmenityRepository amenityRepository;
     private final ApartmentMapper apartmentMapper;
+    private final CloudinaryService cloudinaryService;
 
     @Autowired
     public ApartmentService(ApartmentRepository apartmentRepository,
                             ApartmentImageRepository apartmentImageRepository,
                             AmenityRepository amenityRepository,
-                            ApartmentMapper apartmentMapper) {
+                            ApartmentMapper apartmentMapper, CloudinaryService cloudinaryService) {
         this.apartmentRepository = apartmentRepository;
         this.apartmentImageRepository = apartmentImageRepository;
         this.amenityRepository = amenityRepository;
         this.apartmentMapper = apartmentMapper;
+        this.cloudinaryService = cloudinaryService;
     }
 
     public List<ApartmentDto> getAllApartments() {
@@ -52,8 +57,6 @@ public class ApartmentService {
 
     public ApartmentDto createApartment(CreateApartmentRequest request) {
         Apartment apartment = apartmentMapper.mapToApartment(request);
-
-        // amenities
         if (request.getAmenityIds() != null && !request.getAmenityIds().isEmpty()) {
             List<Amenity> amenities = amenityRepository.findAllById(request.getAmenityIds());
             apartment.setAmenities(amenities);
@@ -65,28 +68,11 @@ public class ApartmentService {
     public ApartmentDto updateApartment(Long id, UpdateApartmentRequest request) {
         Apartment apartment = apartmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Apartment not found with id: " + id));
-
-        // Update fields
-        apartment.setName(request.getName());
-        apartment.setDescription(request.getDescription());
-        apartment.setAddress(request.getAddress());
-        apartment.setCity(request.getCity());
-        apartment.setFloor(request.getFloor());
-        apartment.setBedrooms(request.getBedrooms());
-        apartment.setBathrooms(request.getBathrooms());
-        apartment.setMaxGuests(request.getMaxGuests());
-        apartment.setSizeM2(request.getSizeM2());
-        apartment.setBasePrice(request.getBasePrice());
-        if (request.getStatus() != null) {
-            apartment.setStatus(request.getStatus());
-        }
-
-        // Update amenities
+        apartmentMapper.updateApartmentFromRequest(apartment, request);
         if (request.getAmenityIds() != null) {
             List<Amenity> amenities = amenityRepository.findAllById(request.getAmenityIds());
             apartment.setAmenities(amenities);
         }
-
         Apartment savedApartment = apartmentRepository.save(apartment);
         return mapToDto(savedApartment);
     }
@@ -105,43 +91,44 @@ public class ApartmentService {
                 .collect(Collectors.toList());
     }
 
+    // NEW METHOD: Upload images to Cloudinary
+    public List<ApartmentImageDto> saveApartmentImages(Long apartmentId, MultipartFile[] files, int featuredIndex) {
+        if (!apartmentRepository.existsById(apartmentId)) {
+            throw new RuntimeException("Apartment not found with id: " + apartmentId);
+        }
+        List<ApartmentImageDto> savedImages = new ArrayList<>();
+        for (int i = 0; i < files.length; i++) {
+            MultipartFile file = files[i];
+            if (!isValidImageFile(file)) {
+                throw new RuntimeException("Invalid file format: " + file.getOriginalFilename());
+            }
+            try {
+                String imageUrl = cloudinaryService.uploadImage(file, apartmentId, i);
+                ApartmentImage apartmentImage = new ApartmentImage();
+                apartmentImage.setApartmentId(apartmentId);
+                apartmentImage.setUrl(imageUrl); // Store full Cloudinary URL
+                apartmentImage.setIsFeatured(i == featuredIndex);
+                ApartmentImage saved = apartmentImageRepository.save(apartmentImage);
+                savedImages.add(apartmentMapper.mapImageToDto(saved));
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload image: " + file.getOriginalFilename(), e);
+            }
+        }
+        return savedImages;
+    }
+    private boolean isValidImageFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        return contentType.equals("image/jpeg") || contentType.equals("image/png") || contentType.equals("image/webp");
+    }
+
+    public List<ApartmentImageDto> getApartmentImages(Long apartmentId) {
+        List<ApartmentImage> images = apartmentImageRepository.findByApartmentId(apartmentId);
+        return images.stream().map(apartmentMapper::mapImageToDto).collect(Collectors.toList());
+    }
+
     private ApartmentDto mapToDto(Apartment apartment) {
         List<ApartmentImage> images = apartmentImageRepository.findByApartmentId(apartment.getId());
-
-        ApartmentDto dto = new ApartmentDto();
-        dto.setId(apartment.getId());
-        dto.setOwnerId(apartment.getOwnerId());
-        dto.setName(apartment.getName());
-        dto.setDescription(apartment.getDescription());
-        dto.setAddress(apartment.getAddress());
-        dto.setCity(apartment.getCity());
-        dto.setFloor(apartment.getFloor());
-        dto.setBedrooms(apartment.getBedrooms());
-        dto.setBathrooms(apartment.getBathrooms());
-        dto.setMaxGuests(apartment.getMaxGuests());
-        dto.setSizeM2(apartment.getSizeM2());
-        dto.setBasePrice(apartment.getBasePrice());
-        dto.setStatus(apartment.getStatus());
-        dto.setCreatedAt(apartment.getCreatedAt());
-        dto.setImages(images.stream().map(this::mapImageToDto).collect(Collectors.toList()));
-        dto.setAmenities(apartment.getAmenities().stream().map(this::mapAmenityToDto).collect(Collectors.toList()));
-
-        return dto;
+        return apartmentMapper.mapToDto(apartment, images);
     }
 
-    private ApartmentImageDto mapImageToDto(ApartmentImage image) {
-        ApartmentImageDto dto = new ApartmentImageDto();
-        dto.setId(image.getId());
-        dto.setApartmentId(image.getApartmentId());
-        dto.setUrl(image.getUrl());
-        dto.setIsFeatured(image.getFeatured());
-        return dto;
-    }
-
-    private AmenityDto mapAmenityToDto(Amenity amenity) {
-        AmenityDto dto = new AmenityDto();
-        dto.setId(amenity.getId());
-        dto.setName(amenity.getName());
-        return dto;
-    }
 }

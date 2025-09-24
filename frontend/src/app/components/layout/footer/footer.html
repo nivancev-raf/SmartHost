@@ -1,1 +1,75 @@
-<p>footer works!</p>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <!-- Company Info Section -->
+      <div class="footer-section">
+        <div class="footer-logo">
+          <img src="images/logo-light-removebg.png" alt="SmartHost Logo" class="logo">
+          <h3>SmartHost</h3>
+        </div>
+        <p class="footer-description">
+          Your trusted partner for finding the perfect apartment. 
+          Discover comfortable stays in prime locations across Serbia.
+        </p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Facebook">
+            <mat-icon>facebook</mat-icon>
+          </a>
+          <a href="#" class="social-link" aria-label="Twitter">
+            <mat-icon>alternate_email</mat-icon>
+          </a>
+          <a href="#" class="social-link" aria-label="Instagram">
+            <mat-icon>camera_alt</mat-icon>
+          </a>
+          <a href="#" class="social-link" aria-label="LinkedIn">
+            <mat-icon>business</mat-icon>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Links Section -->
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/">Home</a></li>
+          <li><a routerLink="/apartments">Apartments</a></li>
+          <li><a routerLink="/about">About Us</a></li>
+          <li><a routerLink="/contact">Contact</a></li>
+          <li><a routerLink="/reviews">Reviews</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info Section -->
+      <div class="footer-section">
+        <h4>Contact Info</h4>
+        <div class="contact-info">
+          <div class="contact-item">
+            <mat-icon>location_on</mat-icon>
+            <span>Belgrade, Serbia</span>
+          </div>
+          <div class="contact-item">
+            <mat-icon>phone</mat-icon>
+            <span>+381 11 123 4567</span>
+          </div>
+          <div class="contact-item">
+            <mat-icon>email</mat-icon>
+            <span>info@smarthost.rs</span>
+          </div>
+          <div class="contact-item">
+            <mat-icon>schedule</mat-icon>
+            <span>24/7 Available</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-content">
+        <p class="copyright">
+          &copy; {{ currentYear }} SmartHost. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

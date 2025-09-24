@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
+import { ViewportScroller } from '@angular/common';
 import { HeroSectionComponent } from '../../layout/hero-section/hero-section';
 import { ApartmentCardComponent } from '../../shared/apartment-card/apartment-card';
 import { ApartmentCardData, Apartment, AmenityDto } from '../../../models/apartment';
@@ -26,7 +27,8 @@ export class Home implements OnInit {
   constructor(
     private apartmentService: ApartmentService,
     private dialogService: DialogService,
-    private router: Router
+    private router: Router,
+    private viewportScroller: ViewportScroller
   ) {}
 
   ngOnInit(): void {
@@ -68,7 +70,10 @@ export class Home implements OnInit {
 
   // Navigate to full apartments catalog
   onViewAllApartments(): void {
-    this.router.navigate(['/apartments']);
+    this.router.navigate(['/apartments']).then(() => {
+      // Scroll to top after navigation
+      this.viewportScroller.scrollToPosition([0, 0]);
+    });
   }
 
   // Handle search from hero section
@@ -81,6 +86,9 @@ export class Home implements OnInit {
         guests: searchData.guests,
         location: searchData.location
       }
+    }).then(() => {
+      // Scroll to top after navigation
+      this.viewportScroller.scrollToPosition([0, 0]);
     });
   }
 

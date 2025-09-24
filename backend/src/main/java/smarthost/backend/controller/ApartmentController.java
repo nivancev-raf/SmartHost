@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import smarthost.backend.dto.ApartmentDto;
 import smarthost.backend.dto.ApartmentImageDto;
+import smarthost.backend.model.ApartmentImage;
 import smarthost.backend.requests.CreateApartmentRequest;
 import smarthost.backend.model.Apartment;
 import smarthost.backend.requests.UpdateApartmentRequest;
 import smarthost.backend.services.ApartmentService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/apartments")
@@ -81,5 +83,41 @@ public class ApartmentController {
             return ResponseEntity.status(500).body(null);
         }
     }
+
+//    public List<ApartmentImageDto> getApartmentImages(Long apartmentId) {
+//        List<ApartmentImage> images = apartmentImageRepository.findByApartmentId(apartmentId);
+//        return images.stream().map(apartmentMapper::mapImageToDto).collect(Collectors.toList());
+//    }
+
+    @GetMapping("/{apartmentId}/images")
+    public ResponseEntity<List<ApartmentImageDto>> getApartmentImages(@PathVariable Long apartmentId) {
+        List<ApartmentImageDto> images = apartmentService.getApartmentImages(apartmentId);
+        return ResponseEntity.ok(images);
+    }
+
+    // delete apartment by id image by id
+    @DeleteMapping("/images/{imageId}")
+    public ResponseEntity<Void> deleteApartmentImage(@PathVariable Long imageId) {
+        try {
+            apartmentService.deleteApartmentImage(imageId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    // setFeautered image
+    @PutMapping("/{apartmentId}/images/{imageId}/featured")
+    public ResponseEntity<Void> setFeaturedImage(
+            @PathVariable Long apartmentId,
+            @PathVariable Long imageId) {
+        try {
+            apartmentService.setFeaturedImage(apartmentId, imageId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
 
 }

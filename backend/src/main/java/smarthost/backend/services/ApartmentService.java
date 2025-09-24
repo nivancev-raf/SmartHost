@@ -91,7 +91,6 @@ public class ApartmentService {
                 .collect(Collectors.toList());
     }
 
-    // NEW METHOD: Upload images to Cloudinary
     public List<ApartmentImageDto> saveApartmentImages(Long apartmentId, MultipartFile[] files, int featuredIndex) {
         if (!apartmentRepository.existsById(apartmentId)) {
             throw new RuntimeException("Apartment not found with id: " + apartmentId);
@@ -129,6 +128,37 @@ public class ApartmentService {
     private ApartmentDto mapToDto(Apartment apartment) {
         List<ApartmentImage> images = apartmentImageRepository.findByApartmentId(apartment.getId());
         return apartmentMapper.mapToDto(apartment, images);
+    }
+
+    public void deleteApartmentImage(Long imageId) {
+        ApartmentImage image = apartmentImageRepository.findById(imageId)
+                .orElseThrow(() -> new RuntimeException("Apartment image not found with id: " + imageId));
+        // Extract public ID from URL
+        String url = image.getUrl();
+        String publicId = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf("."));
+        try {
+            cloudinaryService.deleteImage("smarthost/apartments/" + image.getApartmentId() + "/" + publicId);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to delete image from Cloudinary: " + publicId, e);
+        }
+        apartmentImageRepository.deleteById(imageId);
+    }
+
+    public void setFeaturedImage(Long apartmentId, Long imageId) {
+        List<ApartmentImage> images = apartmentImageRepository.findByApartmentId(apartmentId);
+        images.stream()
+                .filter(ApartmentImage::getIsFeatured)
+                .forEach(image -> {
+                    image.setIsFeatured(false);
+                    apartmentImageRepository.save(image);
+                });
+        ApartmentImage newFeaturedImage = images.stream()
+                .filter(image -> image.getId().equals(imageId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Image not found with id: " + imageId));
+
+        newFeaturedImage.setIsFeatured(true);
+        apartmentImageRepository.save(newFeaturedImage);
     }
 
 }

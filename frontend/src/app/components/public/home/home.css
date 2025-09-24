@@ -59,10 +59,27 @@
 
 .apartments-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  max-width: 1200px; /* Limit total width */
   gap: 24px;
   margin-bottom: 60px;
-  justify-items: center;
+  justify-content: center;
+}
+
+/* Ensure max 3 cards per row */
+@media (min-width: 1200px) {
+  .apartments-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 1200px;
+  }
+}
+
+/* 2 cards per row on medium screens */
+@media (max-width: 1199px) and (min-width: 769px) {
+  .apartments-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+  }
 }
 
 .view-more-section {
@@ -111,9 +128,10 @@
   }
 
   .apartments-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Single column on mobile */
     gap: 20px;
     margin-bottom: 40px;
+    justify-items: center; /* Center single column items */
   }
 }
 

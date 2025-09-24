@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,7 +13,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApartmentCardWideComponent } from '../../shared/apartment-card-wide/apartment-card-wide';
-import { Apartment, ApartmentCardData, ApartmentStatus, AmenityDto } from '../../../models/apartment';
+import { Apartment, ApartmentCardData, AmenityDto } from '../../../models/apartment';
 import { ApartmentService } from '../../../services/apartment.service';
 import { DialogService } from '../../../services/dialog.service';
 
@@ -50,126 +50,13 @@ export class Apartments implements OnInit, OnDestroy {
   amenities: AmenityDto[] = [];
   priceRange = { min: 30, max: 150 };
 
-  // Mock data - in real app this would come from API
-  private mockApartments: Apartment[] = [
-    {
-      id: 1,
-      ownerId: 1,
-      name: 'Aqua View Studio',
-      description: 'Modern studio with beautiful city views and all amenities included.',
-      address: 'Knez Mihailova 12',
-      city: 'Belgrade',
-      floor: 3,
-      bedrooms: 1,
-      bathrooms: 1,
-      maxGuests: 2,
-      sizeM2: 45,
-      basePrice: 55,
-      status: ApartmentStatus.AVAILABLE,
-      createdAt: new Date().toISOString(),
-      amenities: [
-        { id: 1, name: 'Wi-Fi' },
-        { id: 2, name: 'Air Conditioning' },
-        { id: 3, name: 'Kitchen' },
-        { id: 6, name: 'TV' },
-        { id: 4, name: 'Parking' }
-      ],
-      rating: 4.8,
-      currency: '€',
-      images: [
-        {
-          id: 1,
-          apartmentId: 1,
-          url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-          featured: true,
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: 2,
-          apartmentId: 1,
-          url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-          featured: false,
-          createdAt: new Date().toISOString()
-        }
-      ]
-    },
-    {
-      id: 2,
-      ownerId: 1,
-      name: 'Luxury Downtown Apartment',
-      description: 'Spacious 2-bedroom apartment in the heart of Belgrade with premium amenities.',
-      address: 'Terazije 25',
-      city: 'Belgrade',
-      floor: 5,
-      bedrooms: 2,
-      bathrooms: 2,
-      maxGuests: 4,
-      sizeM2: 80,
-      basePrice: 95,
-      status: ApartmentStatus.AVAILABLE,
-      createdAt: new Date().toISOString(),
-      amenities: [
-        { id: 1, name: 'Wi-Fi' },
-        { id: 2, name: 'Air Conditioning' },
-        { id: 3, name: 'Kitchen' },
-        { id: 5, name: 'Balcony' },
-        { id: 6, name: 'TV' },
-        { id: 7, name: 'Washing Machine' },
-        { id: 8, name: 'City View' }
-      ],
-      rating: 4.9,
-      currency: '€',
-      images: [
-        {
-          id: 3,
-          apartmentId: 2,
-          url: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
-          featured: true,
-          createdAt: new Date().toISOString()
-        }
-      ]
-    },
-    {
-      id: 3,
-      ownerId: 2,
-      name: 'Cozy Garden Studio',
-      description: 'Charming studio apartment with private terrace and garden access.',
-      address: 'Skadarska 15',
-      city: 'Belgrade',
-      floor: 1,
-      bedrooms: 1,
-      bathrooms: 1,
-      maxGuests: 2,
-      sizeM2: 35,
-      basePrice: 45,
-      status: ApartmentStatus.AVAILABLE,
-      createdAt: new Date().toISOString(),
-      amenities: [
-        { id: 1, name: 'Wi-Fi' },
-        { id: 3, name: 'Kitchen' },
-        { id: 6, name: 'TV' },
-        { id: 9, name: 'Terrace' }
-      ],
-      rating: 4.6,
-      currency: '€',
-      images: [
-        {
-          id: 4,
-          apartmentId: 3,
-          url: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
-          featured: true,
-          createdAt: new Date().toISOString()
-        }
-      ]
-    }
-  ];
-
   constructor(
     private apartmentService: ApartmentService,
     private dialogService: DialogService,
     private route: ActivatedRoute,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
   ) {
     // Form will be initialized in ngOnInit
   }
@@ -251,22 +138,37 @@ export class Apartments implements OnInit, OnDestroy {
   }
 
   private loadApartments(): void {
-    console.log('Starting to load apartments...'); // Debug log
     this.isLoading = true;
     
-    // Use mock data immediately - no need for setTimeout with mock data
-    console.log('Loading apartments...', this.mockApartments.length); // Debug log
-    this.allApartments = this.mockApartments;
-    this.filteredApartments = [...this.mockApartments];
-    this.totalApartments = this.mockApartments.length;
-    this.apartments = this.mockApartments.map(apt => 
-      this.apartmentService.transformToCardData(apt)
+    this.subscriptions.add(
+      this.apartmentService.getAllApartments().subscribe({
+        next: (apartments) => {
+          this.allApartments = apartments.filter(apt => apt.status === 'AVAILABLE');
+          this.filteredApartments = [...this.allApartments];
+          this.totalApartments = this.allApartments.length;
+          this.apartments = this.allApartments.map(apt => 
+            this.apartmentService.transformToCardData(apt)
+          );
+          this.isLoading = false;
+          this.cdr.detectChanges();
+          this.applyFilters();
+        },
+        error: (error) => {
+          console.error('Error loading apartments from API:', error);
+          console.error('Full error object:', error);
+          // Fallback - show empty array if API fails
+          this.allApartments = [];
+          this.filteredApartments = [];
+          this.totalApartments = 0;
+          this.apartments = [];
+          this.isLoading = false;
+          console.log('Error occurred, setting isLoading to false'); // Debug log
+          
+          // Force change detection
+          this.cdr.detectChanges();
+        }
+      })
     );
-    this.isLoading = false;
-    console.log('Apartments loaded immediately:', this.apartments.length); // Debug log
-    
-    // Apply any existing filters after loading
-    this.applyFilters();
   }
 
   private applyFilters(): void {

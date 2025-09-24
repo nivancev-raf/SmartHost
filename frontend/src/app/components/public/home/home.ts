@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { HeroSectionComponent } from '../../layout/hero-section/hero-section';
 import { ApartmentCardComponent } from '../../shared/apartment-card/apartment-card';
-import { ApartmentCardData, Apartment, ApartmentStatus, AmenityDto } from '../../../models/apartment';
+import { ApartmentCardData, Apartment, AmenityDto } from '../../../models/apartment';
 import { ApartmentService } from '../../../services/apartment.service';
 import { DialogService } from '../../../services/dialog.service';
 
@@ -21,8 +21,7 @@ import { DialogService } from '../../../services/dialog.service';
 })
 export class Home implements OnInit {
   apartments: ApartmentCardData[] = [];
-  featuredApartments: ApartmentCardData[] = []; // Show only featured ones on home
-  private mockFullApartments: Apartment[] = []; // Store full data for dialog
+  private allApartments: Apartment[] = []; // Store full data for dialog
 
   constructor(
     private apartmentService: ApartmentService,
@@ -31,210 +30,31 @@ export class Home implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Load featured apartments for home page (first 6)
-    this.mockFullApartments = this.getMockFullApartments();
-    this.apartments = this.mockFullApartments
-      .slice(0, 6) // Show only first 6 on home page
-      .map(apt => this.apartmentService.transformToCardData(apt));
+    this.loadFeaturedApartments();
   }
 
-  private loadApartments(): void {
-    this.apartmentService.getApartments().subscribe({
+  private loadFeaturedApartments(): void {
+    this.apartmentService.getAllApartments().subscribe({
       next: (apartments) => {
-        this.apartments = apartments.slice(0, 6); // Show only featured
+        // Store all apartments for dialog details
+        this.allApartments = apartments.filter(apt => apt.status === 'AVAILABLE');
+        // Show only first 6 for featured display on home page
+        this.apartments = this.allApartments
+          .slice(0, 6)
+          .map(apt => this.apartmentService.transformToCardData(apt));
       },
       error: (error) => {
         console.error('Error loading apartments:', error);
-        // Fallback to mock data
-        this.apartments = this.getMockApartments().slice(0, 6);
+        // Fallback - show empty array if API fails
+        this.apartments = [];
+        this.allApartments = [];
       }
     });
   }
 
-  private getMockFullApartments(): Apartment[] {
-    return [
-      {
-        id: 1,
-        ownerId: 1,
-        name: 'Aqua View Studio',
-        description: 'Modern studio with beautiful city views and premium amenities. Perfect for couples or solo travelers.',
-        address: 'Knez Mihailova 12',
-        city: 'Belgrade',
-        floor: 3,
-        bedrooms: 1,
-        bathrooms: 1,
-        maxGuests: 2,
-        sizeM2: 45,
-        basePrice: 55,
-        status: ApartmentStatus.AVAILABLE,
-        createdAt: new Date().toISOString(),
-        amenities: [
-          { id: 1, name: 'Wi-Fi' },
-          { id: 2, name: 'Air Conditioning' },
-          { id: 3, name: 'Kitchen' },
-          { id: 6, name: 'TV' },
-          { id: 5, name: 'Balcony' }
-        ],
-        rating: 4.8,
-        currency: '€',
-        images: [
-          {
-            id: 1,
-            apartmentId: 1,
-            url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-            featured: true,
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: 2,
-            apartmentId: 1,
-            url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-            featured: false,
-            createdAt: new Date().toISOString()
-          }
-        ]
-      },
-      {
-        id: 2,
-        ownerId: 1,
-        name: 'Urban Loft Dorcol',
-        description: 'Stylish loft in the heart of Dorcol with exposed brick walls and modern furnishings.',
-        address: 'Cara Dusana 45',
-        city: 'Belgrade',
-        floor: 2,
-        bedrooms: 2,
-        bathrooms: 1,
-        maxGuests: 3,
-        sizeM2: 62,
-        basePrice: 72,
-        status: ApartmentStatus.AVAILABLE,
-        createdAt: new Date().toISOString(),
-        amenities: [
-          { id: 1, name: 'Wi-Fi' },
-          { id: 5, name: 'Balcony' },
-          { id: 7, name: 'Washing Machine' },
-          { id: 6, name: 'TV' }
-        ],
-        rating: 4.9,
-        currency: '€',
-        images: [
-          {
-            id: 3,
-            apartmentId: 2,
-            url: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&h=600&fit=crop',
-            featured: true,
-            createdAt: new Date().toISOString()
-          }
-        ]
-      },
-      // Add more apartments as needed...
-    ];
-  }
-
-  private getMockApartments(): ApartmentCardData[] {
-    return [
-      {
-        id: 1,
-        name: 'Aqua View Studio',
-        location: 'Belgrade',
-        rating: 4.8,
-        guests: 2,
-        price: 55,
-        currency: '€',
-        imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop',
-        amenities: [
-          { id: 1, name: 'Wi-Fi' },
-          { id: 2, name: 'Air Conditioning' },
-          { id: 3, name: 'Kitchen' }
-        ],
-        description: 'Modern studio with beautiful city views'
-      },
-      {
-        id: 2,
-        name: 'Urban Loft Dorcol',
-        location: 'Belgrade',
-        rating: 4.9,
-        guests: 3,
-        price: 72,
-        currency: '€',
-        imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=250&fit=crop',
-        amenities: [
-          { id: 1, name: 'Wi-Fi' },
-          { id: 5, name: 'Balcony' },
-          { id: 7, name: 'Washing Machine' }
-        ],
-        description: 'Stylish loft in the heart of Dorcol'
-      },
-      {
-        id: 3,
-        name: 'Kalemegdan Terrace',
-        location: 'Belgrade',
-        rating: 4.7,
-        guests: 4,
-        price: 95,
-        currency: '€',
-        imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=250&fit=crop',
-        amenities: [
-          { id: 1, name: 'Wi-Fi' },
-          { id: 4, name: 'Parking' },
-          { id: 8, name: 'City View' }
-        ],
-        description: 'Beautiful apartment with terrace and park view'
-      },
-      {
-        id: 4,
-        name: 'Zen Garden Suite',
-        location: 'Belgrade',
-        rating: 4.6,
-        guests: 2,
-        price: 68,
-        currency: '€',
-        imageUrl: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=400&h=250&fit=crop',
-        amenities: [
-          { id: 1, name: 'Wi-Fi' },
-          { id: 5, name: 'Balcony' },
-          { id: 2, name: 'Air Conditioning' }
-        ],
-        description: 'Peaceful suite with garden access'
-      },
-      {
-        id: 5,
-        name: 'City Center Loft',
-        location: 'Belgrade',
-        rating: 4.8,
-        guests: 4,
-        price: 85,
-        currency: '€',
-        imageUrl: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=250&fit=crop',
-        amenities: [
-          { id: 1, name: 'Wi-Fi' },
-          { id: 4, name: 'Parking' },
-          { id: 3, name: 'Kitchen' }
-        ],
-        description: 'Modern loft in the city center'
-      },
-      {
-        id: 6,
-        name: 'Riverside Apartment',
-        location: 'Belgrade',
-        rating: 4.9,
-        guests: 3,
-        price: 78,
-        currency: '€',
-        imageUrl: 'https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?w=400&h=250&fit=crop',
-        amenities: [
-          { id: 1, name: 'Wi-Fi' },
-          { id: 8, name: 'City View' },
-          { id: 9, name: 'Terrace' }
-        ],
-        description: 'Stunning apartment with river views'
-      }
-    ];
-  }
-
   onViewApartment(apartment: ApartmentCardData): void {
     // Find the full apartment data for the dialog
-    const fullApartment = this.mockFullApartments.find(apt => apt.id === apartment.id);
+    const fullApartment = this.allApartments.find(apt => apt.id === apartment.id);
     if (fullApartment) {
       const dialogRef = this.dialogService.openApartmentDetailsDialog(fullApartment, false);
       

@@ -163,8 +163,29 @@ export class Apartments implements OnInit, OnDestroy {
   }
 
   onEditApartment(apartment: ApartmentCardData): void {
-    console.log('Edit apartment:', apartment);
-    // Open edit dialog or navigate to edit page
+    // Find the full apartment data for the edit dialog
+    const fullApartment = this.allApartments.find(apt => apt.id === apartment.id);
+    if (fullApartment) {
+      const dialogRef = this.dialogService.openApartmentEditDialog(fullApartment);
+      
+      dialogRef.afterClosed().subscribe(result => {
+        if (result?.success) {
+          console.log('Apartment updated:', result.apartment);
+          this.snackBar.open('Apartment updated successfully', 'Close', { 
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+          // Refresh the apartments list to show updated data
+          this.loadApartments();
+        }
+      });
+    } else {
+      console.error('Could not find full apartment data for editing');
+      this.snackBar.open('Unable to edit apartment. Please refresh and try again.', 'Close', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+    }
   }
 
   onDeleteApartment(apartment: ApartmentCardData): void {

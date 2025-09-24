@@ -162,39 +162,8 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
-  async getCurrentUser(): Promise<User | null> {
-    if (!this.tokenExists()) {
-      return null;
-    }
-
-    try {
-      const headers = {
-        'Authorization': `Bearer ${this.getToken()}`
-      };
-
-      const response = await this.http.get<User>(
-        `${this.API_URL}/auth/current-user`,
-        { headers }
-      ).toPromise();
-
-      if (response && response.id) {
-        this.currentUserId = response.id;
-        this.currentUserSubject.next(response);
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem('userData', JSON.stringify(response));
-        }
-      }
-
-      return response || null;
-    } catch (error) {
-      console.error('Error fetching current user:', error);
-      this.logout(); // Token might be invalid
-      return null;
-    }
-  }
 
   private async loadCurrentUser(): Promise<void> {
-    // Try to load from localStorage first (only on client side)
     if (isPlatformBrowser(this.platformId)) {
       const savedUserData = localStorage.getItem('userData');
       if (savedUserData) {
@@ -207,12 +176,7 @@ export class AuthService {
         }
       }
     }
-
-    // Then fetch fresh data from server
-    await this.getCurrentUser();
   }
-
-  // Role checking methods
 
   isAdmin(): boolean {
     return this.getUserRole() === 'ADMIN';

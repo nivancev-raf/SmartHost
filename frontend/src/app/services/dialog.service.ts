@@ -4,6 +4,7 @@ import { LoginDialogComponent } from '../components/auth/login-dialog/login-dial
 import { RegisterDialogComponent } from '../components/auth/register-dialog/register-dialog';
 import { ApartmentDetailsDialog, ApartmentDetailsDialogData } from '../components/shared/apartment-details-dialog/apartment-details-dialog';
 import { ApartmentCreateDialogComponent } from '../components/shared/apartment-create-dialog/apartment-create-dialog';
+import { ApartmentEditDialogComponent, ApartmentEditDialogData } from '../components/shared/apartment-edit-dialog/apartment-edit-dialog';
 import { ConfirmationDialogComponent, ConfirmationDialogData } from '../components/shared/confirmation-dialog/confirmation-dialog';
 import { Apartment } from '../models/apartment';
 
@@ -79,6 +80,20 @@ export class DialogService {
       autoFocus: true,
       restoreFocus: true,
       data: { ownerId }
+    });
+
+    return dialogRef;
+  }
+
+  openApartmentEditDialog(apartment: Apartment) {
+    const dialogRef = this.dialog.open(ApartmentEditDialogComponent, {
+      width: '800px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      disableClose: false,
+      autoFocus: true,
+      restoreFocus: true,
+      data: { apartment } as ApartmentEditDialogData
     });
 
     return dialogRef;

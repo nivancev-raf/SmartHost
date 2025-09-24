@@ -7,7 +7,8 @@ import {
   ApartmentStatus, 
   CreateApartmentRequest, 
   UpdateApartmentRequest,
-  AmenityDto 
+  AmenityDto,
+  ApartmentImage 
 } from '../models/apartment';
 
 @Injectable({
@@ -128,10 +129,19 @@ export class ApartmentService {
     return placeholders[Math.floor(Math.random() * placeholders.length)];
   }
 
-  // Image upload methods
   uploadApartmentImages(apartmentId: number, formData: FormData): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post(`${this.API_URL}/apartments/${apartmentId}/images`, formData, { headers });
+  }
+
+  deleteApartmentImage(imageId: number): Observable<void> {
+    const headers = this.getAuthHeaders();
+    return this.http.delete<void>(`${this.API_URL}/apartments/images/${imageId}`, { headers });
+  }
+
+  setFeaturedImage(apartmentId: number, imageId: number): Observable<void> {
+    const headers = this.getAuthHeaders();
+    return this.http.put<void>(`${this.API_URL}/apartments/${apartmentId}/images/${imageId}/featured`, {}, { headers });
   }
 
   // Availability check method

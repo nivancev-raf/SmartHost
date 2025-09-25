@@ -45,6 +45,9 @@ export class Apartments implements OnInit, OnDestroy {
   filterForm!: FormGroup;
   private subscriptions = new Subscription();
 
+  // Hero image for the apartments page
+  heroImage = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1920&h=1080&fit=crop&crop=center';
+
   // Filter options
   cities = ['Belgrade', 'Novi Sad', 'Nis'];
   amenities: AmenityDto[] = [];

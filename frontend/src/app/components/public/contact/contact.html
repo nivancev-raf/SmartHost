@@ -1,1 +1,213 @@
-<p>contact works!</p>
+<!-- Contact Hero Section -->
+<section class="contact-hero">
+  <div class="hero-background">
+    <img [src]="heroImage" alt="Contact Us" class="hero-image">
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <div class="container">
+      <h1 class="hero-title">Contact Us</h1>
+      <p class="hero-subtitle">Get in touch with our team - we're here to help</p>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Content Section -->
+<section class="contact-content">
+  <div class="container">
+    <div class="contact-grid">
+      <!-- Contact Information (Left Side) -->
+      <div class="contact-info">
+        <h2>Get In Touch</h2>
+        <p class="contact-description">
+          Have questions about our apartments or need assistance with your booking? 
+          We're here to help you find the perfect accommodation for your stay.
+        </p>
+
+        <div class="contact-details">
+          <!-- Address -->
+          <div class="contact-item">
+            <div class="contact-icon">
+              <mat-icon>location_on</mat-icon>
+            </div>
+            <div class="contact-text">
+              <h4>Address</h4>
+              <p>Knez Mihailova 42<br>Belgrade, Serbia 11000</p>
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div class="contact-item">
+            <div class="contact-icon">
+              <mat-icon>phone</mat-icon>
+            </div>
+            <div class="contact-text">
+              <h4>Phone</h4>
+              <p>+381 11 123 4567<br>+381 60 123 4567</p>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="contact-item">
+            <div class="contact-icon">
+              <mat-icon>email</mat-icon>
+            </div>
+            <div class="contact-text">
+              <h4>Email</h4>
+              <p>info@smarthost.rs<br>booking@smarthost.rs</p>
+            </div>
+          </div>
+
+          <!-- Working Hours -->
+          <div class="contact-item">
+            <div class="contact-icon">
+              <mat-icon>schedule</mat-icon>
+            </div>
+            <div class="contact-text">
+              <h4>Working Hours</h4>
+              <p>Mon - Fri: 8:00 AM - 10:00 PM<br>Sat - Sun: 9:00 AM - 9:00 PM</p>
+            </div>
+          </div>
+
+          <!-- Emergency Contact -->
+          <div class="contact-item">
+            <div class="contact-icon">
+              <mat-icon>support_agent</mat-icon>
+            </div>
+            <div class="contact-text">
+              <h4>24/7 Support</h4>
+              <p>Emergency assistance available<br>+381 64 123 4567</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="social-section">
+          <h4>Follow Us</h4>
+          <div class="social-links">
+            <a href="#" class="social-link" aria-label="Facebook">
+              <mat-icon>facebook</mat-icon>
+            </a>
+            <a href="#" class="social-link" aria-label="Instagram">
+              <mat-icon>camera_alt</mat-icon>
+            </a>
+            <a href="#" class="social-link" aria-label="Twitter">
+              <mat-icon>alternate_email</mat-icon>
+            </a>
+            <a href="#" class="social-link" aria-label="LinkedIn">
+              <mat-icon>business</mat-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form (Right Side) -->
+      <div class="contact-form-section">
+        <mat-card class="contact-form-card">
+          <mat-card-header>
+            <mat-card-title>Send us a Message</mat-card-title>
+            <mat-card-subtitle>We'll get back to you within 24 hours</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
+              <!-- Name and Email Row -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Full Name</mat-label>
+                  <input matInput formControlName="name" placeholder="Your full name">
+                  <mat-error *ngIf="contactForm.get('name')?.hasError('required')">
+                    Name is required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Email Address</mat-label>
+                  <input matInput type="email" formControlName="email" placeholder="your@email.com">
+                  <mat-error *ngIf="contactForm.get('email')?.hasError('required')">
+                    Email is required
+                  </mat-error>
+                  <mat-error *ngIf="contactForm.get('email')?.hasError('email')">
+                    Please enter a valid email address
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Phone and Subject Row -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Phone Number</mat-label>
+                  <input matInput formControlName="phone" placeholder="+381 60 123 4567">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Subject</mat-label>
+                  <mat-select formControlName="subject">
+                    <mat-option value="booking">Booking Inquiry</mat-option>
+                    <mat-option value="support">Customer Support</mat-option>
+                    <mat-option value="partnership">Partnership</mat-option>
+                    <mat-option value="complaint">Complaint</mat-option>
+                    <mat-option value="other">Other</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="contactForm.get('subject')?.hasError('required')">
+                    Please select a subject
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Message -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Message</mat-label>
+                <textarea matInput 
+                         formControlName="message" 
+                         rows="6" 
+                         placeholder="Tell us how we can help you..."></textarea>
+                <mat-error *ngIf="contactForm.get('message')?.hasError('required')">
+                  Message is required
+                </mat-error>
+                <mat-error *ngIf="contactForm.get('message')?.hasError('minlength')">
+                  Message must be at least 10 characters long
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Privacy Agreement -->
+              <div class="privacy-section">
+                <mat-checkbox formControlName="privacy" color="primary">
+                  I agree to the <a href="#" target="_blank">Privacy Policy</a> and consent to my personal data being processed.
+                </mat-checkbox>
+                <mat-error *ngIf="contactForm.get('privacy')?.hasError('required') && contactForm.get('privacy')?.touched">
+                  You must agree to the privacy policy
+                </mat-error>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="submit-section">
+                <button mat-raised-button 
+                        type="submit" 
+                        color="primary" 
+                        class="submit-btn"
+                        [disabled]="contactForm.invalid || isSubmitting">
+                  <mat-icon *ngIf="!isSubmitting">send</mat-icon>
+                  <mat-progress-spinner 
+                    *ngIf="isSubmitting"
+                    diameter="20"
+                    mode="indeterminate"
+                    color="accent">
+                  </mat-progress-spinner>
+                  {{ isSubmitting ? 'Sending...' : 'Send Message' }}
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Success Message -->
+        <div *ngIf="showSuccessMessage" class="success-message">
+          <mat-icon>check_circle</mat-icon>
+          <h3>Message Sent Successfully!</h3>
+          <p>Thank you for contacting us. We'll get back to you within 24 hours.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -29,6 +29,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   currentUser: any = null;
   isScrolled = false;
   isAdminPage = false;
+  isTransparentPage = false;
 
   private subscriptions = new Subscription();
 
@@ -60,6 +61,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     // Check initial route
     this.checkIfAdminPage();
+    this.checkIfTransparentPage();
 
     // Subscribe to router events to detect route changes
     this.subscriptions.add(
@@ -67,12 +69,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
         filter(event => event instanceof NavigationEnd)
       ).subscribe(() => {
         this.checkIfAdminPage();
+        this.checkIfTransparentPage();
       })
     );
   }
 
   private checkIfAdminPage(): void {
     this.isAdminPage = this.router.url.startsWith('/admin') || this.router.url.startsWith('/apartments');
+  }
+
+  private checkIfTransparentPage(): void {
+    // Pages where header should be transparent initially
+    this.isTransparentPage = this.router.url === '/' || this.router.url === '/contact';
   }
 
   ngOnDestroy(): void {

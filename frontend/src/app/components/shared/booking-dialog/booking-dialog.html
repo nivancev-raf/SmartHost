@@ -1,0 +1,111 @@
+<div class="booking-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Book {{ apartment.name }}</h2>
+    <button mat-icon-button mat-dialog-close class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <!-- Apartment Info -->
+    <div class="apartment-info">
+      <div class="apartment-details">
+        <h3>{{ apartment.name }}</h3>
+        <p class="location">
+          <mat-icon>location_on</mat-icon>
+          {{ apartment.address }}, {{ apartment.city }}
+        </p>
+        <div class="apartment-features">
+          <span class="feature" *ngIf="apartment.maxGuests">
+            <mat-icon>group</mat-icon>
+            {{ apartment.maxGuests }} guests
+          </span>
+          <span class="feature" *ngIf="apartment.bedrooms">
+            <mat-icon>bed</mat-icon>
+            {{ apartment.bedrooms }} bedrooms
+          </span>
+          <span class="feature" *ngIf="apartment.bathrooms">
+            <mat-icon>bathtub</mat-icon>
+            {{ apartment.bathrooms }} bathrooms
+          </span>
+        </div>
+        <div class="price-info">
+          <span class="price">€{{ apartment.basePrice }}</span>
+          <span class="period">per night</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Form -->
+    <form [formGroup]="bookingForm" class="booking-form">
+      <div class="form-section">
+        <h4>Select your dates and guests</h4>
+        
+        <!-- Date Range -->
+        <div class="date-range">
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Check-in</mat-label>
+            <input matInput 
+                   [matDatepicker]="checkInPicker" 
+                   formControlName="checkIn"
+                   [min]="minDate"
+                   readonly>
+            <mat-datepicker-toggle matIconSuffix [for]="checkInPicker"></mat-datepicker-toggle>
+            <mat-datepicker #checkInPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Check-out</mat-label>
+            <input matInput 
+                   [matDatepicker]="checkOutPicker" 
+                   formControlName="checkOut"
+                   [min]="minCheckOutDate"
+                   readonly>
+            <mat-datepicker-toggle matIconSuffix [for]="checkOutPicker"></mat-datepicker-toggle>
+            <mat-datepicker #checkOutPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- Guests -->
+        <mat-form-field appearance="outline" class="guests-field">
+          <mat-label>Number of guests</mat-label>
+          <mat-select formControlName="guests">
+            <mat-option *ngFor="let guest of guestOptions" [value]="guest">
+              {{ guest }} {{ guest === 1 ? 'guest' : 'guests' }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Booking Summary -->
+      <div class="booking-summary" *ngIf="bookingForm.valid">
+        <h4>Booking Summary</h4>
+        <div class="summary-row">
+          <span>€{{ apartment.basePrice }} × {{ numberOfNights }} nights</span>
+          <span>€{{ totalPrice }}</span>
+        </div>
+        <div class="summary-row total">
+          <span><strong>Total</strong></span>
+          <span><strong>€{{ totalPrice }}</strong></span>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-button 
+            type="button" 
+            (click)="onCancel()"
+            class="cancel-button">
+      Cancel
+    </button>
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onCheckAvailability()"
+            [disabled]="!bookingForm.valid"
+            class="search-button">
+      <mat-icon>search</mat-icon>
+      Check Availability
+    </button>
+  </div>
+</div>

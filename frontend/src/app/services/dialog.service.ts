@@ -6,6 +6,8 @@ import { ApartmentDetailsDialog, ApartmentDetailsDialogData } from '../component
 import { ApartmentCreateDialogComponent } from '../components/shared/apartment-create-dialog/apartment-create-dialog';
 import { ApartmentEditDialogComponent, ApartmentEditDialogData } from '../components/shared/apartment-edit-dialog/apartment-edit-dialog';
 import { ConfirmationDialogComponent, ConfirmationDialogData } from '../components/shared/confirmation-dialog/confirmation-dialog';
+import { BookingDialogComponent, BookingDialogData } from '../components/shared/booking-dialog/booking-dialog';
+import { ReservationDialogComponent, ReservationDialogData } from '../components/shared/reservation-dialog/reservation-dialog';
 import { Apartment } from '../models/apartment';
 
 @Injectable({
@@ -107,6 +109,39 @@ export class DialogService {
       autoFocus: true,
       restoreFocus: true,
       data
+    });
+
+    return dialogRef;
+  }
+
+  openBookingDialog(apartment: Apartment) {
+    const dialogRef = this.dialog.open(BookingDialogComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      disableClose: false,
+      autoFocus: true,
+      restoreFocus: true,
+      data: { apartment } as BookingDialogData
+    });
+
+    return dialogRef;
+  }
+
+  openReservationDialog(apartment: Apartment, checkIn: string, checkOut: string, guests: number) {
+    const dialogRef = this.dialog.open(ReservationDialogComponent, {
+      width: '700px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      disableClose: false,
+      autoFocus: true,
+      restoreFocus: true,
+      data: { 
+        apartment, 
+        checkIn, 
+        checkOut, 
+        guests 
+      } as ReservationDialogData
     });
 
     return dialogRef;

@@ -1,4 +1,4 @@
-<app-hero-section (onSearch)="onSearchApartments($event)"></app-hero-section>
+<app-hero-section (searchSubmit)="onSearchApartments($event)"></app-hero-section>
 
 <main class="home-content">
   <section class="apartments-section">
@@ -15,12 +15,6 @@
           [showAdminActions]="false"
           (onView)="onViewApartment($event)">
         </app-apartment-card>
-      </div>
-      
-      <div class="view-more-section">
-        <button mat-raised-button color="primary" class="view-more-btn" (click)="onViewAllApartments()">
-          View All Apartments
-        </button>
       </div>
     </div>
   </section>

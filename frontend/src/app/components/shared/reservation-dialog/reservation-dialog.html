@@ -1,0 +1,121 @@
+<div class="reservation-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Complete Your Reservation</h2>
+    <button mat-icon-button mat-dialog-close class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <!-- Booking Summary -->
+    <div class="booking-summary">
+      <h3>Booking Details</h3>
+      <div class="apartment-info">
+        <h4>{{ apartment.name }}</h4>
+        <p class="location">
+          <mat-icon>location_on</mat-icon>
+          {{ apartment.address }}, {{ apartment.city }}
+        </p>
+      </div>
+      
+      <div class="booking-details">
+        <div class="detail-row">
+          <span class="label">Check-in:</span>
+          <span class="value">{{ checkInFormatted }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Check-out:</span>
+          <span class="value">{{ checkOutFormatted }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Guests:</span>
+          <span class="value">{{ guests }} {{ guests === 1 ? 'guest' : 'guests' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Nights:</span>
+          <span class="value">{{ numberOfNights }} {{ numberOfNights === 1 ? 'night' : 'nights' }}</span>
+        </div>
+        <div class="detail-row total">
+          <span class="label">Total:</span>
+          <span class="value">€{{ totalPrice }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Guest Information Form -->
+    <form [formGroup]="reservationForm" class="reservation-form">
+      <h3>Guest Information</h3>
+      
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" required>
+          <mat-error *ngIf="hasError('firstName')">
+            {{ getErrorMessage('firstName') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName" required>
+          <mat-error *ngIf="hasError('lastName')">
+            {{ getErrorMessage('lastName') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Email Address</mat-label>
+          <input matInput type="email" formControlName="email" required>
+          <mat-error *ngIf="hasError('email')">
+            {{ getErrorMessage('email') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Phone Number</mat-label>
+          <input matInput formControlName="phone" required>
+          <mat-error *ngIf="hasError('phone')">
+            {{ getErrorMessage('phone') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="form-field full-width">
+        <mat-label>Special Requests (Optional)</mat-label>
+        <textarea matInput 
+                  formControlName="specialRequests" 
+                  rows="3" 
+                  placeholder="Any special requests or notes..."></textarea>
+      </mat-form-field>
+
+      <!-- Terms and Conditions -->
+      <div class="terms-section">
+        <mat-checkbox formControlName="termsAccepted" required>
+          I agree to the <a href="#" target="_blank">Terms and Conditions</a> and <a href="#" target="_blank">Privacy Policy</a>
+        </mat-checkbox>
+        <mat-error *ngIf="hasError('termsAccepted')">
+          You must accept the terms and conditions to proceed
+        </mat-error>
+      </div>
+    </form>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-button 
+            type="button" 
+            (click)="onCancel()"
+            class="cancel-button">
+      Cancel
+    </button>
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onSubmitReservation()"
+            [disabled]="!reservationForm.valid"
+            class="reserve-button">
+      <mat-icon>calendar_month</mat-icon>
+      Complete Reservation
+    </button>
+  </div>
+</div>

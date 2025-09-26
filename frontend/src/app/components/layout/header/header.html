@@ -45,7 +45,6 @@
       
       <!-- Guest/Client Navigation -->
       <ng-container *ngIf="!authService.isAdmin()">
-        <a routerLink="/apartments" routerLinkActive="active" (click)="closeMobileMenu()">Apartments</a>
         <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">Contact</a>
         <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">About us</a>
         <a routerLink="/reviews" routerLinkActive="active" (click)="closeMobileMenu()">Reviews</a>

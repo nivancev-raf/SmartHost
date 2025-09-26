@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApartmentCardWideComponent } from '../../shared/apartment-card-wide/apartment-card-wide';
@@ -31,6 +32,7 @@ import { DialogService } from '../../../services/dialog.service';
     MatSliderModule,
     MatCheckboxModule,
     MatChipsModule,
+    MatDatepickerModule,
     ApartmentCardWideComponent
   ],
   templateUrl: './apartments.html',
@@ -43,10 +45,22 @@ export class Apartments implements OnInit, OnDestroy {
   totalApartments: number = 0;
   isLoading: boolean = true;
   filterForm!: FormGroup;
+  searchForm!: FormGroup;
   private subscriptions = new Subscription();
+
+  // Track if search form has changed
+  hasSearchFormChanged: boolean = false;
+  private originalSearchValues: any = {};
 
   // Hero image for the apartments page
   heroImage = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1920&h=1080&fit=crop&crop=center';
+
+  // Current search parameters
+  currentSearchParams: {
+    checkIn?: string;
+    checkOut?: string;
+    guests?: number;
+  } | null = null;
 
   // Filter options
   cities = ['Belgrade', 'Novi Sad', 'Nis'];
@@ -66,8 +80,9 @@ export class Apartments implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initializeFilterForm();
+    this.initializeSearchForm();
     this.loadAmenities();
-    this.loadApartments();
+    // Don't load apartments by default - only via search parameters
     this.handleQueryParams();
     this.setupFilterSubscription();
   }
@@ -81,23 +96,68 @@ export class Apartments implements OnInit, OnDestroy {
       location: [''],
       priceMin: [this.priceRange.min],
       priceMax: [this.priceRange.max],
-      guests: [''],
       amenities: [[]]
     });
+  }
+
+  private initializeSearchForm(): void {
+    this.searchForm = this.fb.group({
+      checkIn: [''],
+      checkOut: [''],
+      guests: ['']
+    });
+
+    // Subscribe to form changes to enable/disable search button
+    this.subscriptions.add(
+      this.searchForm.valueChanges.subscribe(() => {
+        this.checkSearchFormChanges();
+      })
+    );
+  }
+
+  private checkSearchFormChanges(): void {
+    const currentValues = this.searchForm.value;
+    this.hasSearchFormChanged = JSON.stringify(currentValues) !== JSON.stringify(this.originalSearchValues);
   }
 
   private handleQueryParams(): void {
     this.subscriptions.add(
       this.route.queryParams.subscribe(params => {
-        if (params['location']) {
-          this.filterForm.patchValue({ location: params['location'] });
-        }
-        if (params['guests']) {
-          this.filterForm.patchValue({ guests: params['guests'] });
-        }
-        // Only apply filters if apartments are already loaded
-        if (this.allApartments.length > 0) {
-          this.applyFilters();
+        // Store search parameters
+        const checkIn = params['checkIn'];
+        const checkOut = params['checkOut'];
+        const guests = params['guests'];
+        
+        if (checkIn && checkOut) {
+          // Store current search parameters for reservation
+          this.currentSearchParams = {
+            checkIn,
+            checkOut,
+            guests: guests ? parseInt(guests) : undefined
+          };
+          
+          // Populate search form with current values
+          const searchFormValues = {
+            checkIn: new Date(checkIn),
+            checkOut: new Date(checkOut),
+            guests: guests || '2'
+          };
+          this.searchForm.patchValue(searchFormValues); // patch values to avoid emitting event
+          
+          // Store original values to track changes
+          this.originalSearchValues = { ...searchFormValues };
+          this.hasSearchFormChanged = false;
+          
+          // Load available apartments for those dates
+          this.loadAvailableApartments(new Date(checkIn), new Date(checkOut), guests);
+          // Update form with the search parameters
+          this.filterForm.patchValue({ 
+            location: params['location'] || ''
+          });
+        } else {
+          // If no dates provided, redirect to home page (apartments should only be accessed via search)
+          this.router.navigate(['/']);
+          return;
         }
       })
     );
@@ -119,7 +179,6 @@ export class Apartments implements OnInit, OnDestroy {
       this.apartmentService.getAllAmenities().subscribe({
         next: (amenities) => {
           this.amenities = amenities;
-          console.log('Loaded amenities:', this.amenities);
         },
         error: (error) => {
           console.error('Error loading amenities:', error);
@@ -141,12 +200,27 @@ export class Apartments implements OnInit, OnDestroy {
   }
 
   private loadApartments(): void {
+    // This method is now only used as fallback - apartments should be accessed via search
+    console.warn('Apartments accessed without search parameters - redirecting to home');
+    this.router.navigate(['/']);
+  }
+
+  private loadAvailableApartments(checkIn: Date, checkOut: Date, guests?: number): void {
     this.isLoading = true;
     
     this.subscriptions.add(
-      this.apartmentService.getAllApartments().subscribe({
-        next: (apartments) => {
-          this.allApartments = apartments.filter(apt => apt.status === 'AVAILABLE');
+      this.apartmentService.getAvailableApartments(checkIn, checkOut, guests).subscribe({
+        next: (apartments: Apartment[]) => {
+          console.log('Loaded available apartments from API:', apartments.length);
+          // Filter by guest capacity if specified
+          let filteredApartments = apartments;
+          if (guests) {
+            filteredApartments = apartments.filter(apt => 
+              apt.maxGuests && apt.maxGuests >= guests
+            );
+          }
+          
+          this.allApartments = filteredApartments;
           this.filteredApartments = [...this.allApartments];
           this.totalApartments = this.allApartments.length;
           this.apartments = this.allApartments.map(apt => 
@@ -156,18 +230,14 @@ export class Apartments implements OnInit, OnDestroy {
           this.cdr.detectChanges();
           this.applyFilters();
         },
-        error: (error) => {
-          console.error('Error loading apartments from API:', error);
-          console.error('Full error object:', error);
+        error: (error: any) => {
+          console.error('Error loading available apartments from API:', error);
           // Fallback - show empty array if API fails
           this.allApartments = [];
           this.filteredApartments = [];
           this.totalApartments = 0;
           this.apartments = [];
           this.isLoading = false;
-          console.log('Error occurred, setting isLoading to false'); // Debug log
-          
-          // Force change detection
           this.cdr.detectChanges();
         }
       })
@@ -186,11 +256,6 @@ export class Apartments implements OnInit, OnDestroy {
       // Price filter (using basePrice from apartment model)
       if ((filters.priceMin && apartment.basePrice < filters.priceMin) ||
           (filters.priceMax && apartment.basePrice > filters.priceMax)) {
-        return false;
-      }
-
-      // Guests filter
-      if (filters.guests && apartment.maxGuests && apartment.maxGuests < filters.guests) {
         return false;
       }
 
@@ -220,7 +285,6 @@ export class Apartments implements OnInit, OnDestroy {
       location: '',
       priceMin: this.priceRange.min,
       priceMax: this.priceRange.max,
-      guests: '',
       amenities: []
     });
     this.router.navigate([], { relativeTo: this.route });
@@ -249,8 +313,18 @@ export class Apartments implements OnInit, OnDestroy {
   }
 
   private onBookApartmentFull(apartment: Apartment): void {
-    console.log('Book apartment:', apartment);
-    // TODO: Implement booking functionality
+    // Open reservation dialog with search parameters
+    if (this.currentSearchParams?.checkIn && this.currentSearchParams?.checkOut) {
+      this.dialogService.openReservationDialog(
+        apartment, 
+        this.currentSearchParams.checkIn, 
+        this.currentSearchParams.checkOut, 
+        this.currentSearchParams.guests || 1
+      );
+    } else {
+      // Fallback if no search params (shouldn't happen in normal flow)
+      console.error('No search parameters available for booking');
+    }
   }
 
   trackByApartmentId(index: number, apartment: ApartmentCardData): number {
@@ -259,5 +333,24 @@ export class Apartments implements OnInit, OnDestroy {
 
   formatPriceLabel = (value: number): string => {
     return `€${value}`;
+  }
+
+  onSearchApartments(): void {
+    const formValues = this.searchForm.value;
+    
+    if (formValues.checkIn && formValues.checkOut && formValues.guests) {
+      // Format dates for URL
+      const checkInDate = new Date(formValues.checkIn).toISOString().split('T')[0];
+      const checkOutDate = new Date(formValues.checkOut).toISOString().split('T')[0];
+      
+      // Navigate to apartments with new search parameters
+      this.router.navigate(['/apartments'], {
+        queryParams: {
+          checkIn: checkInDate,
+          checkOut: checkOutDate,
+          guests: formValues.guests
+        }
+      });
+    }
   }
 }

@@ -68,14 +68,6 @@ export class Home implements OnInit {
     }
   }
 
-  // Navigate to full apartments catalog
-  onViewAllApartments(): void {
-    this.router.navigate(['/apartments']).then(() => {
-      // Scroll to top after navigation
-      this.viewportScroller.scrollToPosition([0, 0]);
-    });
-  }
-
   // Handle search from hero section
   onSearchApartments(searchData: any): void {
     // Navigate to apartments page with search parameters
@@ -93,8 +85,7 @@ export class Home implements OnInit {
   }
 
   private onBookApartment(apartment: Apartment): void {
-    console.log('Book apartment:', apartment);
-    // TODO: Navigate to booking page or open booking dialog
-    // this.router.navigate(['/booking'], { queryParams: { apartmentId: apartment.id } });
+    // Open booking dialog for availability check
+    this.dialogService.openBookingDialog(apartment);
   }
 }

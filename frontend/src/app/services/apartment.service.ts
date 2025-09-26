@@ -155,6 +155,19 @@ export class ApartmentService {
     return this.http.get<boolean>(`${this.API_URL}/apartments/check-availability`, { params });
   }
 
+  getAvailableApartments(checkIn: Date, checkOut: Date, guests?: number): Observable<Apartment[]> {
+    const params: any = {
+      checkIn: checkIn.toISOString().split('T')[0],
+      checkOut: checkOut.toISOString().split('T')[0]
+    };
+    
+    if (guests) {
+      params.guests = guests.toString();
+    }
+    
+    return this.http.get<Apartment[]>(`${this.API_URL}/apartments/available`, { params });
+  }
+
   // Booking method
   createBooking(bookingData: any): Observable<any> {
     const headers = this.getAuthHeaders();

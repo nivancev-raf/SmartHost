@@ -6,17 +6,22 @@ import org.springframework.web.multipart.MultipartFile;
 import smarthost.backend.dto.AmenityDto;
 import smarthost.backend.dto.ApartmentDto;
 import smarthost.backend.dto.ApartmentImageDto;
+import smarthost.backend.enums.ReservationStatus;
 import smarthost.backend.mapper.ApartmentMapper;
 import smarthost.backend.model.Amenity;
 import smarthost.backend.model.ApartmentImage;
+import smarthost.backend.model.Reservation;
 import smarthost.backend.repository.AmenityRepository;
 import smarthost.backend.repository.ApartmentImageRepository;
+import smarthost.backend.repository.ReservationRepository;
 import smarthost.backend.requests.CreateApartmentRequest;
 import smarthost.backend.model.Apartment;
 import smarthost.backend.repository.ApartmentRepository;
 import smarthost.backend.requests.UpdateApartmentRequest;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.io.IOException;
@@ -27,6 +32,7 @@ public class ApartmentService {
     private final ApartmentRepository apartmentRepository;
     private final ApartmentImageRepository apartmentImageRepository;
     private final AmenityRepository amenityRepository;
+    private final ReservationRepository reservationRepository;
     private final ApartmentMapper apartmentMapper;
     private final CloudinaryService cloudinaryService;
 
@@ -34,10 +40,13 @@ public class ApartmentService {
     public ApartmentService(ApartmentRepository apartmentRepository,
                             ApartmentImageRepository apartmentImageRepository,
                             AmenityRepository amenityRepository,
-                            ApartmentMapper apartmentMapper, CloudinaryService cloudinaryService) {
+                            ReservationRepository reservationRepository,
+                            ApartmentMapper apartmentMapper, 
+                            CloudinaryService cloudinaryService) {
         this.apartmentRepository = apartmentRepository;
         this.apartmentImageRepository = apartmentImageRepository;
         this.amenityRepository = amenityRepository;
+        this.reservationRepository = reservationRepository;
         this.apartmentMapper = apartmentMapper;
         this.cloudinaryService = cloudinaryService;
     }
@@ -117,7 +126,10 @@ public class ApartmentService {
     }
     private boolean isValidImageFile(MultipartFile file) {
         String contentType = file.getContentType();
-        return contentType.equals("image/jpeg") || contentType.equals("image/png") || contentType.equals("image/webp");
+        return contentType != null && 
+               (contentType.equals("image/jpeg") || 
+                contentType.equals("image/png") || 
+                contentType.equals("image/webp"));
     }
 
     public List<ApartmentImageDto> getApartmentImages(Long apartmentId) {
@@ -159,6 +171,71 @@ public class ApartmentService {
 
         newFeaturedImage.setIsFeatured(true);
         apartmentImageRepository.save(newFeaturedImage);
+    }
+
+    /**
+     * Check if a specific apartment is available for the given date range
+     */
+    public boolean isApartmentAvailable(Long apartmentId, LocalDate checkIn, LocalDate checkOut) {
+        // Validate input dates
+        if (checkIn.isAfter(checkOut) || checkIn.isBefore(LocalDate.now())) {
+            return false;
+        }
+
+        // Check if apartment exists
+        if (!apartmentRepository.existsById(apartmentId)) {
+            throw new RuntimeException("Apartment not found with id: " + apartmentId);
+        }
+
+        // Define statuses that should block availability (confirmed and pending reservations)
+        List<ReservationStatus> blockingStatuses = Arrays.asList(
+                ReservationStatus.CONFIRMED, 
+                ReservationStatus.PENDING
+        );
+
+        // Find overlapping reservations
+        List<Reservation> overlappingReservations = reservationRepository.findOverlappingReservations(
+                apartmentId, checkIn, checkOut, blockingStatuses);
+
+        return overlappingReservations.isEmpty();
+    }
+
+    /**
+     * Get all apartments that are available for the given date range and can accommodate the number of guests
+     */
+    public List<ApartmentDto> getAvailableApartments(LocalDate checkIn, LocalDate checkOut, Integer guests) {
+        // Validate input dates
+        if (checkIn.isAfter(checkOut) || checkIn.isBefore(LocalDate.now())) {
+            return new ArrayList<>();
+        }
+
+        // Validate guests parameter
+        if (guests == null || guests <= 0) {
+            return new ArrayList<>();
+        }
+
+        // Define statuses that should block availability
+        List<ReservationStatus> blockingStatuses = Arrays.asList(
+                ReservationStatus.CONFIRMED, 
+                ReservationStatus.PENDING
+        );
+
+        // Get available apartment IDs
+        List<Long> availableApartmentIds = reservationRepository.findAvailableApartmentIds(
+                checkIn, checkOut, blockingStatuses);
+
+        // If no apartments are available by date, return empty list
+        if (availableApartmentIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Fetch available apartments that can accommodate the guests (database-level filtering)
+        List<Apartment> availableApartments = apartmentRepository.findByIdInAndMaxGuestsGreaterThanEqual(
+                availableApartmentIds, guests);
+        
+        return availableApartments.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 
 }

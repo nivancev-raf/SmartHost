@@ -3,6 +3,7 @@ package smarthost.backend.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,7 @@ import smarthost.backend.model.Apartment;
 import smarthost.backend.requests.UpdateApartmentRequest;
 import smarthost.backend.services.ApartmentService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -119,5 +121,45 @@ public class ApartmentController {
         }
     }
 
+    /**
+     * Check availability for a specific apartment
+     */
+    @GetMapping("/check-availability")
+    public ResponseEntity<Boolean> checkApartmentAvailability(
+            @RequestParam Long apartmentId,
+            @RequestParam String checkin,
+            @RequestParam String checkout) {
+        try {
+            LocalDate checkInDate = LocalDate.parse(checkin);
+            LocalDate checkOutDate = LocalDate.parse(checkout);
+            
+            boolean isAvailable = apartmentService.isApartmentAvailable(apartmentId, checkInDate, checkOutDate);
+            return ResponseEntity.ok(isAvailable);
+        } catch (Exception e) {
+            logger.error("Error checking apartment availability", e);
+            return ResponseEntity.badRequest().body(false);
+        }
+    }
+
+    /**
+     * Get all available apartments for given date range and number of guests
+     */
+    @GetMapping("/available")
+    public ResponseEntity<List<ApartmentDto>> getAvailableApartments(
+            @RequestParam(name = "checkIn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkin,
+            @RequestParam(name = "checkOut") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkout,
+            @RequestParam(name = "guests") Integer guests) {
+        try {
+//            LocalDate checkInDate = LocalDate.parse(checkin);
+//            LocalDate checkOutDate = LocalDate.parse(checkout);
+            
+            List<ApartmentDto> availableApartments = apartmentService.getAvailableApartments(checkin, checkout, guests);
+            System.out.println("AVAILABLE APARTMENTS: " + availableApartments);
+            return ResponseEntity.ok(availableApartments);
+        } catch (Exception e) {
+            logger.error("Error getting available apartments", e);
+            return ResponseEntity.badRequest().body(List.of());
+        }
+    }
 
 }

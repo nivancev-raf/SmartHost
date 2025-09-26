@@ -45,6 +45,7 @@ public class SpringSecurityConfig {
                         // PUBLIC ENDPOINTS - dostupni svima (GUEST pristup)
                         .requestMatchers("/auth/login", "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/apartments/**").permitAll() // Guest može da vidi apartmane
+                        .requestMatchers(HttpMethod.GET, "/apartments/available").permitAll() // Guest može da vidi apartmane
                         .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()   // Guest može da čita reviews
                         .requestMatchers("/contact/**").permitAll()  // Contact forma
                         .requestMatchers("/about").permitAll()       // About Us stranica

@@ -103,12 +103,13 @@ export class BookingDialogComponent implements OnInit {
       // Close the dialog and navigate to apartments page with search parameters
       this.dialogRef.close(searchData);
       
-      // Navigate to apartments page with query parameters
+      // Navigate to apartments page with query parameters including apartment ID
       this.router.navigate(['/apartments'], {
         queryParams: {
           checkIn: searchData.checkIn,
           checkOut: searchData.checkOut,
-          guests: searchData.guests
+          guests: searchData.guests,
+          apartmentId: this.apartment.id // Add apartment ID for backend priority
         }
       });
     }

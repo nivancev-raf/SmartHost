@@ -143,17 +143,19 @@ public class ApartmentController {
 
     /**
      * Get all available apartments for given date range and number of guests
+     * Optional apartmentId parameter - if provided and available, it will be shown first in results
      */
     @GetMapping("/available")
     public ResponseEntity<List<ApartmentDto>> getAvailableApartments(
             @RequestParam(name = "checkIn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkin,
             @RequestParam(name = "checkOut") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkout,
-            @RequestParam(name = "guests") Integer guests) {
+            @RequestParam(name = "guests") Integer guests,
+            @RequestParam(name = "apartmentId", required = false) Long apartmentId) {
         try {
 //            LocalDate checkInDate = LocalDate.parse(checkin);
 //            LocalDate checkOutDate = LocalDate.parse(checkout);
             
-            List<ApartmentDto> availableApartments = apartmentService.getAvailableApartments(checkin, checkout, guests);
+            List<ApartmentDto> availableApartments = apartmentService.getAvailableApartments(checkin, checkout, guests, apartmentId);
             System.out.println("AVAILABLE APARTMENTS: " + availableApartments);
             return ResponseEntity.ok(availableApartments);
         } catch (Exception e) {

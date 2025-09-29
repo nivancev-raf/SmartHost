@@ -144,18 +144,7 @@ export class ApartmentService {
     return this.http.put<void>(`${this.API_URL}/apartments/${apartmentId}/images/${imageId}/featured`, {}, { headers });
   }
 
-  // Availability check method
-  checkAvailability(apartmentId: number, checkin: Date, checkout: Date): Observable<boolean> {
-    const params = {
-      apartmentId: apartmentId.toString(),
-      checkin: checkin.toISOString().split('T')[0],
-      checkout: checkout.toISOString().split('T')[0]
-    };
-
-    return this.http.get<boolean>(`${this.API_URL}/apartments/check-availability`, { params });
-  }
-
-  getAvailableApartments(checkIn: Date, checkOut: Date, guests?: number): Observable<Apartment[]> {
+  getAvailableApartments(checkIn: Date, checkOut: Date, guests?: number, apartmentId?: number): Observable<Apartment[]> {
     const params: any = {
       checkIn: checkIn.toISOString().split('T')[0],
       checkOut: checkOut.toISOString().split('T')[0]
@@ -163,6 +152,10 @@ export class ApartmentService {
     
     if (guests) {
       params.guests = guests.toString();
+    }
+    
+    if (apartmentId) {
+      params.apartmentId = apartmentId.toString();
     }
     
     return this.http.get<Apartment[]>(`${this.API_URL}/apartments/available`, { params });

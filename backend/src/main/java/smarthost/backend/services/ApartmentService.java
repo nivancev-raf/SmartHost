@@ -204,6 +204,14 @@ public class ApartmentService {
      * Get all apartments that are available for the given date range and can accommodate the number of guests
      */
     public List<ApartmentDto> getAvailableApartments(LocalDate checkIn, LocalDate checkOut, Integer guests) {
+        return getAvailableApartments(checkIn, checkOut, guests, null);
+    }
+
+    /**
+     * Get all apartments that are available for the given date range and can accommodate the number of guests
+     * If priorityApartmentId is provided and available, it will be placed first in the results
+     */
+    public List<ApartmentDto> getAvailableApartments(LocalDate checkIn, LocalDate checkOut, Integer guests, Long priorityApartmentId) {
         // Validate input dates
         if (checkIn.isAfter(checkOut) || checkIn.isBefore(LocalDate.now())) {
             return new ArrayList<>();
@@ -233,9 +241,26 @@ public class ApartmentService {
         List<Apartment> availableApartments = apartmentRepository.findByIdInAndMaxGuestsGreaterThanEqual(
                 availableApartmentIds, guests);
         
-        return availableApartments.stream()
+        List<ApartmentDto> apartmentDtos = availableApartments.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
+
+        if (priorityApartmentId != null) {
+            ApartmentDto priorityApartment = null;
+            
+            for (int i = 0; i < apartmentDtos.size(); i++) {
+                if (apartmentDtos.get(i).getId().equals(priorityApartmentId)) {
+                    priorityApartment = apartmentDtos.remove(i);
+                    break;
+                }
+            }
+            
+            if (priorityApartment != null) {
+                apartmentDtos.add(0, priorityApartment);
+            }
+        }
+
+        return apartmentDtos;
     }
 
 }

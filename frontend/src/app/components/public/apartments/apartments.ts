@@ -12,6 +12,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ViewportScroller } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ApartmentCardWideComponent } from '../../shared/apartment-card-wide/apartment-card-wide';
 import { Apartment, ApartmentCardData, AmenityDto } from '../../../models/apartment';
@@ -73,12 +74,16 @@ export class Apartments implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private viewportScroller: ViewportScroller
   ) {
     // Form will be initialized in ngOnInit
   }
 
   ngOnInit(): void {
+    // Always scroll to top when navigating to apartments page
+    this.viewportScroller.scrollToPosition([0, 0]);
+    
     this.initializeFilterForm();
     this.initializeSearchForm();
     this.loadAmenities();
@@ -127,6 +132,7 @@ export class Apartments implements OnInit, OnDestroy {
         const checkIn = params['checkIn'];
         const checkOut = params['checkOut'];
         const guests = params['guests'];
+        const apartmentId = params['apartmentId'];
         
         if (checkIn && checkOut) {
           // Store current search parameters for reservation
@@ -148,8 +154,13 @@ export class Apartments implements OnInit, OnDestroy {
           this.originalSearchValues = { ...searchFormValues };
           this.hasSearchFormChanged = false;
           
-          // Load available apartments for those dates
-          this.loadAvailableApartments(new Date(checkIn), new Date(checkOut), guests);
+          // Load available apartments for those dates (apartmentId helps backend prioritize specific apartment)
+          this.loadAvailableApartments(
+            new Date(checkIn), 
+            new Date(checkOut), 
+            guests ? parseInt(guests) : undefined,
+            apartmentId ? parseInt(apartmentId) : undefined
+          );
           // Update form with the search parameters
           this.filterForm.patchValue({ 
             location: params['location'] || ''
@@ -205,11 +216,11 @@ export class Apartments implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
-  private loadAvailableApartments(checkIn: Date, checkOut: Date, guests?: number): void {
+  private loadAvailableApartments(checkIn: Date, checkOut: Date, guests?: number, apartmentId?: number): void {
     this.isLoading = true;
     
     this.subscriptions.add(
-      this.apartmentService.getAvailableApartments(checkIn, checkOut, guests).subscribe({
+      this.apartmentService.getAvailableApartments(checkIn, checkOut, guests, apartmentId).subscribe({
         next: (apartments: Apartment[]) => {
           console.log('Loaded available apartments from API:', apartments.length);
           // Filter by guest capacity if specified

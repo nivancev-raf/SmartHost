@@ -10,6 +10,7 @@ export interface User {
   email: string;
   role: string;
   phone: string;
+  created_at: string; // ISO string from LocalDateTime
 }
 
 export interface RegisterRequest {

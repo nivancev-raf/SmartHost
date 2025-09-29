@@ -256,6 +256,13 @@ export class AuthService {
     }
   }
 
+  updateUserData(updatedUser: User): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('userData', JSON.stringify(updatedUser));
+    }
+    this.currentUserSubject.next(updatedUser);
+  }
+
   private handleAuthError(error: any): void {
     if (error instanceof HttpErrorResponse) {
       switch (error.status) {

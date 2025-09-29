@@ -1,1 +1,238 @@
-<p>profile works!</p>
+<!-- Profile Hero Section -->
+<section class="profile-hero">
+  <div class="hero-background">
+    <img [src]="heroImage" alt="User Profile" class="hero-image">
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <div class="container">
+      <div class="hero-profile" *ngIf="currentUser">
+        <div class="profile-avatar">
+          <mat-icon class="avatar-icon">account_circle</mat-icon>
+        </div>
+        <h1 class="hero-title">{{ getFullName() }}</h1>
+        <p class="hero-subtitle">{{ getRoleDisplayName() }} • Member since {{ formatJoinDate() }}</p>
+      </div>
+      <div class="hero-loading" *ngIf="isLoading">
+        <mat-progress-spinner diameter="60" mode="indeterminate" color="accent"></mat-progress-spinner>
+        <p>Loading profile...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Profile Content Section -->
+<section class="profile-content">
+  <div class="container">
+    <div class="profile-grid" *ngIf="currentUser && !isLoading">
+      <!-- Profile Information Card -->
+      <div class="profile-info-section">
+        <mat-card class="profile-info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>person</mat-icon>
+              Personal Information
+            </mat-card-title>
+            <div class="spacer"></div>
+            <button mat-icon-button 
+                    color="primary" 
+                    (click)="openEditDialog()"
+                    matTooltip="Edit Profile"
+                    class="edit-btn">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="info-grid">
+              <!-- First Name -->
+              <div class="info-item">
+                <div class="info-label">
+                  <mat-icon>badge</mat-icon>
+                  <span>First Name</span>
+                </div>
+                <div class="info-value">{{ currentUser.firstName }}</div>
+              </div>
+
+              <!-- Last Name -->
+              <div class="info-item">
+                <div class="info-label">
+                  <mat-icon>badge</mat-icon>
+                  <span>Last Name</span>
+                </div>
+                <div class="info-value">{{ currentUser.lastName }}</div>
+              </div>
+
+              <!-- Email -->
+              <div class="info-item">
+                <div class="info-label">
+                  <mat-icon>email</mat-icon>
+                  <span>Email Address</span>
+                </div>
+                <div class="info-value">{{ currentUser.email }}</div>
+              </div>
+
+              <!-- Phone -->
+              <div class="info-item">
+                <div class="info-label">
+                  <mat-icon>phone</mat-icon>
+                  <span>Phone Number</span>
+                </div>
+                <div class="info-value">{{ currentUser.phone || 'Not provided' }}</div>
+              </div>
+
+              <!-- Role -->
+              <div class="info-item">
+                <div class="info-label">
+                  <mat-icon>security</mat-icon>
+                  <span>Account Type</span>
+                </div>
+                <div class="info-value">
+                  <span class="role-badge" [class]="'role-' + currentUser.role.toLowerCase()">
+                    {{ getRoleDisplayName() }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- User ID -->
+              <div class="info-item">
+                <div class="info-label">
+                  <mat-icon>fingerprint</mat-icon>
+                  <span>User ID</span>
+                </div>
+                <div class="info-value">#{{ currentUser.id }}</div>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions class="card-actions">
+            <button mat-raised-button 
+                    color="primary" 
+                    (click)="openEditDialog()"
+                    class="edit-profile-btn">
+              <mat-icon>edit</mat-icon>
+              Edit Profile
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
+      <!-- Quick Actions Card -->
+      <div class="quick-actions-section">
+        <mat-card class="quick-actions-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>dashboard</mat-icon>
+              Quick Actions
+            </mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="actions-list">
+              <button mat-stroked-button 
+                      class="action-btn"
+                      [routerLink]="['/booking-history']"
+                      *ngIf="currentUser.role === 'CLIENT'">
+                <mat-icon>history</mat-icon>
+                <span>Booking History</span>
+                <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+              </button>
+
+              <button mat-stroked-button 
+                      class="action-btn"
+                      [routerLink]="['/apartments']"
+                      *ngIf="currentUser.role === 'CLIENT'">
+                <mat-icon>home</mat-icon>
+                <span>Browse Apartments</span>
+                <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+              </button>
+
+              <button mat-stroked-button 
+                      class="action-btn"
+                      [routerLink]="['/admin/dashboard']"
+                      *ngIf="currentUser.role === 'ADMIN'">
+                <mat-icon>admin_panel_settings</mat-icon>
+                <span>Admin Dashboard</span>
+                <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+              </button>
+
+              <button mat-stroked-button 
+                      class="action-btn"
+                      [routerLink]="['/contact']">
+                <mat-icon>support_agent</mat-icon>
+                <span>Contact Support</span>
+                <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+              </button>
+
+              <button mat-stroked-button 
+                      class="action-btn"
+                      (click)="openEditDialog()">
+                <mat-icon>settings</mat-icon>
+                <span>Account Settings</span>
+                <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Account Stats Card -->
+        <mat-card class="stats-card" *ngIf="currentUser.role === 'CLIENT'">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>analytics</mat-icon>
+              Account Statistics
+            </mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Total Bookings</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Active Reservations</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Completed Stays</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">5.0</div>
+                <div class="stat-label">Average Rating</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-content" *ngIf="isLoading">
+      <mat-progress-spinner diameter="60" mode="indeterminate" color="primary"></mat-progress-spinner>
+      <p>Loading your profile...</p>
+    </div>
+
+    <!-- Not Authenticated State -->
+    <div class="not-authenticated" *ngIf="!currentUser && !isLoading">
+      <mat-card class="auth-prompt-card">
+        <mat-card-content>
+          <mat-icon class="large-icon">account_circle</mat-icon>
+          <h2>Please Sign In</h2>
+          <p>You need to be signed in to view your profile.</p>
+          <div class="auth-actions">
+            <button mat-raised-button color="primary" [routerLink]="['/auth/login']">
+              <mat-icon>login</mat-icon>
+              Sign In
+            </button>
+            <button mat-stroked-button [routerLink]="['/auth/register']">
+              <mat-icon>person_add</mat-icon>
+              Create Account
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</section>

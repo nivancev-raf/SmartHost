@@ -58,7 +58,7 @@ public class UserService implements UserDetailsService {
         user.setRole(UserTypes.CLIENT);
         user.setPhone(registerRequest.getPhone());
         User savedUser = userRepository.save(user);
-        return new UserDto(savedUser.getId(), savedUser.getFirstName(), savedUser.getLastName(), savedUser.getEmail(), savedUser.getRole(), savedUser.getPhone());
+        return new UserDto(savedUser.getId(), savedUser.getFirstName(), savedUser.getLastName(), savedUser.getEmail(), savedUser.getRole(), savedUser.getPhone(), savedUser.getCreatedAt());
     }
 
 
@@ -67,7 +67,7 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole(), user.getPhone());
+        return new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole(), user.getPhone(), user.getCreatedAt());
     }
 
     public List<User> getAllUsers() {

@@ -50,6 +50,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/contact/**").permitAll()  // Contact forma
                         .requestMatchers("/about").permitAll()       // About Us stranica
                         .requestMatchers("/amenities").permitAll() // Amenities list
+                        .requestMatchers("/reservations").permitAll() 
 
                         // SWAGGER ENDPOINTS - Add these lines
                         .requestMatchers("/swagger-ui/**").permitAll()
@@ -62,7 +63,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/profile/**").authenticated() // My Profile
 
                         // CLIENT ONLY ENDPOINTS - samo CLIENT
-                        .requestMatchers("/reservations/**").hasRole("CLIENT") // Sve rezervacije - samo CLIENT
+                        // .requestMatchers("/reservations/**").hasRole("CLIENT") // Sve rezervacije - samo CLIENT
                         .requestMatchers("/bookings/**").hasRole("CLIENT")     // Booking history - samo CLIENT
                         .requestMatchers(HttpMethod.POST, "/reviews/**").hasRole("CLIENT") // Reviews - samo CLIENT
 

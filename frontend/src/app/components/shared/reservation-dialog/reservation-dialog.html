@@ -82,6 +82,37 @@
         </mat-form-field>
       </div>
 
+      <!-- Address fields - required for guest reservations, optional for client reservations -->
+      <div *ngIf="!isLoggedIn" class="address-section">
+        <h4>Address Information</h4>
+        
+        <mat-form-field appearance="outline" class="form-field full-width">
+          <mat-label>Address</mat-label>
+          <input matInput formControlName="address" required>
+          <mat-error *ngIf="hasError('address')">
+            {{ getErrorMessage('address') }}
+          </mat-error>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>City</mat-label>
+            <input matInput formControlName="city" required>
+            <mat-error *ngIf="hasError('city')">
+              {{ getErrorMessage('city') }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Country</mat-label>
+            <input matInput formControlName="country" required>
+            <mat-error *ngIf="hasError('country')">
+              {{ getErrorMessage('country') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
       <mat-form-field appearance="outline" class="form-field full-width">
         <mat-label>Special Requests (Optional)</mat-label>
         <textarea matInput 
@@ -89,16 +120,6 @@
                   rows="3" 
                   placeholder="Any special requests or notes..."></textarea>
       </mat-form-field>
-
-      <!-- Terms and Conditions -->
-      <div class="terms-section">
-        <mat-checkbox formControlName="termsAccepted" required>
-          I agree to the <a href="#" target="_blank">Terms and Conditions</a> and <a href="#" target="_blank">Privacy Policy</a>
-        </mat-checkbox>
-        <mat-error *ngIf="hasError('termsAccepted')">
-          You must accept the terms and conditions to proceed
-        </mat-error>
-      </div>
     </form>
   </div>
 
@@ -112,10 +133,11 @@
     <button mat-raised-button 
             color="primary" 
             (click)="onSubmitReservation()"
-            [disabled]="!reservationForm.valid"
+            [disabled]="!reservationForm.valid || isSubmitting"
             class="reserve-button">
-      <mat-icon>calendar_month</mat-icon>
-      Complete Reservation
+      <mat-icon *ngIf="!isSubmitting">calendar_month</mat-icon>
+      <mat-icon *ngIf="isSubmitting" class="spinner">hourglass_empty</mat-icon>
+      {{ isSubmitting ? 'Creating Reservation...' : 'Complete Reservation' }}
     </button>
   </div>
 </div>

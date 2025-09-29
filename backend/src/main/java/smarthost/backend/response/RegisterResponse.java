@@ -1,10 +1,10 @@
 package smarthost.backend.response;
 
-import smarthost.backend.dto.UserDTO;
+import smarthost.backend.dto.UserDto;
 
 public class RegisterResponse {
     private String token;
-    private UserDTO user;
+    private UserDto user;
 
     public String getToken() {
         return token;
@@ -14,11 +14,11 @@ public class RegisterResponse {
         this.token = token;
     }
 
-    public UserDTO getUser() {
+    public UserDto getUser() {
         return user;
     }
 
-    public void setUser(UserDTO user) {
+    public void setUser(UserDto user) {
         this.user = user;
     }
 }

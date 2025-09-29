@@ -3,7 +3,7 @@ package smarthost.backend.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import smarthost.backend.enums.UserTypes;
 
-public class UserDTO {
+public class UserDto {
     private Long id;
     private String firstName;
     private String lastName;
@@ -12,7 +12,7 @@ public class UserDTO {
     private String phone;
 
 
-    public UserDTO(Long id, String firstName, String lastName, String email, UserTypes role, String phone) {
+    public UserDto(Long id, String firstName, String lastName, String email, UserTypes role, String phone) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

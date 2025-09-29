@@ -8,7 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
-import smarthost.backend.dto.UserDTO;
+import smarthost.backend.dto.UserDto;
 import smarthost.backend.requests.LoginRequest;
 import smarthost.backend.requests.RegisterRequest;
 import smarthost.backend.response.LoginResponse;
@@ -43,7 +43,7 @@ public class AuthController {
 
             if (authentication.isAuthenticated()) {
                 String token = jwtUtil.generateToken(loginRequest.getEmail());
-                UserDTO userDTO = userService.getUserDTOByEmail(loginRequest.getEmail());
+                UserDto userDTO = userService.getUserDTOByEmail(loginRequest.getEmail());
                 LoginResponse loginResponse = new LoginResponse();
                 loginResponse.setToken(token);
                 loginResponse.setUser(userDTO);
@@ -62,7 +62,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registrationRequest) {
        try{
-            UserDTO newUser = userService.registerUser(registrationRequest);
+            UserDto newUser = userService.registerUser(registrationRequest);
             String token = jwtUtil.generateToken(newUser.getEmail());
             RegisterResponse response = new RegisterResponse();
             response.setToken(token);

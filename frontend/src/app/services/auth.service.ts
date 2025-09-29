@@ -112,6 +112,22 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
+  getCurrentUser(): User | null {
+    if (!isPlatformBrowser(this.platformId)) {
+      return null;
+    }
+    const userData = localStorage.getItem('userData');
+    if (userData) {
+      try {
+        return JSON.parse(userData);
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+        return null;
+      }
+    }
+    return null;
+  }
+
   private getUserRole(): string {
     if (!isPlatformBrowser(this.platformId)) {
       return 'GUEST';

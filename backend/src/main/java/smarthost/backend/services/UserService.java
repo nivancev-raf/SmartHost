@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import smarthost.backend.dto.UserDTO;
+import smarthost.backend.dto.UserDto;
 import smarthost.backend.enums.UserTypes;
 import smarthost.backend.model.User;
 import smarthost.backend.repository.UserRepository;
@@ -46,7 +46,7 @@ public class UserService implements UserDetailsService {
 
     }
 
-    public UserDTO registerUser(RegisterRequest registerRequest) {
+    public UserDto registerUser(RegisterRequest registerRequest) {
         if (userRepository.findByEmail(registerRequest.getEmail()) != null) {
             throw new IllegalArgumentException("User with email " + registerRequest.getEmail() + " already exists");
         }
@@ -58,16 +58,16 @@ public class UserService implements UserDetailsService {
         user.setRole(UserTypes.CLIENT);
         user.setPhone(registerRequest.getPhone());
         User savedUser = userRepository.save(user);
-        return new UserDTO(savedUser.getId(), savedUser.getFirstName(), savedUser.getLastName(), savedUser.getEmail(), savedUser.getRole(), savedUser.getPhone());
+        return new UserDto(savedUser.getId(), savedUser.getFirstName(), savedUser.getLastName(), savedUser.getEmail(), savedUser.getRole(), savedUser.getPhone());
     }
 
 
-    public UserDTO getUserDTOByEmail(String email) {
+    public UserDto getUserDTOByEmail(String email) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole(), user.getPhone());
+        return new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole(), user.getPhone());
     }
 
     public List<User> getAllUsers() {

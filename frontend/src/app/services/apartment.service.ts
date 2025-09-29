@@ -10,6 +10,7 @@ import {
   AmenityDto,
   ApartmentImage 
 } from '../models/apartment';
+import { ReservationRequest, ReservationResponse } from '../models/reservation';
 
 @Injectable({
   providedIn: 'root'
@@ -161,9 +162,15 @@ export class ApartmentService {
     return this.http.get<Apartment[]>(`${this.API_URL}/apartments/available`, { params });
   }
 
-  // Booking method
-  createBooking(bookingData: any): Observable<any> {
+  // Reservation methods
+  createGuestReservation(reservationData: ReservationRequest): Observable<ReservationResponse> {
+    // Guest reservations don't require authentication
+    return this.http.post<ReservationResponse>(`${this.API_URL}/reservations`, reservationData);
+  }
+
+  createClientReservation(reservationData: ReservationRequest): Observable<ReservationResponse> {
+    // Client reservations require authentication
     const headers = this.getAuthHeaders();
-    return this.http.post(`${this.API_URL}/bookings`, bookingData, { headers });
+    return this.http.post<ReservationResponse>(`${this.API_URL}/reservations`, reservationData, { headers });
   }
 }

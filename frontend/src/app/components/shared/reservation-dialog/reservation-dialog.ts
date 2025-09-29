@@ -6,8 +6,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Apartment } from '../../../models/apartment';
+import { ReservationRequest, ReservationResponse } from '../../../models/reservation';
+import { ApartmentService } from '../../../services/apartment.service';
+import { AuthService } from '../../../services/auth.service';
 
 export interface ReservationDialogData {
   apartment: Apartment;
@@ -17,14 +20,9 @@ export interface ReservationDialogData {
 }
 
 export interface ReservationDialogResult {
-  guestData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    specialRequests?: string;
-  };
-  termsAccepted: boolean;
+  success: boolean;
+  reservation?: ReservationResponse;
+  error?: string;
 }
 
 @Component({
@@ -38,8 +36,7 @@ export interface ReservationDialogResult {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatIconModule,
-    MatCheckboxModule
+    MatIconModule
   ]
 })
 export class ReservationDialogComponent implements OnInit {
@@ -48,9 +45,13 @@ export class ReservationDialogComponent implements OnInit {
   checkIn: string;
   checkOut: string;
   guests: number;
+  isSubmitting = false;
 
   constructor(
     private fb: FormBuilder,
+    private apartmentService: ApartmentService,
+    private authService: AuthService,
+    private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<ReservationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ReservationDialogData
   ) {
@@ -62,17 +63,37 @@ export class ReservationDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Initialize form if needed
+    // Populate form with user data if logged in
+    this.populateUserData();
+  }
+
+  private populateUserData(): void {
+    if (this.isLoggedIn) {
+      const currentUser = this.authService.getCurrentUser();
+      if (currentUser) {
+        this.reservationForm.patchValue({
+          firstName: currentUser.firstName || '',
+          lastName: currentUser.lastName || '',
+          email: currentUser.email || '',
+          phone: currentUser.phone || ''
+        });
+      }
+    }
   }
 
   private createReservationForm(): FormGroup {
+    const isLoggedIn = !!this.authService.getToken();
+    
     return this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^[+]?[\d\s\-\(\)]+$/)]],
-      specialRequests: [''],
-      termsAccepted: [false, Validators.requiredTrue]
+      // Address fields are required for guest reservations, optional for client reservations
+      address: ['', isLoggedIn ? [] : [Validators.required]],
+      city: ['', isLoggedIn ? [] : [Validators.required]],
+      country: ['', isLoggedIn ? [] : [Validators.required]],
+      specialRequests: ['']
     });
   }
 
@@ -81,20 +102,61 @@ export class ReservationDialogComponent implements OnInit {
   }
 
   onSubmitReservation(): void {
-    if (this.reservationForm.valid) {
+    if (this.reservationForm.valid && !this.isSubmitting) {
+      this.isSubmitting = true;
       const formValue = this.reservationForm.value;
-      const reservationData: ReservationDialogResult = {
-        guestData: {
+      const isLoggedIn = !!this.authService.getToken();
+      
+      const reservationRequest: ReservationRequest = {
+        apartmentId: this.apartment.id,
+        checkIn: this.checkIn,
+        checkOut: this.checkOut,
+        guests: this.guests,
+        totalPrice: this.totalPrice,
+        specialRequest: formValue.specialRequests || undefined,
+        guestInformation: {
           firstName: formValue.firstName,
           lastName: formValue.lastName,
           email: formValue.email,
           phone: formValue.phone,
-          specialRequests: formValue.specialRequests
-        },
-        termsAccepted: formValue.termsAccepted
+          address: formValue.address || undefined,
+          city: formValue.city || undefined,
+          country: formValue.country || undefined
+        }
       };
 
-      this.dialogRef.close(reservationData);
+      // Choose the appropriate service method based on login status
+      const reservationObservable = isLoggedIn 
+        ? this.apartmentService.createClientReservation(reservationRequest)
+        : this.apartmentService.createGuestReservation(reservationRequest);
+
+      reservationObservable.subscribe({
+        next: (reservation: ReservationResponse) => {
+          this.isSubmitting = false;
+          this.snackBar.open(
+            `Reservation created successfully! Access code: ${reservation.accessCode}`, 
+            'Close', 
+            { duration: 10000 }
+          );
+          
+          this.dialogRef.close({
+            success: true,
+            reservation: reservation
+          } as ReservationDialogResult);
+        },
+        error: (error) => {
+          this.isSubmitting = false;
+          console.error('Reservation error:', error);
+          
+          const errorMessage = error.error?.message || error.message || 'Failed to create reservation. Please try again.';
+          this.snackBar.open(errorMessage, 'Close', { duration: 5000 });
+          
+          this.dialogRef.close({
+            success: false,
+            error: errorMessage
+          } as ReservationDialogResult);
+        }
+      });
     } else {
       // Mark all fields as touched to show validation errors
       Object.keys(this.reservationForm.controls).forEach(key => {
@@ -152,4 +214,8 @@ export class ReservationDialogComponent implements OnInit {
   get checkOutFormatted(): string {
     return new Date(this.checkOut).toLocaleDateString();
   }
-}
+
+  get isLoggedIn(): boolean {
+    return !!this.authService.getToken();
+  }
+  }

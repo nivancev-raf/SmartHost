@@ -80,7 +80,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private checkIfTransparentPage(): void {
     // Pages where header should be transparent initially
-    this.isTransparentPage = this.router.url === '/' || this.router.url === '/contact';
+    this.isTransparentPage = this.router.url === '/';
   }
 
   ngOnDestroy(): void {

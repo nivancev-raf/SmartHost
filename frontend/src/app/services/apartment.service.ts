@@ -173,4 +173,10 @@ export class ApartmentService {
     const headers = this.getAuthHeaders();
     return this.http.post<ReservationResponse>(`${this.API_URL}/reservations`, reservationData, { headers });
   }
+
+  getClientReservations(): Observable<ReservationResponse[]> {
+    // Get reservations for the logged-in client
+    const headers = this.getAuthHeaders();
+    return this.http.get<ReservationResponse[]>(`${this.API_URL}/reservations/client`, { headers });
+  }
 }

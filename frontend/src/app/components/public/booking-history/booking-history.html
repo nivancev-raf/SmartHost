@@ -1,1 +1,243 @@
-<p>booking-history works!</p>
+<!-- Hero Section (for guests) -->
+<section *ngIf="!isLoggedIn" class="booking-history-hero">
+  <div class="hero-background">
+    <img [src]="heroImage" alt="Booking History" class="hero-image">
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <div class="container">
+      <!-- Login Required Hero Content -->
+      <div class="hero-login-section">
+        <div class="hero-icon">
+          <mat-icon>bookmark_border</mat-icon>
+        </div>
+        <h1 class="hero-title">Login to See Your Bookings</h1>
+        <p class="hero-subtitle">
+          Access your reservation history and manage all your SmartHost bookings in one place
+        </p>
+        <div class="hero-actions">
+          <button mat-raised-button color="primary" (click)="openLoginDialog()" class="hero-login-btn">
+            <mat-icon>login</mat-icon>
+            Login
+          </button>
+          <button mat-raised-button (click)="openRegisterDialog()" class="hero-register-btn">
+            <mat-icon>person_add</mat-icon>
+            Register
+          </button>
+          <button mat-stroked-button routerLink="/contact" class="hero-support-btn">
+            <mat-icon>help</mat-icon>
+            Need Help?
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Booking History Content -->
+<div class="booking-history-container">
+  <div class="container">
+    
+    <!-- Guest View - Benefits Info (below hero) -->
+    <div *ngIf="!isLoggedIn" class="login-benefits-section">
+      <div class="benefits-grid">
+        <div class="benefit-item">
+          <mat-icon>history</mat-icon>
+          <h3>Reservation History</h3>
+          <p>View complete history of all your reservations in one organized place</p>
+        </div>
+        <div class="benefit-item">
+          <mat-icon>person</mat-icon>
+          <h3>Save Your Information</h3>
+          <p>Enter your details once and they'll be auto-filled for future bookings</p>
+        </div>
+        <div class="benefit-item">
+          <mat-icon>rate_review</mat-icon>
+          <h3>Write Reviews</h3>
+          <p>Write one review per apartment after your stay (1 stay = 1 review)</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Client View - Reservation History -->
+    <div *ngIf="isLoggedIn && currentUser?.role === 'CLIENT'" class="client-reservations-section">
+      <!-- Header -->
+      <div class="section-header">
+        <h1>Your Booking History</h1>
+        <p>Manage and view all your reservations with SmartHost</p>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-section">
+        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+        <p>Loading your reservations...</p>
+      </div>
+
+      <!-- No Reservations -->
+      <div *ngIf="!isLoading && reservations.length === 0" class="no-reservations-section">
+        <mat-card class="no-reservations-card">
+          <mat-card-content>
+            <div class="no-reservations-content">
+              <mat-icon>event_busy</mat-icon>
+              <h2>No Reservations Yet</h2>
+              <p>You haven't made any reservations yet. Start exploring our amazing apartments!</p>
+              <button mat-raised-button color="primary" routerLink="/apartments">
+                <mat-icon>search</mat-icon>
+                Browse Apartments
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Reservations List -->
+      <div *ngIf="!isLoading && reservations.length > 0" class="reservations-list">
+        <mat-card *ngFor="let reservation of reservations" class="reservation-card">
+          <mat-card-header>
+            <div mat-card-avatar class="reservation-avatar">
+              <mat-icon>{{ getStatusIcon(reservation.status) }}</mat-icon>
+            </div>
+            <mat-card-title>
+              {{ reservation.apartment?.name || 'Apartment #' + reservation.apartmentId }}
+            </mat-card-title>
+            <mat-card-subtitle>
+              <mat-chip [class]="getStatusClass(reservation.status)" class="status-chip">
+                {{ reservation.status }}
+              </mat-chip>
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="reservation-details">
+              <!-- Dates & Duration -->
+              <div class="detail-section">
+                <div class="detail-item">
+                  <mat-icon>date_range</mat-icon>
+                  <div class="detail-content">
+                    <span class="detail-label">Check-in</span>
+                    <span class="detail-value">{{ formatDate(reservation.checkIn) }}</span>
+                  </div>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>date_range</mat-icon>
+                  <div class="detail-content">
+                    <span class="detail-label">Check-out</span>
+                    <span class="detail-value">{{ formatDate(reservation.checkOut) }}</span>
+                  </div>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>nights_stay</mat-icon>
+                  <div class="detail-content">
+                    <span class="detail-label">Duration</span>
+                    <span class="detail-value">{{ calculateNights(reservation.checkIn, reservation.checkOut) }} nights</span>
+                  </div>
+                </div>
+              </div>
+
+              <mat-divider></mat-divider>
+
+              <!-- Guest & Payment Info -->
+              <div class="detail-section">
+                <div class="detail-item">
+                  <mat-icon>people</mat-icon>
+                  <div class="detail-content">
+                    <span class="detail-label">Guests</span>
+                    <span class="detail-value">{{ reservation.guests }}</span>
+                  </div>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>euro</mat-icon>
+                  <div class="detail-content">
+                    <span class="detail-label">Total Price</span>
+                    <span class="detail-value">€{{ reservation.totalPrice }}</span>
+                  </div>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>schedule</mat-icon>
+                  <div class="detail-content">
+                    <span class="detail-label">Booked</span>
+                    <span class="detail-value">{{ formatDateTime(reservation.createdAt) }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Access Code (for confirmed reservations) -->
+              <div *ngIf="reservation.status === 'CONFIRMED' && reservation.accessCode" class="access-code-section">
+                <mat-divider></mat-divider>
+                <div class="detail-item">
+                  <mat-icon>vpn_key</mat-icon>
+                  <div class="detail-content">
+                    <span class="detail-label">Access Code</span>
+                    <span class="detail-value access-code">{{ reservation.accessCode }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Special Requests -->
+              <div *ngIf="reservation.specialRequest" class="special-request-section">
+                <mat-divider></mat-divider>
+                <div class="detail-item">
+                  <mat-icon>note</mat-icon>
+                  <div class="detail-content">
+                    <span class="detail-label">Special Request</span>
+                    <span class="detail-value">{{ reservation.specialRequest }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Location Info -->
+              <div *ngIf="reservation.apartment" class="location-section">
+                <mat-divider></mat-divider>
+                <div class="detail-item">
+                  <mat-icon>location_on</mat-icon>
+                  <div class="detail-content">
+                    <span class="detail-label">Location</span>
+                    <span class="detail-value">{{ reservation.apartment.address }}, {{ reservation.apartment.city }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <button mat-button color="primary" 
+                    (click)="viewApartmentDetails(reservation.apartmentId)"
+                    matTooltip="View apartment details">
+              <mat-icon>visibility</mat-icon>
+              View Apartment
+            </button>
+            <button mat-button color="accent" 
+                    (click)="contactSupport()"
+                    matTooltip="Contact customer support">
+              <mat-icon>support_agent</mat-icon>
+              Support
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Admin View - Redirect or Different Message -->
+    <div *ngIf="isLoggedIn && currentUser?.role === 'ADMIN'" class="admin-section">
+      <mat-card class="admin-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>admin_panel_settings</mat-icon>
+            Admin Access
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>As an administrator, you can manage all reservations from the admin panel.</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" routerLink="/admin/reservations">
+            <mat-icon>dashboard</mat-icon>
+            Go to Admin Panel
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+  </div>
+</div>

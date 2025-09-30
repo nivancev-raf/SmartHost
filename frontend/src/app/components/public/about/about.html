@@ -1,1 +1,153 @@
-<p>about works!</p>
+<!-- About Hero Section -->
+<section class="about-hero">
+  <div class="hero-background">
+    <img [src]="heroImage" alt="About SmartHost" class="hero-image">
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <div class="container">
+      <h1 class="hero-title">About SmartHost</h1>
+      <p class="hero-subtitle">Redefining apartment rentals with comfort, technology, and exceptional service</p>
+    </div>
+  </div>
+</section>
+
+<!-- About Content Section -->
+<section class="about-content">
+  <div class="container">
+    <!-- Company Story -->
+    <div class="story-section">
+      <div class="story-grid">
+        <div class="story-text">
+          <h2>Our Story</h2>
+          <p class="lead">
+            Founded in 2023, SmartHost emerged from a simple vision: to transform the way people experience short-term apartment rentals by combining cutting-edge technology with warm, personalized service.
+          </p>
+          <p>
+            What started as a small collection of premium apartments in Belgrade has grown into a trusted platform serving guests from around the world. We believe that every stay should feel like coming home, which is why we've carefully curated each property to meet our exacting standards of comfort, cleanliness, and convenience.
+          </p>
+          <p>
+            Our commitment to innovation drives us to continuously enhance the guest experience through smart home technology, seamless booking processes, and 24/7 support that's always just a click or call away.
+          </p>
+        </div>
+        <div class="story-image">
+          <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop&crop=center" alt="Modern apartment interior" class="story-img">
+        </div>
+      </div>
+    </div>
+
+    <!-- Mission & Vision -->
+    <div class="mission-vision-section">
+      <div class="mission-vision-grid">
+        <mat-card class="mission-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>flag</mat-icon>
+              Our Mission
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>
+              To provide exceptional apartment rental experiences that combine the comfort of home with the convenience of modern technology, making every guest feel welcomed and valued.
+            </p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="vision-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>visibility</mat-icon>
+              Our Vision
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>
+              To become the leading platform for premium apartment rentals across Europe, setting new standards for hospitality, technology integration, and sustainable tourism.
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Core Values -->
+    <div class="values-section">
+      <h2 class="section-title">Our Core Values</h2>
+      <div class="values-grid">
+        <mat-card *ngFor="let value of values" class="value-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>{{ value.icon }}</mat-icon>
+              {{ value.title }}
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>{{ value.description }}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="team-section">
+      <h2 class="section-title">Meet Our Team</h2>
+      <p class="section-subtitle">
+        The passionate individuals behind SmartHost, dedicated to making your stay unforgettable.
+      </p>
+      <div class="team-grid">
+        <mat-card *ngFor="let member of teamMembers" class="team-card">
+          <div class="team-image">
+            <img [src]="member.image" [alt]="member.name" class="member-photo">
+          </div>
+          <mat-card-content>
+            <h3 class="member-name">{{ member.name }}</h3>
+            <p class="member-role">{{ member.role }}</p>
+            <p class="member-description">{{ member.description }}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-section">
+      <h2 class="section-title">SmartHost by Numbers</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Premium Apartments</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">2,500+</div>
+          <div class="stat-label">Happy Guests</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">4.9</div>
+          <div class="stat-label">Average Rating</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Customer Support</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+      <mat-card class="cta-card">
+        <mat-card-content>
+          <h2>Ready to Experience SmartHost?</h2>
+          <p>Join thousands of satisfied guests who have made SmartHost their preferred choice for apartment rentals.</p>
+          <div class="cta-buttons">
+            <button mat-raised-button color="primary" routerLink="/apartments">
+              <mat-icon>search</mat-icon>
+              Browse Apartments
+            </button>
+            <button mat-stroked-button color="primary" routerLink="/contact">
+              <mat-icon>contact_support</mat-icon>
+              Contact Us
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</section>

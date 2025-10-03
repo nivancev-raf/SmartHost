@@ -135,9 +135,9 @@
             (click)="onSubmitReservation()"
             [disabled]="!reservationForm.valid || isSubmitting"
             class="reserve-button">
-      <mat-icon *ngIf="!isSubmitting">calendar_month</mat-icon>
+      <mat-icon *ngIf="!isSubmitting">payment</mat-icon>
       <mat-icon *ngIf="isSubmitting" class="spinner">hourglass_empty</mat-icon>
-      {{ isSubmitting ? 'Creating Reservation...' : 'Complete Reservation' }}
+      {{ isSubmitting ? 'Processing...' : 'Proceed to Payment' }}
     </button>
   </div>
 </div>

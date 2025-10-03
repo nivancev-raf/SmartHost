@@ -23,6 +23,7 @@ export interface ReservationDialogResult {
   success: boolean;
   reservation?: ReservationResponse;
   error?: string;
+  redirectToPayment?: boolean;
 }
 
 @Component({
@@ -104,65 +105,72 @@ export class ReservationDialogComponent implements OnInit {
   onSubmitReservation(): void {
     if (this.reservationForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
-      const formValue = this.reservationForm.value;
-      const isLoggedIn = !!this.authService.getToken();
-      
-      const reservationRequest: ReservationRequest = {
-        apartmentId: this.apartment.id,
-        checkIn: this.checkIn,
-        checkOut: this.checkOut,
-        guests: this.guests,
-        totalPrice: this.totalPrice,
-        specialRequest: formValue.specialRequests || undefined,
-        guestInformation: {
-          firstName: formValue.firstName,
-          lastName: formValue.lastName,
-          email: formValue.email,
-          phone: formValue.phone,
-          address: formValue.address || undefined,
-          city: formValue.city || undefined,
-          country: formValue.country || undefined
-        }
-      };
-
-      // Choose the appropriate service method based on login status
-      const reservationObservable = isLoggedIn 
-        ? this.apartmentService.createClientReservation(reservationRequest)
-        : this.apartmentService.createGuestReservation(reservationRequest);
-
-      reservationObservable.subscribe({
-        next: (reservation: ReservationResponse) => {
-          this.isSubmitting = false;
-          this.snackBar.open(
-            `Reservation created successfully! Access code: ${reservation.accessCode}`, 
-            'Close', 
-            { duration: 10000 }
-          );
-          
-          this.dialogRef.close({
-            success: true,
-            reservation: reservation
-          } as ReservationDialogResult);
-        },
-        error: (error) => {
-          this.isSubmitting = false;
-          console.error('Reservation error:', error);
-          
-          const errorMessage = error.error?.message || error.message || 'Failed to create reservation. Please try again.';
-          this.snackBar.open(errorMessage, 'Close', { duration: 5000 });
-          
-          this.dialogRef.close({
-            success: false,
-            error: errorMessage
-          } as ReservationDialogResult);
-        }
-      });
+      this.createReservation();
     } else {
       // Mark all fields as touched to show validation errors
       Object.keys(this.reservationForm.controls).forEach(key => {
         this.reservationForm.get(key)?.markAsTouched();
       });
     }
+  }
+
+  private createReservation(): void {
+    const formValue = this.reservationForm.value;
+    const isLoggedIn = !!this.authService.getToken();
+    
+    const reservationRequest: ReservationRequest = {
+      apartmentId: this.apartment.id,
+      checkIn: this.checkIn,
+      checkOut: this.checkOut,
+      guests: this.guests,
+      totalPrice: this.totalPrice,
+      specialRequest: formValue.specialRequests || undefined,
+      guestInformation: {
+        firstName: formValue.firstName,
+        lastName: formValue.lastName,
+        email: formValue.email,
+        phone: formValue.phone,
+        address: formValue.address || undefined,
+        city: formValue.city || undefined,
+        country: formValue.country || undefined
+      }
+    };
+
+    // Backend creates reservation AND Stripe checkout session, returns checkoutUrl
+    const reservationObservable = isLoggedIn 
+      ? this.apartmentService.createClientReservation(reservationRequest)
+      : this.apartmentService.createGuestReservation(reservationRequest);
+
+    reservationObservable.subscribe({
+      next: (reservation: ReservationResponse) => {
+        // Close dialog first
+        this.dialogRef.close({
+          success: true,
+          reservation: reservation,
+          redirectToPayment: true
+        } as ReservationDialogResult);
+
+        // Backend provides checkoutUrl, just redirect to it
+        if (reservation.checkoutUrl) {
+          window.location.href = reservation.checkoutUrl;
+        } else {
+          console.error('No checkout URL provided by backend');
+          this.snackBar.open('Payment initialization failed. Please try again.', 'Close', { duration: 5000 });
+        }
+      },
+      error: (error) => {
+        this.isSubmitting = false;
+        console.error('Reservation creation error:', error);
+        
+        const errorMessage = error.error?.message || error.message || 'Failed to create reservation. Please try again.';
+        this.snackBar.open(errorMessage, 'Close', { duration: 5000 });
+        
+        this.dialogRef.close({
+          success: false,
+          error: errorMessage
+        } as ReservationDialogResult);
+      }
+    });
   }
 
   // Helper methods for form validation

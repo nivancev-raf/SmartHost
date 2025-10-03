@@ -40,17 +40,20 @@ public class SpringSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) // csrf stands for Cross-Site Request Forgery
                 .authorizeHttpRequests(auth -> auth
                         // PUBLIC ENDPOINTS - dostupni svima (GUEST pristup)
                         .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("/webhooks/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/apartments/**").permitAll() // Guest može da vidi apartmane
                         .requestMatchers(HttpMethod.GET, "/apartments/available").permitAll() // Guest može da vidi apartmane
                         .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()   // Guest može da čita reviews
                         .requestMatchers("/contact/**").permitAll()  // Contact forma
                         .requestMatchers("/about").permitAll()       // About Us stranica
                         .requestMatchers("/amenities").permitAll() // Amenities list
-                        .requestMatchers("/reservations").permitAll() 
+                        .requestMatchers("/reservations").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/reservations/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/reservations/{id}").permitAll()
 
                         // SWAGGER ENDPOINTS - Add these lines
                         .requestMatchers("/swagger-ui/**").permitAll()

@@ -1,0 +1,184 @@
+<!-- Payment Success Page -->
+<div class="payment-success-container">
+  <div class="container">
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-section">
+      <mat-progress-spinner mode="indeterminate" diameter="60"></mat-progress-spinner>
+      <h2>Confirming Your Payment...</h2>
+      <p>Please wait while we process your payment confirmation.</p>
+    </div>
+
+    <!-- Success State -->
+    <div *ngIf="!isLoading" class="success-section">
+      <mat-card class="success-card">
+        <mat-card-content>
+          <div class="success-content">
+            <!-- Success Icon -->
+            <div class="success-icon">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+
+            <!-- Success Message -->
+            <h1>Payment Successful!</h1>
+            <h2>Your Reservation is Confirmed</h2>
+            
+            <p class="success-description">
+              Thank you for your payment! Your reservation has been confirmed and you should receive 
+              a confirmation email with your access code and booking details shortly.
+            </p>
+
+            <!-- Reservation Details -->
+            <div class="reservation-details" *ngIf="reservation && apartment">
+              
+              <!-- Key Information Card -->
+              <mat-card class="details-card key-info">
+                <mat-card-content>
+                  <div class="card-header">
+                    <mat-icon>confirmation_number</mat-icon>
+                    <h3>Booking Confirmed</h3>
+                  </div>
+                  <div class="key-details">
+                    <div class="detail-item">
+                      <span class="label">Reservation</span>
+                      <span class="value">#{{ reservation.id }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="label">Access Code</span>
+                      <span class="value highlight">{{ reservation.accessCode }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="label">Total Paid</span>
+                      <span class="value price">€{{ reservation.totalPrice }}</span>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+
+              <!-- Stay Details Card -->
+              <mat-card class="details-card stay-info">
+                <mat-card-content>
+                  <div class="card-header">
+                    <mat-icon>home</mat-icon>
+                    <h3>Your Stay</h3>
+                  </div>
+                  <div class="stay-details">
+                    <div class="apartment-info">
+                      <h4>{{ apartment.name }}</h4>
+                      <p><mat-icon>location_on</mat-icon>{{ apartment.address }}, {{ apartment.city }}</p>
+                    </div>
+                    <div class="dates-guests">
+                      <div class="date-range">
+                        <div class="date-item">
+                          <mat-icon>login</mat-icon>
+                          <div>
+                            <span class="date-label">Check-in</span>
+                            <span class="date-value">{{ reservation.checkIn | date:'EEE, MMM d' }}</span>
+                          </div>
+                        </div>
+                        <div class="date-separator">→</div>
+                        <div class="date-item">
+                          <mat-icon>logout</mat-icon>
+                          <div>
+                            <span class="date-label">Check-out</span>
+                            <span class="date-value">{{ reservation.checkOut | date:'EEE, MMM d' }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="guests-info">
+                        <mat-icon>people</mat-icon>
+                        <span>{{ reservation.guests }} Guest{{ reservation.guests > 1 ? 's' : '' }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+
+            </div>
+            
+            <!-- Fallback for basic info -->
+            <div class="reservation-info" *ngIf="reservationId && !reservation">
+              <div class="info-item">
+                <mat-icon>confirmation_number</mat-icon>
+                <div class="info-content">
+                  <span class="info-label">Reservation ID</span>
+                  <span class="info-value">#{{ reservationId }}</span>
+                </div>
+              </div>
+              
+              <div class="info-item" *ngIf="sessionId">
+                <mat-icon>payment</mat-icon>
+                <div class="info-content">
+                  <span class="info-label">Payment ID</span>
+                  <span class="info-value">{{ sessionId.substring(0, 20) }}...</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Error Message -->
+            <div class="error-message" *ngIf="error">
+              <mat-icon>error</mat-icon>
+              <p>{{ error }}</p>
+            </div>
+
+            <!-- Next Steps -->
+            <!-- <div class="next-steps">
+              <h3>What's Next?</h3>
+              <div class="steps-list">
+                <div class="step-item">
+                  <mat-icon>email</mat-icon>
+                  <span>Check your email for booking confirmation and access codes</span>
+                </div>
+                <div class="step-item">
+                  <mat-icon>calendar_today</mat-icon>
+                  <span>Save your check-in date and access information</span>
+                </div>
+                <div class="step-item">
+                  <mat-icon>support_agent</mat-icon>
+                  <span>Contact us if you have any questions or special requests</span>
+                </div>
+            </div>
+        </div> -->
+        
+        <!-- Additional Information -->
+        <div class="additional-info">
+          <mat-card class="info-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>info</mat-icon>
+                Important Information
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <ul>
+                <li>Your booking confirmation email will arrive within 5-10 minutes</li>
+                <li>Access codes will be provided 24 hours before check-in</li>
+                <li>For any changes or cancellations, please contact our support team</li>
+                <li>Check-in time is typically after 3:00 PM, check-out before 11:00 AM</li>
+              </ul>
+            </mat-card-content>
+          </mat-card>
+        </div>
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button mat-raised-button color="primary" (click)="goToBookingHistory()">
+                <mat-icon>history</mat-icon>
+                View Booking History
+              </button>
+              <button mat-stroked-button color="primary" (click)="goToHome()">
+                <mat-icon>home</mat-icon>
+                Back to Home
+              </button>
+              <button mat-button (click)="contactSupport()">
+                <mat-icon>help</mat-icon>
+                Contact Support
+              </button>
+            </div>
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+  </div>
+</div>

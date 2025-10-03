@@ -1,0 +1,59 @@
+<!-- Payment Cancel Page -->
+<div class="payment-cancel-container">
+  <div class="container">
+    <mat-card class="cancel-card">
+      <mat-card-content>
+        <div class="cancel-content">
+          <!-- Cancel Icon -->
+          <div class="cancel-icon">
+            <mat-icon>close</mat-icon>
+          </div>
+
+          <!-- Cancel Message -->
+          <h1>Payment Cancelled</h1>
+          <h2>Your reservation has been cancelled</h2>
+          
+          <p class="cancel-description">
+            Your payment was cancelled and the reservation has been removed from our system. 
+            You can start a new booking whenever you're ready.
+          </p>
+
+          <!-- What Happens Next -->
+          <div class="next-steps">
+            <h3>What happens next?</h3>
+            <div class="steps-list">
+              <div class="step-item">
+                <mat-icon>delete_sweep</mat-icon>
+                <span>The incomplete reservation has been automatically removed</span>
+              </div>
+              <div class="step-item">
+                <mat-icon>apartment</mat-icon>
+                <span>Browse available apartments for your dates</span>
+              </div>
+              <div class="step-item">
+                <mat-icon>support_agent</mat-icon>
+                <span>Contact support if you need assistance</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button mat-raised-button color="primary" (click)="startNewBooking()">
+              <mat-icon>apartment</mat-icon>
+              Browse Apartments
+            </button>
+            <button mat-stroked-button color="primary" (click)="goToHome()">
+              <mat-icon>home</mat-icon>
+              Back to Home
+            </button>
+            <button mat-button (click)="contactSupport()">
+              <mat-icon>help</mat-icon>
+              Contact Support
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

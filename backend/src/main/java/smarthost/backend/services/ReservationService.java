@@ -1,5 +1,6 @@
 package smarthost.backend.services;
 
+import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -7,14 +8,18 @@ import org.springframework.transaction.annotation.Transactional;
 import smarthost.backend.dto.ReservationDto;
 import smarthost.backend.enums.ReservationStatus;
 import smarthost.backend.mapper.ReservationMapper;
+import smarthost.backend.model.Apartment;
 import smarthost.backend.model.GuestInformation;
 import smarthost.backend.model.Reservation;
 import smarthost.backend.model.User;
 import smarthost.backend.repository.ReservationRepository;
+import smarthost.backend.repository.ApartmentRepository;
 import smarthost.backend.repository.UserRepository;
 import smarthost.backend.requests.CreateReservationRequest;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ReservationService {
@@ -28,8 +33,14 @@ public class ReservationService {
     @Autowired
     private ReservationMapper reservationMapper;
 
+    @Autowired
+    private StripeService stripeService;
+
+    @Autowired
+    private ApartmentRepository apartmentRepository;
+
     @Transactional
-    public ReservationDto createReservation(CreateReservationRequest request) {
+    public ReservationDto createReservation(CreateReservationRequest request) throws StripeException {
         // Check if apartment is available
         List<ReservationStatus> activeStatuses = List.of(
                 ReservationStatus.CONFIRMED,
@@ -63,6 +74,8 @@ public class ReservationService {
         Reservation reservation = reservationMapper.mapToReservation(request);
         reservation.setClientId(clientId); // null for guest reservations
         reservation.setAccessCode(generateAccessCode());
+        reservation.setCancellationToken(UUID.randomUUID().toString()); // Unique token for cancellation
+        System.out.println("Generated cancellation token: " + reservation.getCancellationToken());
         Reservation savedReservation = reservationRepository.save(reservation);
 
         GuestInformation guestInfo = reservationMapper.mapToGuestInformation(
@@ -73,7 +86,16 @@ public class ReservationService {
         savedReservation.setGuestInformation(guestInfo);
         reservationRepository.save(savedReservation);
 
-        return reservationMapper.mapToDto(savedReservation);
+        // Create Stripe checkout session
+        Apartment apartment = apartmentRepository.findById(request.getApartmentId())
+                .orElseThrow(() -> new RuntimeException("Apartment not found"));
+
+        String checkoutUrl = stripeService.createCheckoutSession(savedReservation, apartment.getName());
+
+        ReservationDto dto = reservationMapper.mapToDto(savedReservation);
+        dto.setCheckoutUrl(checkoutUrl);
+
+        return dto;
     }
 
     private String generateAccessCode() {
@@ -118,6 +140,30 @@ public class ReservationService {
         return reservations.stream()
                 .map(reservationMapper::mapToDto)
                 .toList();
+    }
+
+    @Transactional
+    public void deleteReservationWithToken(Long reservationId, String token) {
+        System.out.println("Attempting to delete reservation ID: " + reservationId + " with token: " + token);
+        Optional<Reservation> optionalReservation = reservationRepository.findById(reservationId);
+
+        if (optionalReservation.isEmpty()) {
+            System.out.println("Reservation not found - may have already been deleted");
+            return; // Silently succeed if already deleted
+        }
+        Reservation reservation = optionalReservation.get();
+
+        // Validate token
+        if (!token.equals(reservation.getCancellationToken())) {
+            throw new RuntimeException("Invalid cancellation token");
+        }
+
+        // Only delete PENDING reservations
+        if (reservation.getStatus() != ReservationStatus.PENDING) {
+            throw new RuntimeException("Cannot delete confirmed reservation");
+        }
+
+        reservationRepository.delete(reservation);
     }
 
 }

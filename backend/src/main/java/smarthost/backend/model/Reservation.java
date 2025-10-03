@@ -44,6 +44,9 @@ public class Reservation {
     @Column(name = "access_code", length = 20)
     private String accessCode;
 
+    @Column(name = "cancellation_token", unique = true)
+    private String cancellationToken;
+
     @Column(name = "special_request", length = 300)
     private String specialRequest;
 
@@ -195,5 +198,13 @@ public class Reservation {
 
     public void setReview(Review review) {
         this.review = review;
+    }
+
+    public String getCancellationToken() {
+        return cancellationToken;
+    }
+
+    public void setCancellationToken(String cancellationToken) {
+        this.cancellationToken = cancellationToken;
     }
 }

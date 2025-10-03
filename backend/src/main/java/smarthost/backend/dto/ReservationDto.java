@@ -18,6 +18,7 @@ public class ReservationDto {
     private String accessCode;
     private String specialRequest;
     private LocalDateTime createdAt;
+    private String checkoutUrl;
 
     // Nested DTOs
     private GuestInformationDto guestInformation;
@@ -117,5 +118,13 @@ public class ReservationDto {
 
     public void setGuestInformation(GuestInformationDto guestInformation) {
         this.guestInformation = guestInformation;
+    }
+
+    public String getCheckoutUrl() {
+        return checkoutUrl;
+    }
+
+    public void setCheckoutUrl(String checkoutUrl) {
+        this.checkoutUrl = checkoutUrl;
     }
 }

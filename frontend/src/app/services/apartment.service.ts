@@ -179,4 +179,14 @@ export class ApartmentService {
     const headers = this.getAuthHeaders();
     return this.http.get<ReservationResponse[]>(`${this.API_URL}/reservations/client`, { headers });
   }
+
+  getReservationById(id: number): Observable<ReservationResponse> {
+    // Get specific reservation by ID
+    const headers = this.getAuthHeaders();
+    return this.http.get<ReservationResponse>(`${this.API_URL}/reservations/${id}`, { headers });
+  }
+
+  deleteReservation(reservationId: number, token: string): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/reservations/${reservationId}?token=${token}`);
+  }
 }

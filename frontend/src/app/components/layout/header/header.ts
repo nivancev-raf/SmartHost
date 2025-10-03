@@ -80,7 +80,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private checkIfTransparentPage(): void {
     // Pages where header should be transparent initially
-    this.isTransparentPage = this.router.url === '/';
+    // Exclude booking-success and booking-cancelled for better visibility
+    const transparentPages = ['/'];
+    const excludedPages = ['/booking-success', '/booking-cancelled'];
+    
+    this.isTransparentPage = transparentPages.includes(this.router.url) && 
+                            !excludedPages.some(page => this.router.url.startsWith(page));
   }
 
   ngOnDestroy(): void {

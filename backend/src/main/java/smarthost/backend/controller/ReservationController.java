@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import smarthost.backend.dto.ReservationDto;
+import smarthost.backend.model.Reservation;
 import smarthost.backend.requests.CreateReservationRequest;
 import smarthost.backend.services.ReservationService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
@@ -41,5 +44,12 @@ public class ReservationController {
             e.printStackTrace();
             return ResponseEntity.status(403).build();
         }
+    }
+
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<List<ReservationDto>> getClientReservations(
+            @PathVariable Long clientId) {
+        List<ReservationDto> reservations = reservationService.getReservationsByClient(clientId);
+        return ResponseEntity.ok(reservations);
     }
 }

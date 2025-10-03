@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -16,12 +16,15 @@ import { AuthService } from '../../../services/auth.service';
 import { ApartmentService } from '../../../services/apartment.service';
 import { DialogService } from '../../../services/dialog.service';
 import { User } from '../../../models/auth';
-import { ReservationResponse, ReservationStatus } from '../../../models/reservation';
+import { ReservationResponse } from '../../../models/reservation';
 import { Apartment } from '../../../models/apartment';
 
+// Types
 interface ReservationWithApartment extends ReservationResponse {
   apartment?: Apartment;
 }
+
+type ReservationDisplayStatus = 'UPCOMING' | 'ACTIVE' | 'COMPLETED';
 
 @Component({
   selector: 'app-booking-history',
@@ -42,12 +45,14 @@ interface ReservationWithApartment extends ReservationResponse {
   styleUrl: './booking-history.css'
 })
 export class BookingHistory implements OnInit, OnDestroy {
-  heroImage = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920&h=1080&fit=crop&crop=center';
+  // Public properties
+  readonly heroImage = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920&h=1080&fit=crop&crop=center';
   currentUser: User | null = null;
   reservations: ReservationWithApartment[] = [];
   isLoading = false;
   isLoggedIn = false;
   
+  // Private properties
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -56,64 +61,20 @@ export class BookingHistory implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
+  // Lifecycle hooks
   ngOnInit(): void {
-    // Subscribe to authentication status
-    const authSubscription = this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-      this.isLoggedIn = !!user;
-      
-      if (this.isLoggedIn && user?.role === 'CLIENT') {
-        this.loadClientReservations();
-      }
-    });
-    
-    this.subscriptions.push(authSubscription);
+    this.initializeAuthSubscription();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
-  private loadClientReservations(): void {
-    this.isLoading = true;
-    
-    const reservationSubscription = this.apartmentService.getClientReservations().subscribe({
-      next: (reservations) => {
-        this.reservations = reservations;
-        this.loadApartmentDetails();
-      },
-      error: (error) => {
-        console.error('Error loading reservations:', error);
-        this.snackBar.open('Failed to load reservations', 'Close', { duration: 3000 });
-        this.isLoading = false;
-      }
-    });
-    
-    this.subscriptions.push(reservationSubscription);
-  }
-
-  private loadApartmentDetails(): void {
-    // Load apartment details for each reservation
-    const apartmentRequests = this.reservations.map(reservation =>
-      this.apartmentService.getApartmentById(reservation.apartmentId).subscribe({
-        next: (apartment) => {
-          reservation.apartment = apartment;
-        },
-        error: (error) => {
-          console.error(`Error loading apartment ${reservation.apartmentId}:`, error);
-        }
-      })
-    );
-
-    // Wait for all apartment details to load
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 1000);
-  }
-
+  // Public methods - Authentication
   openLoginDialog(): void {
     this.dialogService.openLoginDialog();
   }
@@ -122,36 +83,69 @@ export class BookingHistory implements OnInit, OnDestroy {
     this.dialogService.openRegisterDialog();
   }
 
-  getStatusClass(status: ReservationStatus): string {
-    switch (status) {
-      case 'CONFIRMED':
-        return 'status-confirmed';
-      case 'PENDING':
-        return 'status-pending';
-      case 'CANCELLED':
-        return 'status-cancelled';
-      case 'COMPLETED':
-        return 'status-completed';
-      default:
-        return 'status-pending';
+  viewApartmentDetails(apartmentId: number): void {
+    const reservation = this.reservations.find(r => r.apartmentId === apartmentId);
+    
+    if (reservation?.apartment) {
+      const dialogRef = this.dialogService.openApartmentDetailsDialog(reservation.apartment, false);
+      
+      dialogRef.afterClosed().subscribe(result => {
+        if (result?.action === 'book') {
+          this.onBookApartment(result.apartment);
+        }
+      });
+    } else {
+      this.snackBar.open('Apartment details not available', 'Close', { duration: 3000 });
     }
   }
 
-  getStatusIcon(status: ReservationStatus): string {
-    switch (status) {
-      case 'CONFIRMED':
-        return 'check_circle';
-      case 'PENDING':
-        return 'schedule';
-      case 'CANCELLED':
-        return 'cancel';
-      case 'COMPLETED':
-        return 'done_all';
-      default:
-        return 'schedule';
+  onBookApartment(apartment: any): void {
+    // Open booking dialog for the selected apartment
+    this.dialogService.openBookingDialog(apartment);
+  }
+
+  contactSupport(): void {
+    this.router.navigate(['/contact']);
+  }
+
+  // Public methods - Statistics
+  getActiveReservations(): number {
+    return this.reservations.filter(r => this.getDisplayStatus(r) !== 'ACTIVE').length;
+  }
+
+  getCompletedReservations(): number {
+    return this.reservations.filter(r => this.getDisplayStatus(r) === 'COMPLETED').length;
+  }
+
+  // Public methods - Display Status
+  getDisplayStatus(reservation: ReservationResponse): ReservationDisplayStatus {
+    const today = this.getTodayDate();
+    const checkInDate = this.getDateOnly(reservation.checkIn);
+    const checkOutDate = this.getDateOnly(reservation.checkOut);
+    
+    if (checkOutDate < today) {
+      return 'COMPLETED';
+    } else if (checkInDate <= today && checkOutDate >= today) {
+      return 'ACTIVE';
+    } else {
+      return 'UPCOMING';
     }
   }
 
+  getDisplayStatusIcon(reservation: ReservationResponse): string {
+    const statusIcons: Record<ReservationDisplayStatus, string> = {
+      'COMPLETED': 'done_all',
+      'ACTIVE': 'hotel',
+      'UPCOMING': 'schedule'
+    };
+    return statusIcons[this.getDisplayStatus(reservation)];
+  }
+
+  getDisplayStatusClass(reservation: ReservationResponse): string {
+    return `status-${this.getDisplayStatus(reservation).toLowerCase()}`;
+  }
+
+  // Public methods - Formatting
   formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -177,20 +171,123 @@ export class BookingHistory implements OnInit, OnDestroy {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
-  viewApartmentDetails(apartmentId: number): void {
-    // Navigate to apartment details or show in dialog
-    // For now, navigate to apartments page with query params
-    this.router.navigate(['/apartments'], { 
-      queryParams: { 
-        checkIn: new Date().toISOString().split('T')[0],
-        checkOut: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        guests: 1,
-        apartmentId: apartmentId
+  // Private methods - Initialization
+  private initializeAuthSubscription(): void {
+    const authSubscription = this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.isLoggedIn = !!user;
+      
+      if (this.isLoggedIn && user?.role === 'CLIENT') {
+        this.loadClientReservations();
       }
+    });
+    
+    this.subscriptions.push(authSubscription);
+  }
+
+  // Private methods - Data Loading
+  private loadClientReservations(): void {
+    if (!this.currentUser?.id) {
+      this.handleError('User information not available', 'No user found or user ID missing');
+      return;
+    }
+
+    this.isLoading = true;
+    
+    const reservationSubscription = this.apartmentService.getClientReservations(this.currentUser.id).subscribe({
+      next: (reservations) => {
+        this.reservations = reservations;
+        this.sortReservations();
+        this.loadApartmentDetails();
+      },
+      error: (error) => {
+        this.handleError('Failed to load reservations', 'Error loading reservations', error);
+      }
+    });
+    
+    this.subscriptions.push(reservationSubscription);
+  }
+
+  private loadApartmentDetails(): void {
+    if (this.reservations.length === 0) {
+      this.finishLoading();
+      return;
+    }
+
+    let loadedCount = 0;
+    const totalCount = this.reservations.length;
+
+    this.reservations.forEach(reservation => {
+      const apartmentSubscription = this.apartmentService.getApartmentById(reservation.apartmentId).subscribe({
+        next: (apartment) => {
+          reservation.apartment = apartment;
+          this.checkAllApartmentsLoaded(++loadedCount, totalCount);
+        },
+        error: (error) => {
+          console.error(`Error loading apartment ${reservation.apartmentId}:`, error);
+          this.checkAllApartmentsLoaded(++loadedCount, totalCount);
+        }
+      });
+      
+      this.subscriptions.push(apartmentSubscription);
     });
   }
 
-  contactSupport(): void {
-    this.router.navigate(['/contact']);
+  // Private methods - Sorting
+  private sortReservations(): void {
+    this.reservations.sort((a, b) => {
+      const aOrder = this.getReservationSortOrder(a);
+      const bOrder = this.getReservationSortOrder(b);
+      
+      if (aOrder !== bOrder) {
+        return aOrder - bOrder;
+      }
+      
+      // Within same status, sort by check-in date
+      const aCheckIn = new Date(a.checkIn);
+      const bCheckIn = new Date(b.checkIn);
+      
+      // For completed: most recent first, for others: earliest first
+      return aOrder === 3 ? bCheckIn.getTime() - aCheckIn.getTime() : aCheckIn.getTime() - bCheckIn.getTime();
+    });
+  }
+
+  private getReservationSortOrder(reservation: ReservationResponse): number {
+    const statusOrder: Record<ReservationDisplayStatus, number> = {
+      'UPCOMING': 1,
+      'ACTIVE': 2,
+      'COMPLETED': 3
+    };
+    return statusOrder[this.getDisplayStatus(reservation)] || 4;
+  }
+
+  // Private methods - Utilities
+  private getTodayDate(): Date {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+  }
+
+  private getDateOnly(dateString: string): Date {
+    const date = new Date(dateString);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+
+  private finishLoading(): void {
+    this.isLoading = false;
+    this.cdr.detectChanges();
+  }
+
+  private checkAllApartmentsLoaded(loadedCount: number, totalCount: number): void {
+    if (loadedCount === totalCount) {
+      this.finishLoading();
+    }
+  }
+
+  private handleError(userMessage: string, logMessage: string, error?: any): void {
+    console.error(logMessage, error);
+    this.snackBar.open(userMessage, 'Close', { duration: 3000 });
+    this.finishLoading();
   }
 }

@@ -69,6 +69,7 @@ public class SpringSecurityConfig {
                         // .requestMatchers("/reservations/**").hasRole("CLIENT") // Sve rezervacije - samo CLIENT
                         .requestMatchers("/bookings/**").hasRole("CLIENT")     // Booking history - samo CLIENT
                         .requestMatchers(HttpMethod.POST, "/reviews/**").hasRole("CLIENT") // Reviews - samo CLIENT
+                        .requestMatchers(HttpMethod.GET, "/reservations/client/**").hasRole("CLIENT")
 
                         // ADMIN ONLY ENDPOINTS - samo ADMIN
                         .requestMatchers(HttpMethod.POST, "/apartments/*/images").hasRole("ADMIN")

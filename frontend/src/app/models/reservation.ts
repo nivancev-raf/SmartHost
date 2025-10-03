@@ -31,6 +31,7 @@ export interface ReservationResponse {
   specialRequest?: string;
   createdAt: string;
   guestInformation: GuestInformation;
+  checkoutUrl?: string; // Backend provides this for PENDING reservations
 }
 
 export type ReservationStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';

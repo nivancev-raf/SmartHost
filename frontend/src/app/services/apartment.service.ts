@@ -162,22 +162,19 @@ export class ApartmentService {
     return this.http.get<Apartment[]>(`${this.API_URL}/apartments/available`, { params });
   }
 
-  // Reservation methods
   createGuestReservation(reservationData: ReservationRequest): Observable<ReservationResponse> {
-    // Guest reservations don't require authentication
     return this.http.post<ReservationResponse>(`${this.API_URL}/reservations`, reservationData);
   }
 
   createClientReservation(reservationData: ReservationRequest): Observable<ReservationResponse> {
-    // Client reservations require authentication
     const headers = this.getAuthHeaders();
     return this.http.post<ReservationResponse>(`${this.API_URL}/reservations`, reservationData, { headers });
   }
 
-  getClientReservations(): Observable<ReservationResponse[]> {
-    // Get reservations for the logged-in client
+  getClientReservations(clientId: number): Observable<ReservationResponse[]> {
+    // Get reservations for a specific client by ID
     const headers = this.getAuthHeaders();
-    return this.http.get<ReservationResponse[]>(`${this.API_URL}/reservations/client`, { headers });
+    return this.http.get<ReservationResponse[]>(`${this.API_URL}/reservations/client/${clientId}`, { headers });
   }
 
   getReservationById(id: number): Observable<ReservationResponse> {

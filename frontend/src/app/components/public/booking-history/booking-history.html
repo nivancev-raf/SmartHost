@@ -1,13 +1,14 @@
-<!-- Hero Section (for guests) -->
-<section *ngIf="!isLoggedIn" class="booking-history-hero">
+<!-- Hero Section -->
+<section class="booking-history-hero">
   <div class="hero-background">
     <img [src]="heroImage" alt="Booking History" class="hero-image">
     <div class="hero-overlay"></div>
   </div>
   <div class="hero-content">
     <div class="container">
-      <!-- Login Required Hero Content -->
-      <div class="hero-login-section">
+      
+      <!-- Guest Hero Content -->
+      <div *ngIf="!isLoggedIn" class="hero-login-section">
         <div class="hero-icon">
           <mat-icon>bookmark_border</mat-icon>
         </div>
@@ -30,6 +31,42 @@
           </button>
         </div>
       </div>
+
+      <!-- Logged-in User Hero Content -->
+      <div *ngIf="isLoggedIn" class="hero-user-section">
+        <div class="hero-icon">
+          <mat-icon>history</mat-icon>
+        </div>
+        <h1 class="hero-title">Your Booking History</h1>
+        <p class="hero-subtitle">
+          Welcome back, {{ currentUser?.firstName }}! Manage your reservations and plan your next stay with SmartHost
+        </p>
+        <div class="hero-stats" *ngIf="!isLoading">
+          <div class="stat-item">
+            <span class="stat-number">{{ reservations.length }}</span>
+            <span class="stat-label">Total Bookings</span>
+          </div>
+          <div class="stat-item" *ngIf="reservations.length > 0">
+            <span class="stat-number">{{ getActiveReservations() }}</span>
+            <span class="stat-label">Active</span>
+          </div>
+          <div class="stat-item" *ngIf="reservations.length > 0">
+            <span class="stat-number">{{ getCompletedReservations() }}</span>
+            <span class="stat-label">Completed</span>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button mat-raised-button color="primary" routerLink="/apartments" class="hero-book-btn">
+            <mat-icon>search</mat-icon>
+            Book New Stay
+          </button>
+          <button mat-stroked-button routerLink="/profile" class="hero-profile-btn">
+            <mat-icon>person</mat-icon>
+            View Profile
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -96,14 +133,14 @@
         <mat-card *ngFor="let reservation of reservations" class="reservation-card">
           <mat-card-header>
             <div mat-card-avatar class="reservation-avatar">
-              <mat-icon>{{ getStatusIcon(reservation.status) }}</mat-icon>
+              <mat-icon>{{ getDisplayStatusIcon(reservation) }}</mat-icon>
             </div>
             <mat-card-title>
               {{ reservation.apartment?.name || 'Apartment #' + reservation.apartmentId }}
             </mat-card-title>
             <mat-card-subtitle>
-              <mat-chip [class]="getStatusClass(reservation.status)" class="status-chip">
-                {{ reservation.status }}
+              <mat-chip [class]="getDisplayStatusClass(reservation)" class="status-chip">
+                {{ getDisplayStatus(reservation) }}
               </mat-chip>
             </mat-card-subtitle>
           </mat-card-header>

@@ -119,6 +119,9 @@
                   <mat-error *ngIf="contactForm.get('name')?.hasError('required')">
                     Name is required
                   </mat-error>
+                  <mat-error *ngIf="contactForm.get('name')?.hasError('minlength')">
+                    Name must be at least 2 characters long
+                  </mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="half-width">
@@ -133,27 +136,17 @@
                 </mat-form-field>
               </div>
 
-              <!-- Phone and Subject Row -->
-              <div class="form-row">
-                <mat-form-field appearance="outline" class="half-width">
-                  <mat-label>Phone Number</mat-label>
-                  <input matInput formControlName="phone" placeholder="+381 60 123 4567">
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="half-width">
-                  <mat-label>Subject</mat-label>
-                  <mat-select formControlName="subject">
-                    <mat-option value="booking">Booking Inquiry</mat-option>
-                    <mat-option value="support">Customer Support</mat-option>
-                    <mat-option value="partnership">Partnership</mat-option>
-                    <mat-option value="complaint">Complaint</mat-option>
-                    <mat-option value="other">Other</mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="contactForm.get('subject')?.hasError('required')">
-                    Please select a subject
-                  </mat-error>
-                </mat-form-field>
-              </div>
+              <!-- Subject -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Subject</mat-label>
+                <input matInput formControlName="subject" placeholder="What is this message about?">
+                <mat-error *ngIf="contactForm.get('subject')?.hasError('required')">
+                  Subject is required
+                </mat-error>
+                <mat-error *ngIf="contactForm.get('subject')?.hasError('minlength')">
+                  Subject must be at least 3 characters long
+                </mat-error>
+              </mat-form-field>
 
               <!-- Message -->
               <mat-form-field appearance="outline" class="full-width">
@@ -169,16 +162,6 @@
                   Message must be at least 10 characters long
                 </mat-error>
               </mat-form-field>
-
-              <!-- Privacy Agreement -->
-              <div class="privacy-section">
-                <mat-checkbox formControlName="privacy" color="primary">
-                  I agree to the <a href="#" target="_blank">Privacy Policy</a> and consent to my personal data being processed.
-                </mat-checkbox>
-                <mat-error *ngIf="contactForm.get('privacy')?.hasError('required') && contactForm.get('privacy')?.touched">
-                  You must agree to the privacy policy
-                </mat-error>
-              </div>
 
               <!-- Submit Button -->
               <div class="submit-section">

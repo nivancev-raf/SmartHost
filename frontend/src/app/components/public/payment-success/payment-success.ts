@@ -83,6 +83,9 @@ export class PaymentSuccess implements OnInit {
         this.reservation = reservation;
         console.log('Reservation details:', reservation);
         
+        // Send booking confirmation email
+        this.sendBookingConfirmationEmail(reservationId);
+        
         // Fetch apartment details
         this.apartmentService.getApartmentById(reservation.apartmentId).subscribe({
           next: (apartment) => {
@@ -102,6 +105,17 @@ export class PaymentSuccess implements OnInit {
         this.error = 'Unable to load reservation details';
         this.isLoading = false;
         this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private sendBookingConfirmationEmail(reservationId: number): void {
+    this.apartmentService.sendBookingConfirmationEmail(reservationId).subscribe({
+      next: (response) => {
+        console.log('Booking confirmation email sent successfully:', response);
+      },
+      error: (error) => {
+        console.error('Error sending booking confirmation email:', error);
       }
     });
   }

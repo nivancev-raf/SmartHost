@@ -186,4 +186,8 @@ export class ApartmentService {
   deleteReservation(reservationId: number, token: string): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/reservations/${reservationId}?token=${token}`);
   }
+
+  sendBookingConfirmationEmail(reservationId: number): Observable<{message: string}> {
+    return this.http.post<{message: string}>(`${this.API_URL}/notifications/sendBookingEmail?reservationId=${reservationId}`, {});
+  }
 }

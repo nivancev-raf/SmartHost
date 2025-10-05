@@ -1,0 +1,512 @@
+/* Admin Calendar Component Styles */
+
+/* Header Section */
+.calendar-header {
+  background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+  color: white;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  margin-top: 5rem;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.calendar-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.calendar-header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+/* Loading Section */
+.loading-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.loading-card {
+  margin-bottom: 2rem;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.loading-content p {
+  margin-top: 1rem;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+/* No Apartments Section */
+.no-apartments-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.no-apartments-card {
+  margin-bottom: 2rem;
+}
+
+.no-apartments-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.no-apartments-content mat-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  color: #bdc3c7;
+  margin-bottom: 1.5rem;
+}
+
+.no-apartments-content h2 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.no-apartments-content p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+/* Calendar Dashboard */
+.calendar-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Section Headers */
+.section-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.section-header h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.section-header mat-icon {
+  color: #00bcd4;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.section-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+/* Apartments Grid */
+.apartments-section {
+  margin-bottom: 3rem;
+}
+
+.apartments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.apartment-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.apartment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Apartment Header */
+.apartment-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.apartment-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+  color: white;
+}
+
+.apartment-avatar mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.apartment-title {
+  flex: 1;
+}
+
+.apartment-title h3 {
+  margin: 0 0 0.25rem 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.apartment-location {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.calendar-icon {
+  color: #00bcd4;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.apartment-card:hover .calendar-icon {
+  opacity: 1;
+}
+
+.calendar-icon mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+/* Apartment Stats */
+.apartment-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 1.5rem;
+  background: white;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+}
+
+.stat-item:nth-child(1) {
+  border-left-color: #4caf50;
+}
+
+.stat-item:nth-child(2) {
+  border-left-color: #2196f3;
+}
+
+.stat-item:nth-child(3) {
+  border-left-color: #ff9800;
+}
+
+.stat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.bookings-icon {
+  color: #4caf50;
+}
+
+.guests-icon {
+  color: #2196f3;
+}
+
+.price-icon {
+  color: #ff9800;
+}
+
+.stat-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Upcoming Bookings */
+.upcoming-bookings {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-top: 1px solid #e0e0e0;
+}
+
+.upcoming-bookings h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem 0;
+  color: #1976d2;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.upcoming-bookings mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.booking-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.booking-chip {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 16px;
+}
+
+.booking-chip mat-icon {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* No Bookings */
+.no-bookings {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  color: #6c757d;
+  font-style: italic;
+  background: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+}
+
+.no-bookings mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Card Actions */
+.card-actions {
+  padding: 1rem 1.5rem;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+}
+
+.view-calendar-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+  color: white;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.view-calendar-btn:hover {
+  background: linear-gradient(135deg, #0097a7 0%, #00838f 100%);
+}
+
+.view-calendar-btn mat-icon {
+  margin-right: 0.5rem;
+}
+
+/* Legend Section */
+.legend-section {
+  margin-bottom: 2rem;
+}
+
+.legend-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+}
+
+.legend-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.legend-header mat-icon {
+  color: #00bcd4;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.legend-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.legend-content {
+  padding: 1rem 1.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.legend-item:not(:last-child) {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.legend-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.legend-icon.available {
+  color: #4caf50;
+}
+
+.legend-icon.booked {
+  color: #f44336;
+}
+
+.legend-icon.navigate {
+  color: #2196f3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .calendar-header h1 {
+    font-size: 2rem;
+  }
+
+  .calendar-header p {
+    font-size: 1rem;
+  }
+
+  .apartments-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .apartment-stats {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .apartment-header {
+    padding: 1rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .upcoming-bookings {
+    padding: 1rem;
+  }
+
+  .booking-chips {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-header {
+    padding: 1.5rem 0;
+  }
+
+  .calendar-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .calendar-dashboard {
+    padding: 0 1rem;
+  }
+
+  .apartment-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+
+  .apartment-title h3 {
+    font-size: 1.1rem;
+  }
+
+  .stat-item {
+    padding: 0.5rem;
+  }
+
+  .legend-content {
+    padding: 0.75rem 1rem;
+  }
+
+  .legend-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    text-align: left;
+  }
+}

@@ -1,0 +1,498 @@
+/* Admin Finance Component Styles */
+
+/* Header Section */
+.finance-header {
+  background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+  color: white;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  margin-top: 5rem;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.finance-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.finance-header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+/* Loading Section */
+.loading-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.loading-card {
+  margin-bottom: 2rem;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.loading-content p {
+  margin-top: 1rem;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+/* No Data Section */
+.no-data-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.no-data-card {
+  margin-bottom: 2rem;
+}
+
+.no-data-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.no-data-content mat-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  color: #bdc3c7;
+  margin-bottom: 1.5rem;
+}
+
+.no-data-content h2 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.no-data-content p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+/* Finance Dashboard */
+.finance-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Summary Section */
+.summary-section {
+  margin-bottom: 3rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.summary-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  color: white;
+}
+
+.summary-icon mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.daily-icon {
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+}
+
+.monthly-icon {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+}
+
+.annual-icon {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+}
+
+.properties-icon {
+  background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+}
+
+.summary-details h3 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+  color: #2c3e50;
+}
+
+.summary-details p {
+  font-size: 1rem;
+  color: #6c757d;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Income Table Section */
+.income-table-section {
+  margin-bottom: 2rem;
+}
+
+.income-table-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.table-header {
+  padding: 2rem 2rem 1rem 2rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.table-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.table-header mat-icon {
+  color: #00bcd4;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.table-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 1rem;
+}
+
+/* Table Styles */
+.table-container {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.income-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.income-table th {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  color: #495057;
+  font-weight: 600;
+  text-align: left;
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.income-table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.income-table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.income-table th mat-icon {
+  vertical-align: middle;
+  margin-right: 0.5rem;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.apartment-header mat-icon {
+  color: #6c757d;
+}
+
+.daily-header mat-icon {
+  color: #4caf50;
+}
+
+.monthly-header mat-icon {
+  color: #2196f3;
+}
+
+.annual-header mat-icon {
+  color: #ff9800;
+}
+
+.income-table td {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.income-row:hover {
+  background-color: #f8f9fa;
+}
+
+.income-row:last-child td {
+  border-bottom: none;
+}
+
+/* Apartment Cell */
+.apartment-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.apartment-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+  color: white;
+}
+
+.apartment-avatar mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.apartment-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.apartment-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.apartment-id {
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Income Amounts */
+.income-amount {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.daily-cell .income-amount {
+  color: #4caf50;
+}
+
+.monthly-cell .income-amount {
+  color: #2196f3;
+}
+
+.annual-cell .income-amount {
+  color: #ff9800;
+}
+
+.annual-amount {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* Table Footer */
+.table-footer {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-top: 2px solid #dee2e6;
+  padding: 1.5rem 2rem;
+  margin-top: 1rem;
+}
+
+.footer-totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.total-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.total-label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.total-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #00bcd4;
+}
+
+.annual-total {
+  color: #ff9800;
+  font-size: 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .finance-header h1 {
+    font-size: 2rem;
+  }
+
+  .finance-header p {
+    font-size: 1rem;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .summary-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .summary-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .summary-icon mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .summary-details h3 {
+    font-size: 1.8rem;
+  }
+
+  .table-header {
+    padding: 1.5rem 1rem 1rem 1rem;
+  }
+
+  .table-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .income-table th,
+  .income-table td {
+    padding: 1rem 0.75rem;
+  }
+
+  .apartment-info {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .footer-totals {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .finance-header {
+    padding: 1.5rem 0;
+  }
+
+  .finance-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .loading-content {
+    padding: 2rem 1rem;
+  }
+
+  .no-data-content {
+    padding: 3rem 1rem;
+  }
+
+  .finance-dashboard {
+    padding: 0 1rem;
+  }
+
+  .table-header {
+    padding: 1rem;
+  }
+
+  .table-footer {
+    padding: 1rem;
+  }
+
+  .income-table th,
+  .income-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .apartment-name {
+    font-size: 0.9rem;
+  }
+
+  .income-amount {
+    font-size: 1rem;
+  }
+}

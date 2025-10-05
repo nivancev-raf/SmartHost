@@ -1,1 +1,81 @@
-<p>calendar works!</p>
+<!-- Calendar Header -->
+<div class="calendar-header">
+  <div class="header-content">
+    <h1>Calendar Management</h1>
+    <p>View apartment availability and booking schedule</p>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div *ngIf="isLoading" class="loading-section">
+  <mat-card class="loading-card">
+    <mat-card-content>
+      <div class="loading-content">
+        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+        <p>Loading calendar data...</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- No Apartments State -->
+<div *ngIf="!isLoading && apartments.length === 0" class="no-apartments-section">
+  <mat-card class="no-apartments-card">
+    <mat-card-content>
+      <div class="no-apartments-content">
+        <mat-icon>event_busy</mat-icon>
+        <h2>No Properties Found</h2>
+        <p>Add apartments to start managing their availability calendars.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Calendar Dashboard -->
+<div *ngIf="!isLoading && apartments.length > 0" class="calendar-dashboard">
+  
+  <!-- Apartments List -->
+  <div class="apartments-section">
+    <div class="section-header">
+      <h2>
+        <mat-icon>apartment</mat-icon>
+        Your Properties
+      </h2>
+      <p>Click on any property to view its availability calendar</p>
+    </div>
+
+    <div class="apartments-grid">
+      <app-apartment-card 
+        *ngFor="let apartment of apartments" 
+        [apartment]="convertToCardData(apartment)"
+        [showAdminActions]="false"
+        [viewButtonText]="'View Calendar'"
+        (onView)="onViewCalendar($event)">
+      </app-apartment-card>
+    </div>
+  </div>
+
+  <!-- Quick Legend -->
+  <div class="legend-section">
+    <mat-card class="legend-card">
+      <div class="legend-header">
+        <mat-icon>info</mat-icon>
+        <h3>How to Use</h3>
+      </div>
+      <div class="legend-content">
+        <div class="legend-item">
+          <mat-icon class="legend-icon available">event_available</mat-icon>
+          <span>Click on any property card to open its availability calendar</span>
+        </div>
+        <div class="legend-item">
+          <mat-icon class="legend-icon booked">event_busy</mat-icon>
+          <span>View booked dates and available periods in the calendar view</span>
+        </div>
+        <div class="legend-item">
+          <mat-icon class="legend-icon navigate">navigate_next</mat-icon>
+          <span>Navigate between months to see future availability</span>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div>

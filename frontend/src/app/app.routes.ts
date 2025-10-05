@@ -8,6 +8,8 @@ import { PaymentSuccess } from './components/public/payment-success/payment-succ
 import { PaymentCancel } from './components/public/payment-cancel/payment-cancel';
 import { Apartments as AdminApartments } from './components/admin/apartments/apartments';
 import { Reservations as AdminReservations } from './components/admin/reservations/reservations';
+import { Finance as AdminFinance } from './components/admin/finance/finance';
+import { Calendar as AdminCalendar } from './components/admin/calendar/calendar';
 import { Apartments as PublicApartments } from './components/public/apartments/apartments';
 import { AdminGuard } from './guards/admin.guard';
 
@@ -40,6 +42,16 @@ export const routes: Routes = [
   { 
     path: 'admin/reservations', 
     component: AdminReservations,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'admin/finance', 
+    component: AdminFinance,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'admin/calendar', 
+    component: AdminCalendar,
     canActivate: [AdminGuard]
   },
   

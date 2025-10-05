@@ -43,7 +43,7 @@
     <!-- Public actions (always shown) -->
     <ng-container *ngIf="!showAdminActions">
       <button mat-raised-button color="primary" class="details-btn" (click)="onViewClick()">
-        Details
+        {{ viewButtonText }}
       </button>
     </ng-container>
 

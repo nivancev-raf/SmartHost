@@ -1,0 +1,68 @@
+<div class="calendar-dialog">
+  <!-- Dialog Header -->
+  <div class="dialog-header">
+    <div class="apartment-info">
+      <div class="apartment-avatar">
+        <mat-icon>home</mat-icon>
+      </div>
+      <div class="apartment-details">
+        <h2>{{ apartment.name }}</h2>
+        <p>{{ apartment.city }} • {{ apartment.maxGuests }} guests</p>
+      </div>
+    </div>
+    <button mat-icon-button (click)="close()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Calendar Navigation -->
+  <div class="calendar-nav">
+    <button mat-icon-button (click)="previousMonth()" class="nav-btn">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    
+    <div class="month-year">
+      <h3>{{ monthData.monthName }} {{ monthData.year }}</h3>
+    </div>
+    
+    <button mat-icon-button (click)="nextMonth()" class="nav-btn">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    
+    <button mat-raised-button (click)="goToToday()" class="today-btn">
+      <mat-icon>today</mat-icon>
+      Today
+    </button>
+  </div>
+
+  <!-- Calendar Grid -->
+  <div class="calendar-container">
+    <div class="calendar-grid">
+      <!-- Calendar Days -->
+      <div class="calendar-days">
+        <div 
+          *ngFor="let day of monthData.days" 
+          [class]="getDayClass(day)"
+          [matTooltip]="getDayTooltip(day)"
+          matTooltipPosition="above">
+          
+          <span class="day-number">{{ day.day }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Legend -->
+  <div class="calendar-legend">
+    <div class="legend-item">
+      <div class="legend-color available"></div>
+      <span>Available</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color booked"></div>
+      <span>Booked</span>
+    </div>
+  </div>
+</div>

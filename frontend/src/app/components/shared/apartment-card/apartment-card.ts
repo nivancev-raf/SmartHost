@@ -8,6 +8,7 @@ import { ApartmentCardData } from '../../../models/apartment';
 
 @Component({
   selector: 'app-apartment-card',
+  standalone: true,
   templateUrl: './apartment-card.html',
   styleUrls: ['./apartment-card.css'],
   imports: [
@@ -21,6 +22,7 @@ import { ApartmentCardData } from '../../../models/apartment';
 export class ApartmentCardComponent {
   @Input() apartment!: ApartmentCardData; // apartment! data is required
   @Input() showAdminActions = false;
+  @Input() viewButtonText = 'Details'; // Customizable button text
   
   @Output() onEdit = new EventEmitter<ApartmentCardData>();
   @Output() onDelete = new EventEmitter<ApartmentCardData>();

@@ -7,6 +7,7 @@ import { BookingHistory } from './components/public/booking-history/booking-hist
 import { PaymentSuccess } from './components/public/payment-success/payment-success';
 import { PaymentCancel } from './components/public/payment-cancel/payment-cancel';
 import { Apartments as AdminApartments } from './components/admin/apartments/apartments';
+import { Reservations as AdminReservations } from './components/admin/reservations/reservations';
 import { Apartments as PublicApartments } from './components/public/apartments/apartments';
 import { AdminGuard } from './guards/admin.guard';
 
@@ -34,6 +35,11 @@ export const routes: Routes = [
   { 
     path: 'admin/apartments', 
     component: AdminApartments,
+    canActivate: [AdminGuard]
+  },
+  { 
+    path: 'admin/reservations', 
+    component: AdminReservations,
     canActivate: [AdminGuard]
   },
   

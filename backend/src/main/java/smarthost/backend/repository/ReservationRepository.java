@@ -42,4 +42,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("checkIn") LocalDate checkIn,
             @Param("checkOut") LocalDate checkOut,
             @Param("statuses") List<ReservationStatus> statuses);
+
+    // findByApartmentOwnerId
+    @Query("SELECT r FROM Reservation r JOIN Apartment a ON r.apartmentId = a.id WHERE a.ownerId = :ownerId")
+    List<Reservation> findByApartmentOwnerId(@Param("ownerId") Long ownerId);
 }

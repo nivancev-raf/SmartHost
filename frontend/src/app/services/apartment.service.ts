@@ -190,4 +190,10 @@ export class ApartmentService {
   sendBookingConfirmationEmail(reservationId: number): Observable<{message: string}> {
     return this.http.post<{message: string}>(`${this.API_URL}/notifications/sendBookingEmail?reservationId=${reservationId}`, {});
   }
+
+  getOwnerReservations(ownerId: number): Observable<ReservationResponse[]> {
+    // Get all reservations for apartments owned by the specified owner
+    const headers = this.getAuthHeaders();
+    return this.http.get<ReservationResponse[]>(`${this.API_URL}/reservations/owner/${ownerId}`, { headers });
+  }
 }

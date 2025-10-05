@@ -1,1 +1,292 @@
-<p>reservations works!</p>
+<!-- Admin Reservations Header -->
+<div class="reservations-header">
+  <div class="header-content">
+    <h1>Reservations Management</h1>
+    <p>Manage all reservations for your apartments</p>
+  </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="statistics-section">
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>book_online</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>{{ getTotalReservations() }}</h3>
+            <p>Total Reservations</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon active">
+            <mat-icon>hotel</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>{{ getActiveReservations() }}</h3>
+            <p>Active Bookings</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon completed">
+            <mat-icon>done_all</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>{{ getCompletedReservations() }}</h3>
+            <p>Completed Stays</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon revenue">
+            <mat-icon>euro</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>€{{ getTotalRevenue() }}</h3>
+            <p>Total Revenue</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<!-- Filters Section -->
+<div *ngIf="!isLoading" class="filters-section">
+  <mat-card class="filters-card">
+    <div class="filters-header">
+      <mat-icon>filter_list</mat-icon>
+      <h3>Filters</h3>
+    </div>
+
+    <div class="filters-content">
+      <!-- Filter Form Row -->
+      <div class="filters-row">
+        <!-- Apartment Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Filter by Apartment</mat-label>
+          <mat-select [(value)]="selectedApartmentFilter" (selectionChange)="applyFilters()">
+            <mat-option value="all">All Apartments</mat-option>
+            <mat-option *ngFor="let apartment of ownerApartments" [value]="apartment.id">
+              {{ apartment.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Status Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Filter by Status</mat-label>
+          <mat-select [(value)]="selectedStatusFilter" (selectionChange)="applyFilters()">
+            <mat-option value="all">All Statuses</mat-option>
+            <mat-option value="UPCOMING">Upcoming</mat-option>
+            <mat-option value="ACTIVE">Active</mat-option>
+            <mat-option value="COMPLETED">Completed</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Clear All Filters Button -->
+      <div class="clear-filters-container" *ngIf="selectedApartmentFilter !== 'all' || selectedStatusFilter !== 'all'">
+        <button mat-raised-button class="clear-filters-btn" (click)="clearFilters()">
+          <mat-icon>clear_all</mat-icon>
+          Clear All Filters
+        </button>
+      </div>
+    </div>
+  </mat-card>
+</div>
+
+<!-- Filter Results Summary -->
+<div *ngIf="!isLoading && reservations.length > 0 && (selectedApartmentFilter !== 'all' || selectedStatusFilter !== 'all')" class="filter-results-summary">
+  <div class="results-badge">
+    <mat-icon>search</mat-icon>
+    <span>Total: <strong>{{ filteredReservations.length }}</strong> {{ filteredReservations.length === 1 ? 'result' : 'results' }}</span>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div *ngIf="isLoading" class="loading-section">
+  <mat-card class="loading-card">
+    <mat-card-content>
+      <div class="loading-content">
+        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+        <p>Loading reservations...</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- No Reservations -->
+<div *ngIf="!isLoading && reservations.length === 0" class="no-reservations-section">
+  <mat-card class="no-reservations-card">
+    <mat-card-content>
+      <div class="no-reservations-content">
+        <mat-icon>event_busy</mat-icon>
+        <h2>No Reservations Yet</h2>
+        <p>Your apartments haven't received any bookings yet. Make sure your listings are attractive and competitive!</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Reservations List -->
+<div *ngIf="!isLoading && reservations.length > 0" class="reservations-section">
+  <mat-card class="reservations-card">
+    <mat-card-content>
+      <div class="reservations-list">
+        <div *ngFor="let reservation of getDisplayReservations()" class="reservation-item">
+          <mat-card class="reservation-card">
+            <mat-card-header>
+              <div mat-card-avatar class="reservation-avatar">
+                <mat-icon>{{ getDisplayStatusIcon(reservation) }}</mat-icon>
+              </div>
+              <mat-card-title>
+                {{ reservation.apartment?.name || 'Apartment #' + reservation.apartmentId }}
+              </mat-card-title>
+              <mat-card-subtitle>
+                <mat-chip [class]="getDisplayStatusClass(reservation)" class="status-chip">
+                  {{ getDisplayStatus(reservation) }}
+                </mat-chip>
+              </mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <div class="reservation-details">
+                <!-- Guest Information -->
+                <div class="detail-section">
+                  <div class="detail-item">
+                    <mat-icon>person</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Guest</span>
+                      <span class="detail-value">{{ reservation.guestInformation.firstName }} {{ reservation.guestInformation.lastName }}</span>
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>email</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Email</span>
+                      <span class="detail-value">{{ reservation.guestInformation.email }}</span>
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>phone</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Phone</span>
+                      <span class="detail-value">{{ reservation.guestInformation.phone || 'Not provided' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <!-- Booking Details -->
+                <div class="detail-section">
+                  <div class="detail-item">
+                    <mat-icon>date_range</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Check-in</span>
+                      <span class="detail-value">{{ formatDate(reservation.checkIn) }}</span>
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>date_range</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Check-out</span>
+                      <span class="detail-value">{{ formatDate(reservation.checkOut) }}</span>
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>nights_stay</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Duration</span>
+                      <span class="detail-value">{{ calculateNights(reservation.checkIn, reservation.checkOut) }} nights</span>
+                    </div>
+                  </div>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <!-- Financial & Additional Info -->
+                <div class="detail-section">
+                  <div class="detail-item">
+                    <mat-icon>people</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Guests</span>
+                      <span class="detail-value">{{ reservation.guests }}</span>
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>euro</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Total Price</span>
+                      <span class="detail-value">€{{ reservation.totalPrice }}</span>
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>schedule</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Booked At</span>
+                      <span class="detail-value">{{ formatDateTime(reservation.createdAt) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Access Code (for active/upcoming reservations) -->
+                <div *ngIf="(getDisplayStatus(reservation) === 'ACTIVE' || getDisplayStatus(reservation) === 'UPCOMING') && reservation.accessCode" class="access-code-section">
+                  <mat-divider></mat-divider>
+                  <div class="detail-item">
+                    <mat-icon>vpn_key</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Access Code</span>
+                      <span class="detail-value access-code">{{ reservation.accessCode }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Special Requests -->
+                <div *ngIf="reservation.specialRequest" class="special-request-section">
+                  <mat-divider></mat-divider>
+                  <div class="detail-item">
+                    <mat-icon>note</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Special Request</span>
+                      <span class="detail-value">{{ reservation.specialRequest }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Location Info -->
+                <div *ngIf="reservation.apartment" class="location-section">
+                  <mat-divider></mat-divider>
+                  <div class="detail-item">
+                    <mat-icon>location_on</mat-icon>
+                    <div class="detail-content">
+                      <span class="detail-label">Location</span>
+                      <span class="detail-value">{{ reservation.apartment.address }}, {{ reservation.apartment.city }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

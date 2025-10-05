@@ -52,4 +52,12 @@ public class ReservationController {
         List<ReservationDto> reservations = reservationService.getReservationsByClient(clientId);
         return ResponseEntity.ok(reservations);
     }
+
+    @GetMapping("/owner/{ownerId}")
+    public ResponseEntity<List<ReservationDto>> getOwnerReservations(
+            @PathVariable Integer ownerId) {
+        // Get all reservations for apartments owned by ownerId
+        List<ReservationDto> reservations = reservationService.getReservationsByOwner(Long.valueOf(ownerId));
+        return ResponseEntity.ok(reservations);
+    }
 }

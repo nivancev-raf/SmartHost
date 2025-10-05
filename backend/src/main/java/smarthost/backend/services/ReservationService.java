@@ -142,6 +142,16 @@ public class ReservationService {
                 .toList();
     }
 
+    /**
+     * Get reservations by owner ID (for all apartments owned by the owner)
+     */
+    public List<ReservationDto> getReservationsByOwner(Long ownerId) {
+        List<Reservation> reservations = reservationRepository.findByApartmentOwnerId(ownerId);
+        return reservations.stream()
+                .map(reservationMapper::mapToDto)
+                .toList();
+    }
+
     @Transactional
     public void deleteReservationWithToken(Long reservationId, String token) {
         System.out.println("Attempting to delete reservation ID: " + reservationId + " with token: " + token);

@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 import { ApartmentService } from '../../../services/apartment.service';
 import { DialogService } from '../../../services/dialog.service';
+import { ReservationUtils } from '../../../utils/reservation.utils';
 import { User } from '../../../models/auth';
 import { ReservationResponse } from '../../../models/reservation';
 import { Apartment } from '../../../models/apartment';
@@ -23,8 +24,6 @@ import { Apartment } from '../../../models/apartment';
 interface ReservationWithApartment extends ReservationResponse {
   apartment?: Apartment;
 }
-
-type ReservationDisplayStatus = 'UPCOMING' | 'ACTIVE' | 'COMPLETED';
 
 @Component({
   selector: 'app-booking-history',
@@ -62,7 +61,8 @@ export class BookingHistory implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public reservationUtils: ReservationUtils
   ) {}
 
   // Lifecycle hooks
@@ -108,67 +108,39 @@ export class BookingHistory implements OnInit, OnDestroy {
     this.router.navigate(['/contact']);
   }
 
-  // Public methods - Statistics
+  // Public methods - Statistics (delegated to utility service)
   getActiveReservations(): number {
-    return this.reservations.filter(r => this.getDisplayStatus(r) !== 'ACTIVE').length;
+    return this.reservationUtils.getActiveReservations(this.reservations);
   }
 
   getCompletedReservations(): number {
-    return this.reservations.filter(r => this.getDisplayStatus(r) === 'COMPLETED').length;
+    return this.reservationUtils.getCompletedReservations(this.reservations);
   }
 
-  // Public methods - Display Status
-  getDisplayStatus(reservation: ReservationResponse): ReservationDisplayStatus {
-    const today = this.getTodayDate();
-    const checkInDate = this.getDateOnly(reservation.checkIn);
-    const checkOutDate = this.getDateOnly(reservation.checkOut);
-    
-    if (checkOutDate < today) {
-      return 'COMPLETED';
-    } else if (checkInDate <= today && checkOutDate >= today) {
-      return 'ACTIVE';
-    } else {
-      return 'UPCOMING';
-    }
+  // Public methods - Display Status (delegated to utility service)
+  getDisplayStatus(reservation: ReservationResponse) {
+    return this.reservationUtils.getDisplayStatus(reservation);
   }
 
   getDisplayStatusIcon(reservation: ReservationResponse): string {
-    const statusIcons: Record<ReservationDisplayStatus, string> = {
-      'COMPLETED': 'done_all',
-      'ACTIVE': 'hotel',
-      'UPCOMING': 'schedule'
-    };
-    return statusIcons[this.getDisplayStatus(reservation)];
+    return this.reservationUtils.getDisplayStatusIcon(reservation);
   }
 
   getDisplayStatusClass(reservation: ReservationResponse): string {
-    return `status-${this.getDisplayStatus(reservation).toLowerCase()}`;
+    return this.reservationUtils.getDisplayStatusClass(reservation);
   }
 
-  // Public methods - Formatting
+  // Public methods - Formatting (delegated to utility service)
   formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    return this.reservationUtils.formatDate(dateString);
   }
 
   formatDateTime(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return this.reservationUtils.formatDateTime(dateString);
   }
 
   calculateNights(checkIn: string, checkOut: string): number {
-    const start = new Date(checkIn);
-    const end = new Date(checkOut);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return this.reservationUtils.calculateNights(checkIn, checkOut);
   }
 
   // Private methods - Initialization
@@ -233,45 +205,9 @@ export class BookingHistory implements OnInit, OnDestroy {
     });
   }
 
-  // Private methods - Sorting
+  // Private methods - Sorting (delegated to utility service)
   private sortReservations(): void {
-    this.reservations.sort((a, b) => {
-      const aOrder = this.getReservationSortOrder(a);
-      const bOrder = this.getReservationSortOrder(b);
-      
-      if (aOrder !== bOrder) {
-        return aOrder - bOrder;
-      }
-      
-      // Within same status, sort by check-in date
-      const aCheckIn = new Date(a.checkIn);
-      const bCheckIn = new Date(b.checkIn);
-      
-      // For completed: most recent first, for others: earliest first
-      return aOrder === 3 ? bCheckIn.getTime() - aCheckIn.getTime() : aCheckIn.getTime() - bCheckIn.getTime();
-    });
-  }
-
-  private getReservationSortOrder(reservation: ReservationResponse): number {
-    const statusOrder: Record<ReservationDisplayStatus, number> = {
-      'UPCOMING': 1,
-      'ACTIVE': 2,
-      'COMPLETED': 3
-    };
-    return statusOrder[this.getDisplayStatus(reservation)] || 4;
-  }
-
-  // Private methods - Utilities
-  private getTodayDate(): Date {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return today;
-  }
-
-  private getDateOnly(dateString: string): Date {
-    const date = new Date(dateString);
-    date.setHours(0, 0, 0, 0);
-    return date;
+    this.reservations = this.reservationUtils.sortReservations(this.reservations);
   }
 
   private finishLoading(): void {

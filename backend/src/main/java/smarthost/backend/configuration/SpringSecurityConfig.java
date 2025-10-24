@@ -56,6 +56,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/reservations/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/notifications/sendEmail").permitAll()
                         .requestMatchers(HttpMethod.POST, "/notifications/sendBookingEmail/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll() // svi mogu da dohvate reviews
 
                         // SWAGGER ENDPOINTS - Add these lines
                         .requestMatchers("/swagger-ui/**").permitAll()

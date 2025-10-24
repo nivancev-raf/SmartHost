@@ -46,4 +46,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     // findByApartmentOwnerId
     @Query("SELECT r FROM Reservation r JOIN Apartment a ON r.apartmentId = a.id WHERE a.ownerId = :ownerId")
     List<Reservation> findByApartmentOwnerId(@Param("ownerId") Long ownerId);
+
+    /**
+     * Find confirmed reservations for a client that are in the past and don't have a review yet
+     */
+    @Query("SELECT r FROM Reservation r LEFT JOIN r.review rev " +
+            "WHERE r.clientId = :clientId AND r.status = smarthost.backend.enums.ReservationStatus.CONFIRMED " +
+            "AND r.checkOut < :today AND rev.id IS NULL")
+    List<Reservation> findConfirmedPastWithoutReview(@Param("clientId") Long clientId, @Param("today") java.time.LocalDate today);
 }

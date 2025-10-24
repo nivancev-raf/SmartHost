@@ -6,12 +6,14 @@ import { About } from './components/public/about/about';
 import { BookingHistory } from './components/public/booking-history/booking-history';
 import { PaymentSuccess } from './components/public/payment-success/payment-success';
 import { PaymentCancel } from './components/public/payment-cancel/payment-cancel';
+import { Reviews } from './components/public/reviews/reviews';
 import { Apartments as AdminApartments } from './components/admin/apartments/apartments';
 import { Reservations as AdminReservations } from './components/admin/reservations/reservations';
 import { Finance as AdminFinance } from './components/admin/finance/finance';
 import { Calendar as AdminCalendar } from './components/admin/calendar/calendar';
 import { Apartments as PublicApartments } from './components/public/apartments/apartments';
 import { AdminGuard } from './guards/admin.guard';
+
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -22,6 +24,7 @@ export const routes: Routes = [
   { path: 'apartments', component: PublicApartments },
   { path: 'contact', component: Contact },
   { path: 'about', component: About },
+  { path: 'reviews', component: Reviews },
   { path: 'booking-history', component: BookingHistory },
   
   // Payment routes - Stripe redirects here after payment
@@ -54,7 +57,6 @@ export const routes: Routes = [
     component: AdminCalendar,
     canActivate: [AdminGuard]
   },
-  
   // Add more routes as needed
   { path: '**', redirectTo: '' }
 ];

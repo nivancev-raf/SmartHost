@@ -1,1 +1,111 @@
-<p>reviews works!</p>
+<!-- Reviews Hero Section -->
+<section class="reviews-hero">
+  <div class="hero-background">
+    <img [src]="heroImage" alt="Guest Reviews" class="hero-image">
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <div class="container">
+      <h1 class="hero-title">Guest Reviews</h1>
+      <p class="hero-subtitle">Real experiences from real guests - discover what makes our apartments special</p>
+    </div>
+  </div>
+</section>
+
+<!-- Reviews Content Section -->
+<section class="reviews-content">
+  <div class="container">
+
+  <!-- Pending Reviews Notification Banner -->
+  <div *ngIf="shouldShowPendingNotification()" class="pending-notification-banner">
+    <mat-card class="notification-card">
+      <mat-card-content class="notification-content">
+        <div class="notification-info">
+          <mat-icon class="notification-icon">notifications_active</mat-icon>
+          <div class="notification-text">
+            <h3>You have {{ pendingReviewsCount }} pending review{{ pendingReviewsCount > 1 ? 's' : '' }}</h3>
+            <p>Share your experience and help future guests by submitting your reviews for completed stays.</p>
+          </div>
+        </div>
+        <div class="notification-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            class="submit-reviews-btn"
+            (click)="goToSubmitReviewsTab()">
+            <mat-icon>rate_review</mat-icon>
+            Submit Reviews
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Content Tabs -->
+  <mat-tab-group 
+    [(selectedIndex)]="selectedTabIndex" 
+    (selectedTabChange)="onTabChanged($event.index)"
+    class="reviews-tabs">
+    
+    <!-- All Reviews Tab (Always visible) -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>public</mat-icon>
+        All Reviews
+      </ng-template>
+      
+      <div class="tab-content">
+        <app-review-list
+          [reviews]="allReviews"
+          [loading]="loadingAllReviews"
+          [showActions]="isAdmin()"
+          [emptyMessage]="'No reviews have been submitted yet'"
+          (editReview)="onEditReview($event)"
+          (deleteReview)="onDeleteReview($event)">
+        </app-review-list>
+      </div>
+    </mat-tab>
+
+    <!-- Pending Reviews Tab (Only for clients) -->
+    <mat-tab *ngIf="isClient()">
+      <ng-template mat-tab-label>
+        <div class="tab-label-with-badge">
+          <mat-icon 
+            [matBadge]="pendingReviewsCount" 
+            [matBadgeHidden]="pendingReviewsCount === 0"
+            matBadgeColor="accent"
+            matBadgeSize="small">
+            rate_review
+          </mat-icon>
+          <span class="tab-text">Submit Reviews</span>
+        </div>
+      </ng-template>
+      
+      <div class="tab-content">
+        <app-pending-reviews (reviewSubmitted)="onReviewSubmitted()"></app-pending-reviews>
+      </div>
+    </mat-tab>
+
+    <!-- My Reviews Tab (Only for clients) -->
+    <mat-tab *ngIf="isClient()">
+      <ng-template mat-tab-label>
+        <mat-icon>person</mat-icon>
+        My Reviews
+      </ng-template>
+      
+      <div class="tab-content">
+        <app-review-list
+          [reviews]="myReviews"
+          [loading]="loadingMyReviews"
+          [showActions]="true"
+          [emptyMessage]="'You have not submitted any reviews yet'"
+          (editReview)="onEditReview($event)"
+          (deleteReview)="onDeleteReview($event)">
+        </app-review-list>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+
+  </div>
+</section>

@@ -1,0 +1,334 @@
+/* Reviews Hero Section */
+.reviews-hero {
+  position: relative;
+  height: 60vh;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.8) 0%, rgba(44, 62, 80, 0.6) 100%);
+  z-index: 2;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  color: white;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+  font-size: 1.3rem;
+  font-weight: 300;
+  margin: 0;
+  opacity: 0.95;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  line-height: 1.4;
+}
+
+/* Reviews Content Section */
+.reviews-content {
+  background: #f8f9fa;
+  padding: 3rem 0;
+  min-height: 50vh;
+}
+
+.reviews-content .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Pending Reviews Notification Banner */
+.pending-notification-banner {
+  margin-bottom: 2rem;
+  animation: slideInDown 0.5s ease-out;
+}
+
+.notification-card {
+  background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+  border: 1px solid #ffeaa7;
+  border-left: 4px solid #f39c12;
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.15);
+  border-radius: 8px;
+}
+
+.notification-content {
+  padding: 1.5rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.notification-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 1;
+}
+
+.notification-icon {
+  color: #f39c12;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  margin-top: 0.25rem;
+}
+
+.notification-text h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.notification-text p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #7f8c8d;
+  line-height: 1.4;
+}
+
+.notification-actions {
+  display: flex;
+  align-items: center;
+}
+
+.submit-reviews-btn {
+  background: #f39c12;
+  color: white;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+  transition: all 0.3s ease;
+}
+
+.submit-reviews-btn:hover {
+  background: #e67e22;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+}
+
+.submit-reviews-btn mat-icon {
+  margin-right: 0.5rem;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reviews Tabs */
+.reviews-tabs {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Tab Content */
+.tab-content {
+  padding: 1.5rem;
+  min-height: 400px;
+}
+
+/* Tab Labels */
+::ng-deep .reviews-tabs .mat-mdc-tab-label {
+  min-width: 120px;
+  font-weight: 500;
+}
+
+::ng-deep .reviews-tabs .mat-mdc-tab-label .mdc-tab__text-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+::ng-deep .reviews-tabs .mat-mdc-tab-label mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Tab Badge */
+.tab-label-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tab-text {
+  position: relative;
+}
+
+/* Badge Styling */
+::ng-deep .reviews-tabs .mat-mdc-tab-label .mat-badge {
+  position: relative;
+}
+
+::ng-deep .reviews-tabs .mat-mdc-tab-label .mat-badge .mat-badge-content {
+  background: #e53e3e;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 20px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 10px;
+  padding: 0 5px;
+  position: absolute;
+  top: -10px;
+  left: -26px;
+  transform: translateX(-50%);
+}
+
+/* Active Tab */
+::ng-deep .reviews-tabs .mat-mdc-tab-label.mdc-tab--active {
+  color: #3498db;
+}
+
+::ng-deep .reviews-tabs .mat-mdc-tab-label.mdc-tab--active mat-icon {
+  color: #3498db;
+}
+
+/* Tab Indicator */
+::ng-deep .reviews-tabs .mdc-tab-indicator__content--underline {
+  background-color: #3498db;
+  height: 3px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reviews-hero {
+    height: 50vh;
+    min-height: 350px;
+  }
+
+  .hero-content {
+    padding: 0 1.5rem;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .reviews-content {
+    padding: 2rem 0;
+  }
+
+  .reviews-content .container {
+    padding: 0 0.5rem;
+  }
+
+  .tab-content {
+    padding: 1rem;
+  }
+
+  /* Make tabs scrollable on mobile */
+  ::ng-deep .reviews-tabs .mat-mdc-tab-header {
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  ::ng-deep .reviews-tabs .mat-mdc-tab-label {
+    min-width: 100px;
+    font-size: 0.9rem;
+  }
+
+  /* Notification Banner Mobile */
+  .notification-content {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  .notification-info {
+    align-items: flex-start;
+  }
+
+  .notification-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .submit-reviews-btn {
+    width: 100%;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviews-hero {
+    height: 45vh;
+    min-height: 300px;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .hero-content {
+    padding: 0 1rem;
+  }
+
+  .reviews-content .container {
+    padding: 0 0.5rem;
+  }
+
+  .tab-content {
+    padding: 0.75rem;
+  }
+}

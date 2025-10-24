@@ -32,6 +32,7 @@ export interface ReservationResponse {
   createdAt: string;
   guestInformation: GuestInformation;
   checkoutUrl?: string; // Backend provides this for PENDING reservations
+  reviewSubmitted?: boolean; // Added for review tracking
 }
 
 export type ReservationStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';

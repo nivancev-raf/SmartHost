@@ -1,0 +1,86 @@
+<div class="review-dialog-container">
+  
+  <!-- Dialog Header -->
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Write Your Review</h2>
+    <button mat-icon-button (click)="onCancel()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Apartment Info -->
+  <div class="apartment-info-section">
+    <div class="apartment-card">
+      <div class="apartment-icon">
+        <mat-icon>home</mat-icon>
+      </div>
+      <div class="apartment-details">
+        <h3>{{ data.reservation.apartmentName }}</h3>
+        <p class="stay-dates">
+          <mat-icon>calendar_today</mat-icon>
+          {{ formatDate(data.reservation.checkIn) }} - {{ formatDate(data.reservation.checkOut) }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Form -->
+  <div mat-dialog-content class="dialog-content">
+    <form [formGroup]="reviewForm" class="review-form">
+      
+      <!-- Rating Section -->
+      <div class="rating-section">
+        <label class="rating-label">How would you rate your stay? *</label>
+        <div class="star-rating">
+          <mat-icon 
+            *ngFor="let filled of getStarArray(reviewForm.value.rating); let i = index" 
+            [class.filled]="filled"
+            class="star clickable"
+            (click)="setRating(i + 1)">
+            {{ filled ? 'star' : 'star_border' }}
+          </mat-icon>
+          <span class="rating-text">{{ reviewForm.value.rating }} out of 5 stars</span>
+        </div>
+      </div>
+
+      <!-- Comment Section -->
+      <div class="comment-section">
+        <mat-form-field class="full-width comment-field" appearance="outline">
+          <mat-label>Tell us about your experience (optional)</mat-label>
+          <textarea 
+            matInput 
+            formControlName="comment"
+            placeholder="Share details about your stay to help future guests..."
+            rows="4"
+            maxlength="1000"></textarea>
+          <mat-hint align="end">
+            {{ reviewForm.value.comment?.length || 0 }}/1000 characters
+          </mat-hint>
+        </mat-form-field>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Dialog Actions -->
+  <div mat-dialog-actions class="dialog-actions">
+    <button 
+      mat-button 
+      (click)="onCancel()" 
+      [disabled]="submittingReview"
+      class="cancel-btn">
+      Cancel
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="submitReview()"
+      [disabled]="reviewForm.invalid || submittingReview"
+      class="submit-btn">
+      <mat-spinner *ngIf="submittingReview" diameter="16" class="btn-spinner"></mat-spinner>
+      <mat-icon *ngIf="!submittingReview">send</mat-icon>
+      {{ submittingReview ? 'Submitting...' : 'Submit Review' }}
+    </button>
+  </div>
+
+</div>

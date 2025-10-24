@@ -1,0 +1,247 @@
+.review-dialog-container {
+  min-width: 500px;
+  max-width: 600px;
+}
+
+/* Dialog Header */
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 1rem;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  color: #6c757d;
+}
+
+.close-btn:hover {
+  color: #2c3e50;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Apartment Info Section */
+.apartment-info-section {
+  padding: 0 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.apartment-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.apartment-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  flex-shrink: 0;
+}
+
+.apartment-icon mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.apartment-details h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.stay-dates {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.stay-dates mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* Dialog Content */
+.dialog-content {
+  padding: 0 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Rating Section */
+.rating-section {
+  margin-bottom: 2rem;
+}
+
+.rating-label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.star {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: #ddd;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.star.clickable:hover {
+  transform: scale(1.1);
+  color: #f39c12;
+}
+
+.star.filled {
+  color: #f39c12;
+}
+
+.rating-text {
+  margin-left: 1rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Comment Section */
+.comment-section {
+  margin-bottom: 1.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.comment-field textarea {
+  min-height: 80px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Dialog Actions */
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 1rem;
+}
+
+.cancel-btn {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.submit-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 140px;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.btn-spinner {
+  margin-right: 0.5rem;
+}
+
+/* Hover Effects */
+.cancel-btn:hover {
+  background: rgba(108, 117, 125, 0.1);
+}
+
+.submit-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+/* Disabled State */
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .review-dialog-container {
+    min-width: 320px;
+    max-width: 90vw;
+  }
+
+  .dialog-header {
+    padding: 1rem;
+  }
+
+  .dialog-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .apartment-info-section {
+    padding: 0 1rem;
+  }
+
+  .dialog-content {
+    padding: 0 1rem;
+  }
+
+  .dialog-actions {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .dialog-actions button {
+    width: 100%;
+  }
+
+  .star {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Material Dialog Overrides */
+::ng-deep .review-dialog .mat-mdc-dialog-container {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+::ng-deep .review-dialog .mat-mdc-dialog-surface {
+  border-radius: 12px;
+}

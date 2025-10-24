@@ -1,0 +1,84 @@
+<div class="pending-reviews-container">
+  
+  <!-- Header -->
+  <div class="header">
+    <h2>
+      <mat-icon>rate_review</mat-icon>
+      Pending Reviews
+    </h2>
+    <p class="subtitle">Leave a review for your completed stays</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading your completed stays...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && pendingReviews.length === 0" class="empty-state">
+    <mat-icon>check_circle</mat-icon>
+    <h3>All reviews submitted!</h3>
+    <p>You have no pending reviews at this time.</p>
+  </div>
+
+  <!-- Pending Reviews List -->
+  <div *ngIf="!loading && pendingReviews.length > 0" class="pending-list">
+    
+    <div class="info-banner">
+      <mat-icon>info</mat-icon>
+      <span>Click on any completed stay below to leave a review</span>
+    </div>
+
+    <div class="reservations-grid">
+      <mat-card 
+        *ngFor="let reservation of pendingReviews" 
+        class="reservation-card">
+        
+        <mat-card-header class="reservation-header">
+          <div class="apartment-info">
+            <mat-icon class="apartment-icon">home</mat-icon>
+            <div class="apartment-details">
+              <h3>{{ reservation.apartmentName }}</h3>
+              <p class="stay-dates">
+                {{ formatDate(reservation.checkIn) }} - {{ formatDate(reservation.checkOut) }}
+              </p>
+            </div>
+          </div>
+          <div class="review-prompt">
+            <mat-icon>star_border</mat-icon>
+            <span>Rate your stay</span>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content class="reservation-content">
+          <div class="stay-info">
+            <div class="info-item">
+              <mat-icon>calendar_today</mat-icon>
+              <span>Completed Stay</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>rate_review</mat-icon>
+              <span>Review Pending</span>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions class="reservation-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            class="review-btn"
+            (click)="openReviewDialog(reservation)">
+            <mat-icon>rate_review</mat-icon>
+            Write Review
+          </button>
+        </mat-card-actions>
+
+      </mat-card>
+    </div>
+  </div>
+
+
+
+</div>

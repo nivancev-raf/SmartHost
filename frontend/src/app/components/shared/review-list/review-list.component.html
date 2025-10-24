@@ -1,0 +1,94 @@
+<div class="review-list-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading reviews...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && reviews.length === 0" class="empty-state">
+    <mat-icon>rate_review</mat-icon>
+    <p>{{ emptyMessage }}</p>
+  </div>
+
+  <!-- Reviews List -->
+  <div *ngIf="!loading && reviews.length > 0" class="reviews-grid">
+    <mat-card *ngFor="let review of reviews" class="review-card">
+      
+      <!-- Review Header -->
+      <mat-card-header class="review-header">
+        <div class="reviewer-info">
+          <div class="reviewer-avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="reviewer-details">
+            <h3 class="reviewer-name">{{ getReviewerName(review) }}</h3>
+            <p class="review-date">{{ formatDate(review.createdAt) }}</p>
+          </div>
+        </div>
+        
+        <!-- Rating Stars -->
+        <div class="rating-stars">
+          <mat-icon 
+            *ngFor="let filled of getStarArray(review.rating)" 
+            [class.filled]="filled"
+            class="star">
+            {{ filled ? 'star' : 'star_border' }}
+          </mat-icon>
+          <span class="rating-number">({{ review.rating }}/5)</span>
+        </div>
+      </mat-card-header>
+
+      <mat-divider></mat-divider>
+
+      <!-- Review Content -->
+      <mat-card-content class="review-content">
+        <!-- Apartment Info -->
+        <div class="apartment-info">
+          <mat-icon>home</mat-icon>
+          <span>{{ getApartmentName(review) }}</span>
+        </div>
+
+        <!-- Stay Dates (if available) -->
+        <div *ngIf="review.reservation" class="stay-info">
+          <mat-icon>calendar_today</mat-icon>
+          <span>
+            Stayed: {{ formatDate(review.reservation.checkIn) }} - 
+            {{ formatDate(review.reservation.checkOut) }}
+          </span>
+        </div>
+
+        <!-- Review Comment -->
+        <div *ngIf="review.comment" class="review-comment">
+          <p>{{ review.comment }}</p>
+        </div>
+
+        <!-- No Comment State -->
+        <div *ngIf="!review.comment" class="no-comment">
+          <p class="muted-text">No written review provided</p>
+        </div>
+      </mat-card-content>
+
+      <!-- Actions -->
+      <mat-card-actions *ngIf="canModifyReview(review)" class="review-actions">
+        <button 
+          mat-button 
+          color="primary" 
+          (click)="onEditClick(review)"
+          class="action-btn">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+        <button 
+          mat-button 
+          color="warn" 
+          (click)="onDeleteClick(review)"
+          class="action-btn">
+          <mat-icon>delete</mat-icon>
+          Delete
+        </button>
+      </mat-card-actions>
+
+    </mat-card>
+  </div>
+</div>

@@ -5,8 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.cloudinary.Cloudinary;
+
 import smarthost.backend.dto.ApartmentDto;
 import smarthost.backend.dto.ApartmentImageDto;
 import smarthost.backend.model.ApartmentImage;
@@ -16,6 +21,7 @@ import smarthost.backend.requests.UpdateApartmentRequest;
 import smarthost.backend.services.ApartmentService;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,12 +51,12 @@ public class ApartmentController {
         return ResponseEntity.ok(apartment);
     }
 
-
     @PostMapping
     public ResponseEntity<ApartmentDto> createApartment(@RequestBody CreateApartmentRequest request) {
         ApartmentDto apartment = apartmentService.createApartment(request);
         return ResponseEntity.status(201).body(apartment);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<ApartmentDto> updateApartment(
@@ -76,20 +82,23 @@ public class ApartmentController {
     public ResponseEntity<List<ApartmentImageDto>> uploadImages(
             @PathVariable Long apartmentId,
             @RequestParam("files") MultipartFile[] files,
-            @RequestParam(value = "featuredIndex", defaultValue = "0") int featuredIndex){
+            @RequestParam(value = "featuredIndex", defaultValue = "0") int featuredIndex) {
 
         try {
-            List<ApartmentImageDto> savedImages = apartmentService.saveApartmentImages(apartmentId, files, featuredIndex);
+            List<ApartmentImageDto> savedImages = apartmentService.saveApartmentImages(apartmentId, files,
+                    featuredIndex);
             return ResponseEntity.ok(savedImages);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
         }
     }
 
-//    public List<ApartmentImageDto> getApartmentImages(Long apartmentId) {
-//        List<ApartmentImage> images = apartmentImageRepository.findByApartmentId(apartmentId);
-//        return images.stream().map(apartmentMapper::mapImageToDto).collect(Collectors.toList());
-//    }
+    // public List<ApartmentImageDto> getApartmentImages(Long apartmentId) {
+    // List<ApartmentImage> images =
+    // apartmentImageRepository.findByApartmentId(apartmentId);
+    // return
+    // images.stream().map(apartmentMapper::mapImageToDto).collect(Collectors.toList());
+    // }
 
     @GetMapping("/{apartmentId}/images")
     public ResponseEntity<List<ApartmentImageDto>> getApartmentImages(@PathVariable Long apartmentId) {
@@ -132,7 +141,7 @@ public class ApartmentController {
         try {
             LocalDate checkInDate = LocalDate.parse(checkin);
             LocalDate checkOutDate = LocalDate.parse(checkout);
-            
+
             boolean isAvailable = apartmentService.isApartmentAvailable(apartmentId, checkInDate, checkOutDate);
             return ResponseEntity.ok(isAvailable);
         } catch (Exception e) {
@@ -143,7 +152,8 @@ public class ApartmentController {
 
     /**
      * Get all available apartments for given date range and number of guests
-     * Optional apartmentId parameter - if provided and available, it will be shown first in results
+     * Optional apartmentId parameter - if provided and available, it will be shown
+     * first in results
      */
     @GetMapping("/available")
     public ResponseEntity<List<ApartmentDto>> getAvailableApartments(
@@ -152,10 +162,11 @@ public class ApartmentController {
             @RequestParam(name = "guests") Integer guests,
             @RequestParam(name = "apartmentId", required = false) Long apartmentId) {
         try {
-//            LocalDate checkInDate = LocalDate.parse(checkin);
-//            LocalDate checkOutDate = LocalDate.parse(checkout);
-            
-            List<ApartmentDto> availableApartments = apartmentService.getAvailableApartments(checkin, checkout, guests, apartmentId);
+            // LocalDate checkInDate = LocalDate.parse(checkin);
+            // LocalDate checkOutDate = LocalDate.parse(checkout);
+
+            List<ApartmentDto> availableApartments = apartmentService.getAvailableApartments(checkin, checkout, guests,
+                    apartmentId);
             System.out.println("AVAILABLE APARTMENTS: " + availableApartments);
             return ResponseEntity.ok(availableApartments);
         } catch (Exception e) {
@@ -163,5 +174,4 @@ public class ApartmentController {
             return ResponseEntity.badRequest().body(List.of());
         }
     }
-
 }

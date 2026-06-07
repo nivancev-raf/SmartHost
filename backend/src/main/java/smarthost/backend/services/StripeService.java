@@ -22,7 +22,7 @@ public class StripeService {
     @Value("${stripe.cancel.url}")
     private String cancelUrl;
 
-    public String createCheckoutSession(Reservation reservation, String apartmentName) throws StripeException {
+        public String createCheckoutSession(Reservation reservation, String apartmentName) throws StripeException {
         Stripe.apiKey = stripeApiKey;
 
         // Convert price to cents (Stripe uses smallest currency unit)
@@ -60,5 +60,5 @@ public class StripeService {
 
         Session session = Session.create(params);
         return session.getUrl(); // Stripe hosted checkout page URL
-    }
+        }
 }

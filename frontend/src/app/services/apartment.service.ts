@@ -134,7 +134,7 @@ export class ApartmentService {
     const headers = this.getAuthHeaders();
     return this.http.post(`${this.API_URL}/apartments/${apartmentId}/images`, formData, { headers });
   }
-
+  
   deleteApartmentImage(imageId: number): Observable<void> {
     const headers = this.getAuthHeaders();
     return this.http.delete<void>(`${this.API_URL}/apartments/images/${imageId}`, { headers });
